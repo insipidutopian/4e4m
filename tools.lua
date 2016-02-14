@@ -7,14 +7,15 @@
 --
 -- This file is used to display the corresponding screen content when the user clicks the tab bar. 
 
-local storyboard = require ( "storyboard" )
+-- local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
 local widget = require ( "widget" )
 
 --Create a storyboard scene for this module
 local scene = storyboard.newScene()
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 	
 
@@ -133,7 +134,10 @@ function scene:createScene( event )
 	group:insert(objectGenButton)
 end
 
---Add the createScene listener
-scene:addEventListener( "createScene", scene )
+--Add the createScene, enterScene, and exitScene listeners
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
 
 return scene

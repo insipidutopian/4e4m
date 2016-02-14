@@ -6,7 +6,8 @@
 --
 -- This file is used to display the corresponding screen content when the user clicks the tab bar. 
 
-local storyboard = require ( "storyboard" )
+--local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
 local widget = require ( "widget" )
 local campaign = require ( "campaign" )
 CampaignList = require ("CampaignList")
@@ -45,7 +46,7 @@ end
 
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 
 	print("campaigns:createScene")
@@ -182,7 +183,7 @@ end
 
 
 
-function scene:enterScene( event )
+function scene:show( event )
 	local group = self.view
 
 	print("campaigns:enterScene")
@@ -218,7 +219,7 @@ function scene:enterScene( event )
 	group:insert( campaignListDisplay )
 end
 
-function scene:exitScene( event )
+function scene:destroy( event )
 	local group = self.view
 
 	if campaignListDisplay then
@@ -273,8 +274,8 @@ end
 
 
 --Add the createScene, enterScene, and exitScene listeners
-scene:addEventListener( "createScene", scene )
-scene:addEventListener( "enterScene", scene )
-scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "destroy", scene )
 
 return scene

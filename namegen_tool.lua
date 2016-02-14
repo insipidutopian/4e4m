@@ -6,7 +6,8 @@
 --
 -- This file is used to 
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+--local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 Randomizer = require ("RandGenUtil")
 
@@ -19,8 +20,9 @@ local nameResultString = display.newText( "", display.contentWidth /2 , 200,
 							native.systemFontBold, 50 )
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
+	print ("namegen_tool:create called")
 	
 	local background = display.newImage("images/dragon02.jpg") 
 	background.x = display.contentWidth / 2
@@ -88,6 +90,6 @@ function genName( numNames )
 end
 
 --Add the createScene listener
-scene:addEventListener( "createScene", scene )
+scene:addEventListener( "create", scene )
 
 return scene

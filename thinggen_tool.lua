@@ -6,7 +6,8 @@
 --
 -- This file is used to  
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+-- local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 Randomizer = require ("RandGenUtil")
 
@@ -21,7 +22,7 @@ local thingResultString = display.newText( "", display.contentWidth /2 , 200,
 
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 	
 	local background = display.newImage("images/swords-shields.jpg") 
@@ -89,6 +90,6 @@ function genThingName( )
 end
 
 --Add the createScene listener
-scene:addEventListener( "createScene", scene )
+scene:addEventListener( "create", scene )
 
 return scene

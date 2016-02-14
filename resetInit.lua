@@ -1,8 +1,9 @@
-local storyboard = require ( "storyboard" )
+-- local composer = require ( "composer" )
+local composer = require ( "composer" )
 
 InitiativeList = require ( "InitiativeList" )
 
-local resetInit = storyboard.newScene()
+local resetInit = composer.newScene()
 local myHeight = 100
 local buttonHeight = 40
 local ySpace = 20
@@ -14,7 +15,7 @@ local resetEnemiesFlag = "true"
 
 local nameTF
 
-function resetInit:createScene( event )
+function resetInit:create( event )
 	local group = self.view
 	
 	local popTitleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, titleBarHeight )
@@ -43,10 +44,10 @@ function resetCurrentInitiatives( )
     end
 
     InitiativeList:resetInitiatives()
-	storyboard.hideOverlay( "resetInit", popOptions ); 
+	composer.hideOverlay( "resetInit", popOptions ); 
 end
 
-function resetInit:enterScene( event )
+function resetInit:show( event )
 	local group = self.view
 
 	print("resetInit:enterScene")
@@ -76,7 +77,7 @@ function resetInit:enterScene( event )
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Cancel",
 		emboss = true,
-		onPress =  function() storyboard.hideOverlay( "resetInit", popOptions ); end,
+		onPress =  function() composer.hideOverlay( "resetInit", popOptions ); end,
 		x = display.contentCenterX + (buttonWidth + rightPadding),
 		y = myHeight+buttonHeight/2,
 	}
@@ -107,7 +108,7 @@ function resetInit:enterScene( event )
 end
 
 
-function resetInit:exitScene( event )
+function resetInit:hide( event )
 	local group = self.view
 
 	if nameTF then
@@ -115,14 +116,15 @@ function resetInit:exitScene( event )
 		nameTF = nil
 	end
 
-
 	print("resetInit:exitScene")
+
+	composer.gotoScene( "initiative_tool" );
 end	
 
 
 --Add the createScene, enterScene, and exitScene listeners
-resetInit:addEventListener( "createScene", resetInit )
-resetInit:addEventListener( "enterScene", resetInit )
-resetInit:addEventListener( "exitScene", resetInit )
+resetInit:addEventListener( "create", resetInit )
+resetInit:addEventListener( "show", resetInit )
+resetInit:addEventListener( "hide", resetInit )
 
 return resetInit

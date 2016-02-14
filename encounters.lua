@@ -8,7 +8,8 @@
 --
 -- This file is used to display the corresponding screen content when the user clicks the tab bar. 
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+--local storyboard = require ( "storyboard" )
 
 --Create a storyboard scene for this module
 local scene = storyboard.newScene()
@@ -18,7 +19,7 @@ local scene = storyboard.newScene()
 -- 											native.systemFontBold, 20 )
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 	
 
@@ -48,6 +49,6 @@ function scene:createScene( event )
 end
 
 --Add the createScene listener
-scene:addEventListener( "createScene", scene )
+scene:addEventListener( "create", scene )
 
 return scene

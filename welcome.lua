@@ -6,7 +6,8 @@
 --
 -- This file is used to display the corresponding screen content when the user clicks the tab bar. 
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+-- local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 FileUtil = require ("FileUtil")
 
@@ -25,7 +26,7 @@ local widgetGroup = display.newGroup()
 
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 
 	print("welcome:createScene")
@@ -83,29 +84,39 @@ end
 
 
 
-function scene:enterScene( event )
+function scene:show( event )
 	local group = self.view
 
-	print("welcome:enterScene")
+	print("welcome:show")
 
 
 	welcomeTitleText = display.newText("Welcome.", centerX, display.contentHeight - 100, native.systemFontBold, 16 )
 	welcomeTitleText:setFillColor( 1, 0, 0)
 	group:insert( welcomeTitleText )
 
-	welcomeText = display.newText("Welcome to " .. appSettings["appName"] .. "v" .. appSettings["appVersion"], centerX, display.contentHeight - 100, native.systemFontBold, 16 )
+	welcomeText = display.newText("Welcome to " .. appSettings["appName"] .. " v" .. appSettings["appVersion"], centerX, display.contentHeight - 200, native.systemFontBold, 16 )
 	welcomeTitleText:setFillColor( 1, 0, 0)
-	group:insert( welcomeTitleText )
+	group:insert( welcomeText )
 end
 
-function scene:exitScene( event )
+
+function scene:hide( event )
+	print("welcome:hide")
+
 	local group = self.view
 
 	if welcomeTitleText then
 		welcomeTitleText:removeSelf()
 		welcomeTitleText = nil
 	end
-	print("welcome:exitScene")
+
+	if welcomeText then
+		welcomeText:removeSelf()
+		welcomeText = nil
+	end
+
+
+	
 end	
 
 
@@ -114,8 +125,9 @@ end
 
 
 --Add the createScene, enterScene, and exitScene listeners
-scene:addEventListener( "createScene", scene )
-scene:addEventListener( "enterScene", scene )
-scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
 
 return scene

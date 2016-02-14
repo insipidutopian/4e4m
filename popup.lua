@@ -1,4 +1,5 @@
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+-- local storyboard = require ( "storyboard" )
 
 local popup = storyboard.newScene()
 

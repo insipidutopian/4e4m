@@ -5,7 +5,8 @@
 -- 
 --
 
-local storyboard = require ( "storyboard" )
+--local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
 local widget = require ( "widget" )
 CampaignList = require ("CampaignList")
 

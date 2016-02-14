@@ -6,7 +6,8 @@
 --
 -- This file is used to 
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+--local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 local campaign = require ( "campaign" )
 
@@ -23,7 +24,7 @@ local resultString = display.newText( "", display.contentWidth - 100 , 200,
 
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 	
 	local background = display.newImage("images/dice01.jpg") 
@@ -204,6 +205,6 @@ function rollDie( dieType )
 end
 
 --Add the createScene listener
-scene:addEventListener( "createScene", scene )
+scene:addEventListener( "create", scene )
 
 return scene

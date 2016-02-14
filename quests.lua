@@ -8,7 +8,8 @@
 --
 -- This file is used to display the corresponding screen content when the user clicks the tab bar. 
 
-local storyboard = require ( "storyboard" )
+-- local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
 local widget = require ( "widget" )
 local quest = require ( "quest" )
 QuestList = require ("QuestList")
@@ -111,7 +112,7 @@ end
 
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 
 	local background = display.newImage("images/treasure-map.jpg") 
@@ -147,7 +148,7 @@ function scene:createScene( event )
 	group:insert(randomQuestButton)
 end
 
-function scene:exitScene ( event )
+function scene:exit ( event )
 	local group = self.view
 
 	if questsFoundText then
@@ -161,7 +162,7 @@ function scene:exitScene ( event )
 	end
 end
 
-function scene:enterScene( event )
+function scene:enter( event )
 	local group = self.view
 	
 	print("quests:enterScene")
@@ -196,8 +197,8 @@ end
 
 
 --Add the createScene, enterScene, and exitScene listeners
-scene:addEventListener( "createScene", scene )
-scene:addEventListener( "enterScene", scene )
-scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "create", scene )
+scene:addEventListener( "enter", scene )
+scene:addEventListener( "exit", scene )
 
 return scene

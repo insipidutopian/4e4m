@@ -6,13 +6,14 @@
 --
 -- This file is used to  
 
-local storyboard = require ( "storyboard" )
+local composer = require ( "composer" )
+--local composer = require ( "composer" )
 local widget = require ( "widget" )
 local initiative = require ( "initiative" )
 local initList = require ( "InitiativeList")
 
---Create a storyboard scene for this module
-local scene = storyboard.newScene()
+--Create a composer scene for this module
+local scene = composer.newScene()
 
 
 local text1, text2
@@ -44,8 +45,11 @@ local popOptions =
     isModal = true
 }
 
+
+
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
+	print ("initiative_tool:scene:create")
 	local group = self.view
 	
 	local background = display.newImage("images/swords01.jpg") 
@@ -58,8 +62,8 @@ function scene:createScene( event )
 	-- Create title bar to go at the top of the screen
 	local titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, titleBarHeight )
 	titleBar:setFillColor( titleGradient ) 
-	-- titleBar.y = display.screenOriginY + titleBar.contentHeight * 0.5
 	group:insert ( titleBar )
+
 	-- create embossed text to go on toolbar
 	local titleText = display.newEmbossedText( "Initiative", display.contentCenterX, titleBar.y, 
 												native.systemFontBold, 20 )
@@ -78,7 +82,7 @@ function scene:createScene( event )
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Back",
 		emboss = true,
-		onPress =  function() storyboard.gotoScene( "tools" ); end,
+		onPress =  function() composer.gotoScene( "tools" ); end,
 		x = buttonWidth + rightPadding,
 		y = titleBarHeight/2,
 	}
@@ -92,7 +96,7 @@ function scene:createScene( event )
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "+",
 		emboss = true,
-		onPress =  function() storyboard.showOverlay( "addInit", popOptions ); end,
+		onPress =  function() print ("initiative_tool:add"); composer.showOverlay( "addInit", popOptions ); print ("finished calling initiative_tool:add"); end,
 		x = squareButtonWidth + rightPadding,
 		y = titleBarHeight + initBarHeight/2,
 	}
@@ -106,7 +110,7 @@ function scene:createScene( event )
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "->",
 		emboss = true,
-		onPress = function() InitiativeList:nextInitiative(); storyboard.gotoScene( "initiative_tool" ); end,
+		onPress = function() print ("initiative_tool:next"); InitiativeList:nextInitiative(); composer.gotoScene( "initiative_tool" ); end,
 		x = squareButtonWidth + rightPadding + squareButtonWidth*2 + rightPadding*2,
 		y = titleBarHeight + initBarHeight/2,
 	}
@@ -119,7 +123,7 @@ function scene:createScene( event )
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Delay",
 		emboss = true,
-		onPress =  function() storyboard.showOverlay( "delayInit", popOptions ); end,
+		onPress =  function() print ("initiative_tool:delay"); composer.showOverlay( "delayInit", popOptions ); end,
 		x = squareButtonWidth + rightPadding + squareButtonWidth + rightPadding + buttonWidth*2 + rightPadding,
 		y = titleBarHeight + initBarHeight/2,
 	}
@@ -132,7 +136,7 @@ function scene:createScene( event )
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Reset",
 		emboss = true,
-		onPress =  function() storyboard.showOverlay( "resetInit", popOptions ); end,
+		onPress =  function() print ("initiative_tool:reset"); composer.showOverlay( "resetInit", popOptions ); end,
 		x = squareButtonWidth + rightPadding + squareButtonWidth*2 + rightPadding*2 + 
 			buttonWidth + rightPadding*2 + buttonWidth*2 + rightPadding*2,
 		y = titleBarHeight + initBarHeight/2,
@@ -140,6 +144,9 @@ function scene:createScene( event )
 	group:insert(resetButton)
 
 end
+
+
+
 
 -- Hande row touch events
 local function onRowTouch( event )
@@ -153,15 +160,18 @@ local function onRowTouch( event )
 
 	elseif "release" == phase then
 		if row.index -1 <= InitiativeList:getInitiativeCount() then
-			storyboard.showOverlay( "addInit", { params = { initNumber = row.index-1, } })
+			composer.showOverlay( "addInit", { params = { initNumber = row.index-1, } })
 		end
 		print( "Tapped and/or Released row: " .. row.index )
 	end
 end
 
 
+
+
 -- Handle row rendering
 local function onRowRender( event )
+	print ("  Rendering Row ")
 	local phase = event.phase
 	local row = event.row
 	local id = row.index
@@ -169,17 +179,11 @@ local function onRowRender( event )
 	local groupContentHeight = row.contentHeight
 
 	local params = row.params
-   	--row.bg = display.newRect( 0, 0, display.contentWidth, 38 )
-   	--row.bg.anchorX = 0
-	--row.bg.anchorY = 0
-	--row.bg:setFillColor( 1, 1, 1 )
-	--row:insert( row.bg )
 
 
 	if params.roundMarker  then
 		print ("Rendering Row Marker!")
 		row.nameText = display.newEmbossedText( " --== Round " .. params.roundMarker .. " End ==--" , 12, 0, native.systemFontBold, 10 )
-		--row.nameText.anchorX = 0
 		row.nameText.anchorY = 0.5
 		row.nameText:setFillColor( 0,0,0 )
 		row.nameText.y = 19
@@ -231,10 +235,16 @@ end
 
 
 
-function scene:enterScene( event )
+function scene:show( event )
 	local group = self.view
 
-	print("initiatives:enterScene")
+	print("initiatives:scene:enter")
+
+	if (InitiativeListDisplay) then
+		InitiativeListDisplay:removeSelf()
+		InitiativeListDisplay = nil
+	end
+
 	-- Create a tableView
 	InitiativeListDisplay = widget.newTableView
 	{
@@ -265,6 +275,12 @@ function scene:enterScene( event )
 		showInitiative(i)
  	end
 
+
+ 	if (initiativeFoundText) then
+ 		initiativeFoundText:removeSelf()
+ 		initiativeFoundText = nil
+ 	end
+
  	roundNum = InitiativeList:getRoundNumber()
 	initiativeFoundText = display.newText("Round: "..roundNum, centerX, display.contentHeight - 70, native.systemFontBold, 16 )
 	initiativeFoundText:setFillColor( 1, 0, 0)
@@ -272,7 +288,11 @@ function scene:enterScene( event )
 	group:insert( InitiativeListDisplay )
 end
 
-function scene:exitScene( event )
+
+
+
+function scene:hide( event )
+	print ("initiative_tool:scene:exit")
 	local group = self.view
 
 	if InitiativeListDisplay then
@@ -286,10 +306,15 @@ function scene:exitScene( event )
 	print("initiative:exitScene")
 end	
 
+
+
+
 function showInitiative( i )
+	print ("initiative_tool:showInitiative() called")
 
 	local c = InitiativeList:getOffsetInitiative( i )
 	if c then
+		print ("INSERT ROW CALLED")
 		InitiativeListDisplay:insertRow
 		{
 			height = 24,
@@ -304,7 +329,7 @@ function showInitiative( i )
 		print ("error finding initiative " .. i)
 	end
 	if InitiativeList:isLast(i) then
-		print ("-- round boundary --")
+		print ("-== round ".. InitiativeList:getRoundNumber() .. " boundary ==-")
 		InitiativeListDisplay:insertRow
 		{
 			height = 6,
@@ -318,7 +343,10 @@ function showInitiative( i )
 	end
 end
 
+
+
 function createInitiative()	
+	print ("initiative_tool:createInitiative() called")
 	rand = math.random( 100 )
 	local newInitiative = initiative.new("initiative"..rand)
 	InitiativeListDisplay:insertRow
@@ -336,9 +364,12 @@ function createInitiative()
 	return newInitiative
 end
 
+
+-- JTW: 2/4/16: this is the problem...overlayBegan/Ended are deprecated
+-- see docs for change
 function scene:overlayBegan( event )
    print( "The overlay scene is showing: " .. event.sceneName )
-   --print( "We get custom params too! " .. event.params.sample_var )
+   print( "We get custom params too! " .. event.params.sample_var )
 end
 
 function scene:overlayEnded( event )
@@ -346,15 +377,18 @@ function scene:overlayEnded( event )
    InitiativeList:sortInitiatives( )
    
    --brute force a refresh of the list
-   storyboard.gotoScene( "initiative_tool" )
+   composer.gotoScene( "initiative_tool" )
 end
+-- / JTW:
+
 
 --Add the createScene, enterScene, and exitScene listeners
-scene:addEventListener( "createScene", scene )
-scene:addEventListener( "enterScene", scene )
-scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
 
-scene:addEventListener( "overlayBegan" )
-scene:addEventListener( "overlayEnded" )
+--scene:addEventListener( "overlayBegan" )
+--scene:addEventListener( "overlayEnded" )
 
 return scene

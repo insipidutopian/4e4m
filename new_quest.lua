@@ -6,7 +6,8 @@
 --
 -- This file is used to create a new quest
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+-- local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 local QuestClass = require ( "quest" )
 QuestList = require ("QuestList")
@@ -30,6 +31,10 @@ local addQuestName = ""
 
 local function update ()
 	newQuest = Randomizer:generateQuest()
+	if ( questGoodnessText == nil) then
+		questGoodnessText = ""
+		questDetailsText = ""
+	end
 	questGoodnessText.text = newQuest.description
 	questDetailsText.text = newQuest.details
 	-- updateCountText.text = "Updates: " .. updateCount
@@ -101,7 +106,7 @@ function addQuest()
 end
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 
 	print ("new_quest:createScene - New Quest Type=" .. newQuestType)
@@ -151,6 +156,7 @@ function scene:createScene( event )
 	end
 
 	if (newQuestType == 'new') then 
+		print ("new_quest:createScene - New Quest" )
 		local questNameText = display.newText( { text = "Quest Name: ", 
 										 x= leftPadding, y = yStart + inputFontSize * .5, 
 										 font = native.systemFontBold, fontSize = inputFontSize
@@ -176,6 +182,7 @@ function scene:createScene( event )
 		questKeywordsText:setFillColor( 1, 0, 0)
 		scrollView:insert( questKeywordsText )
 	else
+		print ("new_quest:createScene - New Random Quest" )
 		local questOverviewHeader = display.newText( { text = "Quest Overview", 
 										 x= leftPadding, y = yStart + inputFontSize * .5, 
 										 font = native.systemFontBold, fontSize = inputFontSize
@@ -224,7 +231,7 @@ function scene:createScene( event )
 
 end
 
-function scene:enterScene( event )
+function scene:enter( event )
 	local group = self.view
 
 	-- Generate a name...
@@ -271,7 +278,7 @@ function scene:enterScene( event )
 	-- native.setKeyboardFocus( questNameTF )
 end
 
-function scene:exitScene( event )
+function scene:exit( event )
 	local group = self.view
 
 	-- remove any native objects, since widget objects will be cleaned automatically, but native ones won't
@@ -303,7 +310,7 @@ end
 
 
 --Add the createScene listener
-scene:addEventListener( "createScene", scene )
-scene:addEventListener( "enterScene", scene )
-scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "create", scene )
+scene:addEventListener( "enter", scene )
+scene:addEventListener( "exit", scene )
 return scene

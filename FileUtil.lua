@@ -69,6 +69,7 @@ function FileUtil.loadSettingsFile(self, fName, settings)
 	--local fName = "myFile.txt"
 	local path = system.pathForFile( fName, system.DocumentsDirectory )
 
+	print ("Attempting to open settings file.")
 	local readCount = 0
 	local fContents = ""
 	local file = io.open( path, "r" )

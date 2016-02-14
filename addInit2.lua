@@ -300,8 +300,6 @@ function scene:hide( event )
 
 
 	print("addInit:exitScene")
-
-	composer.gotoScene( "initiative_tool" );
 end	
 
 --Add the createScene listener

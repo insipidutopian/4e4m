@@ -6,7 +6,8 @@
 --
 -- This file is used to  
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
+--local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 local CampaignClass = require ( "campaign" )
 
@@ -60,7 +61,7 @@ function addCampaign()
 end
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
 	
 	local background = display.newImage("images/dragon01.jpg") 
@@ -149,7 +150,7 @@ function scene:createScene( event )
 
 end
 
-function scene:enterScene( event )
+function scene:enter( event )
 	local group = self.view
 
 	-- Generate a name...
@@ -177,7 +178,7 @@ function scene:enterScene( event )
 	-- native.setKeyboardFocus( campaignNameTF )
 end
 
-function scene:exitScene( event )
+function scene:exit( event )
 	local group = self.view
 
 	-- remove any native objects, since widget objects will be cleaned automatically, but native ones won't
@@ -199,7 +200,7 @@ end
 
 
 --Add the createScene listener
-scene:addEventListener( "createScene", scene )
-scene:addEventListener( "enterScene", scene )
-scene:addEventListener( "exitScene", scene )
+scene:addEventListener( "create", scene )
+scene:addEventListener( "enter", scene )
+scene:addEventListener( "exit", scene )
 return scene

@@ -88,6 +88,7 @@ function _sortInits(a,b)
 end
 
 function InitiativeList.sortInitiatives(self)
+	print("InitiativeList.sortInitiatives() called")
 	if self then 
 		table.sort( self.iList, _sortInits  )
 	end

@@ -7,7 +7,8 @@
 ------------------------------------------------------------
 
 local widget = require ( "widget" )
-local storyboard = require ( "storyboard" )
+--local storyboard = require ( "storyboard" )
+local composer = require ( "composer" )
 
 display.setStatusBar( display.HiddenStatusBar ) 
 display.setDefault( "background", 1 )
@@ -51,7 +52,8 @@ local tabButtons =
 		defaultFile = "assets/tabIcon.png",
 		overFile = "assets/tabIcon-down.png",
 		label = "Campaigns",
-		onPress = function() storyboard.gotoScene( "campaigns" ); end,
+		onPress = function() composer.gotoScene( "campaigns" ); end,
+--		onPress = function() storyboard.gotoScene( "campaigns" ); end,
 		selected = true
 	},
 	{
@@ -59,21 +61,24 @@ local tabButtons =
 		defaultFile = "assets/tabIcon.png",
 		overFile = "assets/tabIcon-down.png",
 		label = "Quests",
-		onPress = function() storyboard.gotoScene( "quests" ); end,
+		-- onPress = function() storyboard.gotoScene( "quests" ); end,
+		onPress = function() composer.gotoScene( "quests" ); end,
 	},
 	{
 		width = 32, height = 32,
 		defaultFile = "assets/tabIcon.png",
 		overFile = "assets/tabIcon-down.png",
 		label = "Encounters",
-		onPress = function() storyboard.gotoScene( "encounters" ); end,
+		onPress = function() composer.gotoScene( "encounters" ); end,
+		--onPress = function() storyboard.gotoScene( "encounters" ); end,
 	},
 	{
 		width = 32, height = 32,
 		defaultFile = "assets/tabIcon.png",
 		overFile = "assets/tabIcon-down.png",
 		label = "Tools",
-		onPress = function() storyboard.gotoScene( "tools" ); end,
+		onPress = function() composer.gotoScene( "tools" ); end,
+		--onPress = function() storyboard.gotoScene( "tools" ); end,
 	}
 }
 
@@ -108,12 +113,14 @@ local readResult = FileUtil:loadSettingsFile("settings.cfg", appSettings)
 
 --print ("Load of settings file result: read " .. readResult )
 if (readResult == "") then -- First time run
-	storyboard.gotoScene( "welcome" ) 
+	composer.gotoScene( "welcome" ) 
+	--storyboard.gotoScene( "welcome" ) 
 else -- Loaded settings
 	print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
 	print ("4e4m App Name              : " .. appSettings['appName'])
 	print ("4e4m App Version           : " .. appSettings['appVersion'])
 	
-	storyboard.gotoScene( "campaigns" )
+	composer.gotoScene( "welcome" )
+	--storyboard.gotoScene( "campaigns" )
 end
 
