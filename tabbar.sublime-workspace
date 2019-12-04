@@ -1,804 +1,0 @@
-{
-	"auto_complete":
-	{
-		"selected_items":
-		[
-			[
-				"currentC",
-				"currentCampaign.name"
-			],
-			[
-				"campaignK",
-				"campaignKeywordsHeaderText"
-			],
-			[
-				"curre",
-				"currentCampaign"
-			],
-			[
-				"self.cu",
-				"self.currentCampaignIndex"
-			],
-			[
-				"campaignDe",
-				"campaignDescTB.text"
-			],
-			[
-				"cap",
-				"campaignDescTB.text"
-			],
-			[
-				"camp",
-				"campaignNameTF"
-			],
-			[
-				"Camp",
-				"CampaignList"
-			],
-			[
-				"Campaign",
-				"CampaignList"
-			],
-			[
-				"ca",
-				"campaignList"
-			],
-			[
-				"right",
-				"rightPadding"
-			],
-			[
-				"left",
-				"leftPadding"
-			],
-			[
-				"dis",
-				"display.contentWidth"
-			],
-			[
-				"addC",
-				"addCampaignName"
-			],
-			[
-				"display.con",
-				"display.contentHeight"
-			],
-			[
-				"titleB",
-				"titleBarHeight"
-			],
-			[
-				"rem",
-				"removeAllMarkers()	Map"
-			],
-			[
-				"newCamp",
-				"newCampaignButton"
-			],
-			[
-				"disp",
-				"display.contentHeight	display"
-			],
-			[
-				"display.Bot",
-				"display.BottomCenterReferencePoint	DisplayObject"
-			],
-			[
-				"setR",
-				"setReferencePoint()	DisplayObject"
-			],
-			[
-				"scre",
-				"screenText"
-			]
-		]
-	},
-	"buffers":
-	[
-		{
-			"file": "main.lua",
-			"settings":
-			{
-				"buffer_size": 2721,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "RandGenUtil.lua",
-			"settings":
-			{
-				"buffer_size": 9074,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "campaigns.lua",
-			"settings":
-			{
-				"buffer_size": 8393,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "quest.lua",
-			"settings":
-			{
-				"buffer_size": 2488,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "-------------------------------------------------\n--\n-- questList.lua\n--\n-- class for managing Quest objects.\n--\n-------------------------------------------------\n \nlocal QuestList = {Instances={}}\n--local QuestList = {}\nlocal QuestList_mt = { __index = QuestList }	-- metatable\n \n-------------------------------------------------\n-- PRIVATE FUNCTIONS\n-------------------------------------------------\n \n \n-------------------------------------------------\n-- PUBLIC FUNCTIONS\n-------------------------------------------------\nfunction QuestList:new(...)	-- constructor\n	--local self = setmetatable( {}, QuestList )\n	local instance = setmetatable({}, self)\n	--print (\"QuestList.new called, value=\"..init)\n	--instance:initialize(...)\n	return instance\nend\n \n\nfunction QuestList:initialize()\n	-- instance.cList = {}\n	print (\"QuestList:initialize() - Initializing QuestList...\")\n	table.insert(self.Instances, self)\n	self.currentQuestIndex = -1\n	self.cList = {}\nend\n\nfunction QuestList.getQuestCount(self)\n  print (\"QuestList.getQuestCount() - count=\" .. #self.cList)\n  return #self.cList\nend\n\nfunction QuestList.getQuest(self, i)\n	print (\"QuestList.getQuest() - getting quest #\" .. i .. \" of \" .. #self.cList)\n	\n	if (i < 0) then\n		print (\"Bad Index: \" .. i)\n		return nil\n	end\n\n	if (i > #self.cList) then\n		print (\"Bad Index: \" .. i)\n		return nil\n	end\n\n	print (\"QuestList.getQuest() - found quest, name=\" .. self.cList[i].name)\n	return self.cList[i]\nend\n\nfunction QuestList.addQuest(self, q)\n--	self.cList.insert(quest)\n	if (q.name == \"\") then\n		q.name = \"quest \" .. #self.cList+1\n	end\n	print (\"QuestList.addQuest() - adding quest ==\" .. q.name)\n	if (c.description) then\n		print (\"QuestList.addQuest() -    description ==\" .. q.description)\n	end\n	self.cList[#self.cList+1] = c\n	print (\"QuestList.addQuest() - \" .. #self.cList .. \" quests now found after add.\")\nend\n\n\nfunction QuestList.setCurrentQuestIndex(self, i)\n  print (\"QuestList.setCurrentQuest() - setting current quest to=\" .. i)\n  self.currentQuestIndex = i\nend\n\n\nfunction QuestList.getCurrentQuestIndex(self)\n  print (\"QuestList.getCurrentQuest() - current quest=\" .. self.currentQuestIndex)\n  return self.currentQuestIndex\nend\n\nfunction QuestList.getCurrentQuest(self)\n  print (\"QuestList.getCurrentQuest() - current quest=\" .. self.currentQuestIndex)\n  if (self.currentQuestIndex > -1) then\n  	return self.cList[self.currentQuestIndex]\n  end\n\n  print (\"QuestList.getCurrentQuest() - no current quest\")\n  return nil\nend\n\n-------------------------------------------------\n \n\n -- Initialize the questList\nQuestList:new()\nQuestList:initialize()\n\n\nreturn QuestList",
-			"file": "QuestList.lua",
-			"file_size": 2716,
-			"file_write_time": 130468215460683372,
-			"settings":
-			{
-				"buffer_size": 2616,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "quests.lua",
-			"settings":
-			{
-				"buffer_size": 5412,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "new_quest.lua",
-			"settings":
-			{
-				"buffer_size": 9616,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "quest_details.lua",
-			"settings":
-			{
-				"buffer_size": 5207,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "\nWindows simulator build date: Mar  6 2014 @ 01:57:29\n\n\nCopyright (C) 2009-2014  C o r o n a   L a b s   I n c .\n	Version: 3.0.0\n	Build: 2014.2189\nPlatform: iPhone / x64 / 6.1 / Intel(R) HD Graphics / 2.1.0 - Build 8.15.10.2253\nCampaignList:initialize() - Initializing CampaignList...\nQuestList:initialize() - Initializing QuestList...\nRandGenUtil:initialize() - Initializing RandGenUtil...\ngen'ing name, syllables=2\n  name generated: Kalap\nRandName =Kalap\ncampaigns:createScene\nWarning: could not load font HelveticaNeue-Light. Using default font.\nWarning: could not load font HelveticaNeue-Light. Using default font.\ncampaigns:enterScene\nCampaignList.getCampaignCount() - count=0\ncampaigns:exitScene\nWarning: could not load font HelveticaNeue-Light. Using default font.\nquests:enterScene\nQuestList.getQuestCount() - count=0\nnew_quest:createScene - New Quest Type=rando\nWarning: could not load font HelveticaNeue-Light. Using default font.\nWarning: could not load font HelveticaNeue-Light. Using default font.\nWarning: could not load font HelveticaNeue-Light. Using default font.\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=2\n  name generated: Piple\nquest:addQuestGiver - adding quest giver name = Piple\ngen'ing Dusty Crypt type name\n  name generated: Golden City\n  adversary generated: Drow\nquest:setName - setting quest name = Drow of Golden City\nquest:setDescription - setting quest description = Piple has asked you to go to \nGolden City to investigate \nDrow\n  adversary generated: A rust monster\n  obstacle generated: Washed out road\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way is A rust monster\nWrinkle: On the way is Washed out road\n\nquest:setDetails - setting quest details = Wrinkle: On the way is A rust monster\nWrinkle: On the way is Washed out road\n\nRandGenUtil.generateQuest - Random Quest Generated: Piple has asked you to go to \nGolden City to investigate \nDrow\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=4\n  name generated: Grakalzijab\nquest:addQuestGiver - adding quest giver name = Grakalzijab\n  thing generated: Pantaloons\ngen'ing name, syllables=2\n  name generated: Ziin\ngen'ing Agdon Fort type type name\n  name generated: Rift Of Leal\nquest:setName - setting quest name = Pantaloons delivery\nquest:setDescription - setting quest description = Grakalzijab has asked you to bring his\nPantaloons to Ziin\nin Rift Of Leal\n  adversary generated: A dragon\n  thing generated: Daughter\n  obstacle generated: Slaughtered caravan\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way back is A dragon\nWrinkle: First you must find Grakalzijab's\n    Daughter\nWrinkle: On the way is Slaughtered caravan\n\nquest:setDetails - setting quest details = Wrinkle: On the way back is A dragon\nWrinkle: First you must find Grakalzijab's\n    Daughter\nWrinkle: On the way is Slaughtered caravan\n\nRandGenUtil.generateQuest - Random Quest Generated: Grakalzijab has asked you to bring his\nPantaloons to Ziin\nin Rift Of Leal\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=4\n  name generated: Cidanrian\nquest:addQuestGiver - adding quest giver name = Cidanrian\n  adversary generated: Mercenaries\ngen'ing Dusty Crypt type name\n  name generated: Golden Fens\nquest:setName - setting quest name = Kill Mercenaries of Golden Fens\nquest:setDescription - setting quest description = Cidanrian has asked you to go to \nGolden Fens to kill \nMercenaries\n  adversary generated: Bandits\n  thing generated: Kettle\n  obstacle generated: Washed out road\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way is Bandits\nWrinkle: First you must find Cidanrian's\n    Kettle\nWrinkle: On the way is Washed out road\n\nquest:setDetails - setting quest details = Wrinkle: On the way is Bandits\nWrinkle: First you must find Cidanrian's\n    Kettle\nWrinkle: On the way is Washed out road\n\nRandGenUtil.generateQuest - Random Quest Generated: Cidanrian has asked you to go to \nGolden Fens to kill \nMercenaries\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=4\n  name generated: Ernarphoa\nquest:addQuestGiver - adding quest giver name = Ernarphoa\ngen'ing Dusty Crypt type name\n  name generated: Old Lands\n  adversary generated: Duergar\nquest:setName - setting quest name = Duergar of Old Lands\nquest:setDescription - setting quest description = Ernarphoa has asked you to go to \nOld Lands to investigate \nDuergar\n  adversary generated: A dragon\n  thing generated: Halberd\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: Guarding it is A dragon\nWrinkle: First you must find Ernarphoa's\n    Halberd\n\nquest:setDetails - setting quest details = Wrinkle: Guarding it is A dragon\nWrinkle: First you must find Ernarphoa's\n    Halberd\n\nRandGenUtil.generateQuest - Random Quest Generated: Ernarphoa has asked you to go to \nOld Lands to investigate \nDuergar\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=2\n  name generated: Grepha\nquest:addQuestGiver - adding quest giver name = Grepha\ngen'ing Agdon Fort type type name\n  name generated: Marches Of Lodardor\n  adversary generated: A rust monster\nquest:setName - setting quest name = A rust monster of Marches Of Lodardor\nquest:setDescription - setting quest description = Grepha has asked you to go to \nMarches Of Lodardor to investigate \nA rust monster\n  obstacle generated: Slaughtered caravan\n  adversary generated: Mercenaries\n  obstacle generated: Washed out road\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way is Slaughtered caravan\nWrinkle: On the way back is Mercenaries\nWrinkle: On the way back is Washed out road\n\nquest:setDetails - setting quest details = Wrinkle: On the way is Slaughtered caravan\nWrinkle: On the way back is Mercenaries\nWrinkle: On the way back is Washed out road\n\nRandGenUtil.generateQuest - Random Quest Generated: Grepha has asked you to go to \nMarches Of Lodardor to investigate \nA rust monster\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=4\n  name generated: Angargrela\nquest:addQuestGiver - adding quest giver name = Angargrela\n  adversary generated: Kobolds\ngen'ing Dusty Crypt type name\n  name generated: Bright Forest\nquest:setName - setting quest name = Kill Kobolds of Bright Forest\nquest:setDescription - setting quest description = Angargrela has asked you to go to \nBright Forest to kill \nKobolds\n  adversary generated: A rust monster\n  obstacle generated: Ruined bridge\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way back is A rust monster\nWrinkle: On the way is Ruined bridge\n\nquest:setDetails - setting quest details = Wrinkle: On the way back is A rust monster\nWrinkle: On the way is Ruined bridge\n\nRandGenUtil.generateQuest - Random Quest Generated: Angargrela has asked you to go to \nBright Forest to kill \nKobolds\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=2\n  name generated: Korlo\nquest:addQuestGiver - adding quest giver name = Korlo\ngen'ing Dusty Crypt type name\n  name generated: Murky Marsh\n  adversary generated: A dragon\nquest:setName - setting quest name = A dragon of Murky Marsh\nquest:setDescription - setting quest description = Korlo has asked you to go to \nMurky Marsh to investigate \nA dragon\n  thing generated: Staff\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: First you must find Korlo's\n    Staff\n\nquest:setDetails - setting quest details = Wrinkle: First you must find Korlo's\n    Staff\n\nRandGenUtil.generateQuest - Random Quest Generated: Korlo has asked you to go to \nMurky Marsh to investigate \nA dragon\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=3\n  name generated: Pipphoap\nquest:addQuestGiver - adding quest giver name = Pipphoap\n  thing generated: Sword\ngen'ing name, syllables=4\n  name generated: Lelodorjo\ngen'ing Agdon Fort type type name\n  name generated: Brook Of Ifpiplo\nquest:setName - setting quest name = Sword delivery\nquest:setDescription - setting quest description = Pipphoap has asked you to bring his\nSword to Lelodorjo\nin Brook Of Ifpiplo\n  thing generated: Daughter\n  thing generated: Kettle\n  obstacle generated: Washed out road\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: First you must find Pipphoap's\n    Daughter\nWrinkle: First you must find Pipphoap's\n    Kettle\nWrinkle: On the way back is Washed out road\n\nquest:setDetails - setting quest details = Wrinkle: First you must find Pipphoap's\n    Daughter\nWrinkle: First you must find Pipphoap's\n    Kettle\nWrinkle: On the way back is Washed out road\n\nRandGenUtil.generateQuest - Random Quest Generated: Pipphoap has asked you to bring his\nSword to Lelodorjo\nin Brook Of Ifpiplo\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=2\n  name generated: Grekor\nquest:addQuestGiver - adding quest giver name = Grekor\n  thing generated: Ring\ngen'ing name, syllables=2\n  name generated: Lozi\ngen'ing Ariedor type name, syllables=3\n  name generated: Ifjabo\nquest:setName - setting quest name = Ring delivery\nquest:setDescription - setting quest description = Grekor has asked you to bring his\nRing to Lozi\nin Ifjabo\n  thing generated: Crown\n  thing generated: Dagger\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: First you must find Grekor's\n    Crown\nWrinkle: First you must find Grekor's\n    Dagger\n\nquest:setDetails - setting quest details = Wrinkle: First you must find Grekor's\n    Crown\nWrinkle: First you must find Grekor's\n    Dagger\n\nRandGenUtil.generateQuest - Random Quest Generated: Grekor has asked you to bring his\nRing to Lozi\nin Ifjabo\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=3\n  name generated: Lobanla\nquest:addQuestGiver - adding quest giver name = Lobanla\ngen'ing Ariedor type name, syllables=4\n  name generated: Lajolojab\n  adversary generated: Trolls\nquest:setName - setting quest name = Trolls of Lajolojab\nquest:setDescription - setting quest description = Lobanla has asked you to go to \nLajolojab to investigate \nTrolls\n  adversary generated: Orcs\n  thing generated: Axe\n  adversary generated: Mercenaries\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way back is Orcs\nWrinkle: First you must find Lobanla's\n    Axe\nWrinkle: On the way back is Mercenaries\n\nquest:setDetails - setting quest details = Wrinkle: On the way back is Orcs\nWrinkle: First you must find Lobanla's\n    Axe\nWrinkle: On the way back is Mercenaries\n\nRandGenUtil.generateQuest - Random Quest Generated: Lobanla has asked you to go to \nLajolojab to investigate \nTrolls\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=2\n  name generated: Jonan\nquest:addQuestGiver - adding quest giver name = Jonan\ngen'ing Blue Hills type name\n  name generated: Blue Wastes\n  adversary generated: Duergar\nquest:setName - setting quest name = Duergar of Blue Wastes\nquest:setDescription - setting quest description = Jonan has asked you to go to \nBlue Wastes to investigate \nDuergar\n  obstacle generated: Flooded river\n  adversary generated: Giants\n  thing generated: Brooch\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way back is Flooded river\nWrinkle: On the way is Giants\nWrinkle: First you must find Jonan's\n    Brooch\n\nquest:setDetails - setting quest details = Wrinkle: On the way back is Flooded river\nWrinkle: On the way is Giants\nWrinkle: First you must find Jonan's\n    Brooch\n\nRandGenUtil.generateQuest - Random Quest Generated: Jonan has asked you to go to \nBlue Wastes to investigate \nDuergar\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=3\n  name generated: Loarif\nquest:addQuestGiver - adding quest giver name = Loarif\ngen'ing Blue Hills type name\n  name generated: Blue Brook\n  adversary generated: Duergar\nquest:setName - setting quest name = Duergar of Blue Brook\nquest:setDescription - setting quest description = Loarif has asked you to go to \nBlue Brook to investigate \nDuergar\n  obstacle generated: Flooded river\n  adversary generated: Giants\n  thing generated: Knickers\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way back is Flooded river\nWrinkle: Guarding it is Giants\nWrinkle: First you must find Loarif's\n    Knickers\n\nquest:setDetails - setting quest details = Wrinkle: On the way back is Flooded river\nWrinkle: Guarding it is Giants\nWrinkle: First you must find Loarif's\n    Knickers\n\nRandGenUtil.generateQuest - Random Quest Generated: Loarif has asked you to go to \nBlue Brook to investigate \nDuergar\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=2\n  name generated: Laap\nquest:addQuestGiver - adding quest giver name = Laap\n  adversary generated: Minotaurs\ngen'ing Ariedor type name, syllables=2\n  name generated: Loer\nquest:setName - setting quest name = Kill Minotaurs of Loer\nquest:setDescription - setting quest description = Laap has asked you to go to \nLoer to kill \nMinotaurs\n  adversary generated: Orcs\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way back is Orcs\n\nquest:setDetails - setting quest details = Wrinkle: On the way back is Orcs\n\nRandGenUtil.generateQuest - Random Quest Generated: Laap has asked you to go to \nLoer to kill \nMinotaurs\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=3\n  name generated: Elrafap\nquest:addQuestGiver - adding quest giver name = Elrafap\ngen'ing Blue Hills type name\n  name generated: Grey Peaks\n  adversary generated: Duergar\nquest:setName - setting quest name = Duergar of Grey Peaks\nquest:setDescription - setting quest description = Elrafap has asked you to go to \nGrey Peaks to investigate \nDuergar\n  thing generated: Knife\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: First you must find Elrafap's\n    Knife\n\nquest:setDetails - setting quest details = Wrinkle: First you must find Elrafap's\n    Knife\n\nRandGenUtil.generateQuest - Random Quest Generated: Elrafap has asked you to go to \nGrey Peaks to investigate \nDuergar\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=2\n  name generated: Jabgar\nquest:addQuestGiver - adding quest giver name = Jabgar\n  thing generated: Gem\ngen'ing name, syllables=3\n  name generated: Pipcidel\ngen'ing Dusty Crypt type name\n  name generated: Pleasant Plains\nquest:setName - setting quest name = Gem delivery\nquest:setDescription - setting quest description = Jabgar has asked you to bring his\nGem to Pipcidel\nin Pleasant Plains\n  adversary generated: A rust monster\n  obstacle generated: Slaughtered caravan\n  obstacle generated: Flooded river\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: Guarding it is A rust monster\nWrinkle: On the way is Slaughtered caravan\nWrinkle: On the way back is Flooded river\n\nquest:setDetails - setting quest details = Wrinkle: Guarding it is A rust monster\nWrinkle: On the way is Slaughtered caravan\nWrinkle: On the way back is Flooded river\n\nRandGenUtil.generateQuest - Random Quest Generated: Jabgar has asked you to bring his\nGem to Pipcidel\nin Pleasant Plains\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=4\n  name generated: Arlaoap\nquest:addQuestGiver - adding quest giver name = Arlaoap\n  adversary generated: Minotaurs\ngen'ing Ariedor type name, syllables=4\n  name generated: Doranphopip\nquest:setName - setting quest name = Kill Minotaurs of Doranphopip\nquest:setDescription - setting quest description = Arlaoap has asked you to go to \nDoranphopip to kill \nMinotaurs\n  obstacle generated: Slaughtered caravan\n  obstacle generated: Flooded river\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way is Slaughtered caravan\nWrinkle: On the way back is Flooded river\n\nquest:setDetails - setting quest details = Wrinkle: On the way is Slaughtered caravan\nWrinkle: On the way back is Flooded river\n\nRandGenUtil.generateQuest - Random Quest Generated: Arlaoap has asked you to go to \nDoranphopip to kill \nMinotaurs\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=4\n  name generated: Banlepipin\nquest:addQuestGiver - adding quest giver name = Banlepipin\ngen'ing Ariedor type name, syllables=2\n  name generated: Ridor\n  adversary generated: Giants\nquest:setName - setting quest name = Giants of Ridor\nquest:setDescription - setting quest description = Banlepipin has asked you to go to \nRidor to investigate \nGiants\n  thing generated: Sword\n  thing generated: Boots\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: First you must find Banlepipin's\n    Sword\nWrinkle: First you must find Banlepipin's\n    Boots\n\nquest:setDetails - setting quest details = Wrinkle: First you must find Banlepipin's\n    Sword\nWrinkle: First you must find Banlepipin's\n    Boots\n\nRandGenUtil.generateQuest - Random Quest Generated: Banlepipin has asked you to go to \nRidor to investigate \nGiants\nquest.new() called\nquest.new - creating name=New Quest, desc=\ngen'ing name, syllables=4\n  name generated: Kalalarer\nquest:addQuestGiver - adding quest giver name = Kalalarer\n  thing generated: Bracelet\ngen'ing Blue Hills type name\n  name generated: Territory Of Black\nquest:setName - setting quest name = Kalalarer's Bracelet\nquest:setDescription - setting quest description = Kalalarer has asked you to go to \nTerritory Of Black to retrieve his \nBracelet\n  adversary generated: Duergar\n  thing generated: Brooch\nRandGenUtil.generateQuest - Random Quest Details Generated: Wrinkle: On the way back is Duergar\nWrinkle: First you must find Kalalarer's\n    Brooch\n\nquest:setDetails - setting quest details = Wrinkle: On the way back is Duergar\nWrinkle: First you must find Kalalarer's\n    Brooch\n\nRandGenUtil.generateQuest - Random Quest Generated: Kalalarer has asked you to go to \nTerritory Of Black to retrieve his \nBracelet\n",
-			"settings":
-			{
-				"buffer_size": 18613,
-				"line_ending": "Windows",
-				"name": "Console",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"contents": "Running ...\n",
-			"settings":
-			{
-				"buffer_size": 12,
-				"line_ending": "Windows",
-				"name": "Variables",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"contents": "Running ...\n",
-			"settings":
-			{
-				"buffer_size": 12,
-				"line_ending": "Windows",
-				"name": "Lua Stack",
-				"read_only": true,
-				"scratch": true
-			}
-		}
-	],
-	"build_system": "",
-	"command_palette":
-	{
-		"height": 58.0,
-		"selected_items":
-		[
-			[
-				"Package",
-				"Preferences: Browse Packages"
-			],
-			[
-				"Pack",
-				"Preferences: Browse Packages"
-			]
-		],
-		"width": 392.0
-	},
-	"console":
-	{
-		"height": 0.0
-	},
-	"distraction_free":
-	{
-		"menu_visible": true,
-		"show_minimap": false,
-		"show_open_files": false,
-		"show_tabs": false,
-		"side_bar_visible": false,
-		"status_bar_visible": false
-	},
-	"file_history":
-	[
-		"/C/Projects/mobile/Corona/4e4m/scrolltest.lua",
-		"/C/Projects/mobile/Corona/4e4m/campaign_details.lua",
-		"/C/Projects/mobile/Corona/4e4m/campaign.lua",
-		"/C/Projects/mobile/Corona/4e4m/CampaignList.lua",
-		"/C/Projects/mobile/Corona/4e4m/campaigns.lua",
-		"/C/Projects/mobile/Corona/4e4m/tools.lua",
-		"/C/Projects/mobile/Corona/4e4m/namegen_tool.lua",
-		"/C/Projects/mobile/Corona/4e4m/new_campaign.lua",
-		"/C/Projects/mobile/Corona/4e4m/placegen_tool.lua",
-		"/C/Projects/mobile/Corona/4e4m/thinggen_tool.lua",
-		"/C/Projects/mobile/Corona/4e4m/campaignList.lua",
-		"/C/Projects/mobile/Corona/4e4m/campaign_list.lua",
-		"/C/Projects/mobile/Corona/4e4m/quests.lua",
-		"/C/Projects/mobile/Corona/4e4m/encounters.lua",
-		"/C/Projects/mobile/Corona/4e4m/initiative_tool.lua",
-		"/C/Projects/mobile/Corona/4e4m/dice_tool.lua",
-		"/C/Projects/mobile/Corona/4e4m/build.settings",
-		"/C/Projects/mobile/Corona/4e4m/campaign2.lua",
-		"/C/Projects/mobile/Corona/4e4m/raf.lua",
-		"/C/Projects/mobile/Corona/4e4m/leo.lua",
-		"/C/Projects/mobile/Corona/4e4m/joel.lua"
-	],
-	"find":
-	{
-		"height": 34.0
-	},
-	"find_in_files":
-	{
-		"height": 0.0,
-		"where_history":
-		[
-			""
-		]
-	},
-	"find_state":
-	{
-		"case_sensitive": true,
-		"find_history":
-		[
-			"Rando",
-			"group:insert",
-			"questDescTB",
-			"newRandoQuest",
-			"textListener",
-			"addQuest",
-			"details",
-			"addQuest",
-			"questNameTF",
-			"campaignsFoundText",
-			"questGoodnessText",
-			" questNameTF",
-			"CampaignList",
-			"new",
-			"Campaign",
-			"campaign",
-			"campaignDescTB",
-			"campaignNameTF",
-			"newCampaign",
-			"addCampaign",
-			"campaignKeywordsText",
-			"campaignDescText",
-			"campaignNameText",
-			"genThingName",
-			"numNames",
-			"glen",
-			"thicket",
-			"numNames",
-			"names",
-			"CampaignList",
-			"centerY",
-			"centerX",
-			"campaign",
-			"Campaign",
-			"CampaignQuestQu",
-			"Campaign",
-			"Add",
-			"new",
-			"currentCam",
-			"text2",
-			"text1",
-			"campaignListDisplay",
-			"for",
-			"campaignNameText",
-			"centerX",
-			"campaignsFoundText",
-			"CampaignList",
-			"newCam",
-			"tools",
-			"itemSelected",
-			"NewCampaign",
-			"newCampaignButton",
-			"button",
-			"add",
-			"text2",
-			"text1",
-			"backButton",
-			"newTable",
-			"onRowTouch",
-			"CampaignList",
-			"addCampaign",
-			"list",
-			"campaigns",
-			"yStart",
-			"addCamp",
-			"genName",
-			"resultString",
-			"defaultField",
-			"yPadding + (buttonCount * buttonHeight)",
-			"y = yStart + ",
-			"buttonBlue",
-			"text",
-			"text1",
-			"list",
-			"onRowRender",
-			"titleBar",
-			"rowArr",
-			"newCamp",
-			"alpha(0.5)",
-			"newCamp",
-			"button1",
-			"alpha(0.5)",
-			":alpha",
-			"joel"
-		],
-		"highlight": true,
-		"in_selection": false,
-		"preserve_case": false,
-		"regex": false,
-		"replace_history":
-		[
-			"Quest",
-			"quest",
-			"questDescTB",
-			"questNameTF",
-			"newQuest",
-			"addQuest",
-			"questKeywordsText",
-			"questDescText",
-			"questNameText",
-			"campaignDescText",
-			"campaignNameText",
-			"campaignsFoundText",
-			"thingResultString",
-			"placeResultString",
-			"nameResultString",
-			"campaignNameTF",
-			"(buttonCount * (yPadding + buttonHeight))",
-			"y = yStart + yPadding + ",
-			"buttonRed",
-			"newCampaignButton",
-			"backButton",
-			"alpha = 0.5",
-			".alpha"
-		],
-		"reverse": false,
-		"show_context": true,
-		"use_buffer2": true,
-		"whole_word": false,
-		"wrap": true
-	},
-	"groups":
-	[
-		{
-			"selected": 1,
-			"sheets":
-			[
-				{
-					"buffer": 0,
-					"file": "main.lua",
-					"settings":
-					{
-						"buffer_size": 2721,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								501,
-								501
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"translate_tabs_to_spaces": false,
-							"word_separators": "/\\()\"'-:,;<>~!@#$%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "RandGenUtil.lua",
-					"settings":
-					{
-						"buffer_size": 9074,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6850,
-								6850
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoronaSDK-SublimeText-master/CoronaSDKLua.tmLanguage",
-							"translate_tabs_to_spaces": false,
-							"word_separators": "/\\()\"'-:,;<>~!@#$%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 2910.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "campaigns.lua",
-					"settings":
-					{
-						"buffer_size": 8393,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6980,
-								6980
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoronaSDK-SublimeText-master/CoronaSDKLua.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3008.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "quest.lua",
-					"settings":
-					{
-						"buffer_size": 2488,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1206,
-								1206
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoronaSDK-SublimeText-master/CoronaSDKLua.tmLanguage",
-							"translate_tabs_to_spaces": false,
-							"word_separators": "/\\()\"'-:,;<>~!@#$%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "QuestList.lua",
-					"settings":
-					{
-						"buffer_size": 2616,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1859,
-								1859
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoronaSDK-SublimeText-master/CoronaSDKLua.tmLanguage",
-							"word_separators": "/\\()\"'-:,;<>~!@#$%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 675.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "quests.lua",
-					"settings":
-					{
-						"buffer_size": 5412,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2637,
-								2637
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoronaSDK-SublimeText-master/CoronaSDKLua.tmLanguage",
-							"translate_tabs_to_spaces": false,
-							"word_separators": "/\\()\"'-:,;<>~!@#$%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 810.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "new_quest.lua",
-					"settings":
-					{
-						"buffer_size": 9616,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								772,
-								772
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoronaSDK-SublimeText-master/CoronaSDKLua.tmLanguage",
-							"translate_tabs_to_spaces": false,
-							"word_separators": "/\\()\"'-:,;<>~!@#$%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 259.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "quest_details.lua",
-					"settings":
-					{
-						"buffer_size": 5207,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3837,
-								3837
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CoronaSDK-SublimeText-master/CoronaSDKLua.tmLanguage",
-							"translate_tabs_to_spaces": false,
-							"word_separators": "/\\()\"'-:,;<>~!@#$%^&*|+=[]{}`~?"
-						},
-						"translation.x": 0.0,
-						"translation.y": 1202.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
-				{
-					"buffer": 8,
-					"settings":
-					{
-						"buffer_size": 18613,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								18613,
-								18613
-							]
-						],
-						"settings":
-						{
-							"line_numbers": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"word_wrap": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 7341.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
-				{
-					"buffer": 9,
-					"settings":
-					{
-						"buffer_size": 12,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								12,
-								12
-							]
-						],
-						"settings":
-						{
-							"line_numbers": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"word_wrap": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
-				{
-					"buffer": 10,
-					"settings":
-					{
-						"buffer_size": 12,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								12,
-								12
-							]
-						],
-						"settings":
-						{
-							"line_numbers": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"word_wrap": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
-			]
-		}
-	],
-	"incremental_find":
-	{
-		"height": 0.0
-	},
-	"input":
-	{
-		"height": 31.0
-	},
-	"layout":
-	{
-		"cells":
-		[
-			[
-				0,
-				0,
-				2,
-				1
-			],
-			[
-				0,
-				1,
-				2,
-				2
-			],
-			[
-				0,
-				2,
-				1,
-				3
-			],
-			[
-				1,
-				2,
-				2,
-				3
-			]
-		],
-		"cols":
-		[
-			0.0,
-			0.6,
-			1.0
-		],
-		"rows":
-		[
-			0.0,
-			0.5,
-			0.7,
-			1.0
-		]
-	},
-	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 39.0
-	},
-	"replace":
-	{
-		"height": 62.0
-	},
-	"save_all_on_build": true,
-	"select_file":
-	{
-		"height": 0.0,
-		"selected_items":
-		[
-		],
-		"width": 0.0
-	},
-	"select_project":
-	{
-		"height": 0.0,
-		"selected_items":
-		[
-		],
-		"width": 0.0
-	},
-	"show_minimap": true,
-	"show_open_files": true,
-	"show_tabs": true,
-	"side_bar_visible": false,
-	"side_bar_width": 150.0,
-	"status_bar_visible": true
-}

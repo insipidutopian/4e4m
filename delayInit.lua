@@ -7,9 +7,13 @@ local ySpace = 20
 local tHeight = 40
 local widget = require ( "widget" )
 local delayButton
+local selectedDelayType = "oneTurn"
+InitiativeList = require ( "InitiativeList" )
 local delayTypeRadio
-local afterRB
-local untilRB
+local radioOneTurn
+local radioUntil
+local afterText
+local delayUntil = 1
 
 local initList = require ( "InitiativeList")
 
@@ -29,6 +33,47 @@ function scene:create( event )
 	group:insert ( popTitleText )
 end
 
+
+function delayInitiative( )
+	local initNumber = InitiativeList:getCurrentInitiativeIndex()
+	local newInitNumber = delayUntil
+	print ("Delaying init slot " .. initNumber .. ": type " .. selectedDelayType)
+	if selectedDelayType == "until" then
+		print ("Delaying init slot " .. initNumber .. " to slot " .. newInitNumber)
+		local tmp = InitiativeList:getCurrentInitiativeIndex()
+		InitiativeList:delayInitiative(newInitNumber)
+	else
+		print ("Delaying init slot " .. initNumber .. " to slot " .. initNumber+1)
+		if (initNumber+1 > #InitiativeList.iList ) then
+			print "********Delaying past end of round***********"
+		end
+		InitiativeList:delayInitiative()
+	end
+	
+	composer.hideOverlay( "scene", popOptions );
+	--storyboard.hideOverlay( "delayInit", popOptions )
+end
+
+
+-- Handle press events for the buttons
+local function onSwitchPress( event )
+    local switch = event.target
+    print( "Switch with ID '"..switch.id.."' is on: "..tostring(switch.isOn) )
+    selectedDelayType = switch.id
+end
+
+local function stepperListener( event )
+		local statusText = "Stepper\nevent.value = " .. string.format( "%02d", event.value )
+		print ("Stepper press: " .. statusText)
+		local init = InitiativeList:getInitiative(tonumber(event.value))
+		afterText.text = "After " .. init.name
+		selectedDelayType = "until"
+		radioUntil:setState ({ isOn = true } )
+
+		delayUntil = tonumber(event.value)
+	end
+
+
 function scene:show( event )
 	local group = self.view
 
@@ -46,7 +91,8 @@ function scene:show( event )
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Delay",
 		emboss = true,
-		onPress =  function() delayInits(delayTypeRadio, delayUntilTF.text); composer.hideOverlay( "scene", popOptions ); end,
+		onPress =  function() delayInitiative(); end,
+		-- onPress =  function() delayInits(delayTypeRadio, delayUntilTF.text); composer.hideOverlay( "scene", popOptions ); end,
 		x = display.contentCenterX - (buttonWidth + rightPadding),
 		y = myHeight+buttonHeight/2,
 	}
@@ -77,64 +123,49 @@ function scene:show( event )
 
 
 	delayTypeRadio = display.newGroup( )
-	afterRB = widget.newSwitch{ x=rightPadding+ radioWidth/2, y=startY, style="radio", id="afterRB", initialSwitchState=true, }
-	afterRB:setState ({ isOn = true } )
-	delayTypeRadio:insert(afterRB)
+	radioOneTurn = widget.newSwitch{ x=rightPadding+ radioWidth/2, y=startY, style="radio", id="oneTurn", initalSwitchState=true,  onPress = onSwitchPress}
+	radioOneTurn:setState ({ isOn = true } )
+	delayTypeRadio:insert(radioOneTurn)
 
 	startY = startY + buttonHeight/2 + ySpace
 
-	untilRB = widget.newSwitch{ x=rightPadding+ radioWidth/2, y=startY, style="radio", id="untilRB", }
-	delayTypeRadio:insert(untilRB)
+	radioUntil = widget.newSwitch{ x=rightPadding+ radioWidth/2, y=startY, style="radio", id="until",  onPress = onSwitchPress }
+	delayTypeRadio:insert(radioUntil)
 	group:insert( delayTypeRadio )
 
-	local enemyText = display.newText( "Until",   rightPadding+radioWidth, startY, native.systemFontBold, 18 )
-	enemyText.anchorX= 0
-	enemyText:setFillColor( 0, 0, 0 )
-	group:insert( enemyText )
-
-	-- Create text field
-	delayUntilTF = native.newTextField( display.contentCenterX+10, startY + inputFontSize * 0.3, 150, tHeight)
-	delayUntilTF.placeholder = "(24)"
-	group:insert(delayUntilTF)
+	local nextInit = InitiativeList:getOffsetInitiative(2)
+	afterText = display.newText( "After "..nextInit.name,   rightPadding+radioWidth, startY, native.systemFontBold, 18 )
+	afterText.anchorX= 0
+	afterText:setFillColor( 0, 0, 0 )
+	group:insert( afterText )
 
 
-
-end
-
-function delayInits( radType, delayUntil )
-	print ("delayInits(!)")
-	print ("radType=" .. delayTypeRadio.x)
-	if (afterRB.isOn) then
-		print("Delay until after, called")
-		local curInit =  InitiativeList:getOffsetInitiative(1);
-		if (curInit) then
-			local nextInit = InitiativeList:getOffsetInitiative(2);
-			if (nextInit) then
-				print ("Delaying until after " .. nextInit.name .. "'s' initiative...")
-				curInit.initVal = nextInit.initVal + nextInit.initBon
-				curInit.initBon = 0
-				InitiativeList:updateInitiative(2, curInit)
-				InitiativeList:updateInitiative(1, nextInit)
-				InitiativeList:sortInitiatives( )
-			end
-		end
+	local nn = InitiativeList:getCurrentInitiativeIndex()+1
+	if (nn > InitiativeList:getInitiativeCount()) then
+		nn = 1
 	end
-	if (untilRB.isOn ) then
-		print ("Delay until called")
+	print ("nn="..nn)
+	local newStepper = widget.newStepper {
+	    left = 24,
+	    top = 112,
+	    initialValue = nn,
+	    minimumValue = 1,
+	    maximumValue = InitiativeList:getInitiativeCount(),
+		timerIncrementSpeed = 500,
+		changeSpeedAtIncrement = 4,
+	    onPress = stepperListener
+	}
+	local nn = InitiativeList:getCurrentInitiativeIndex()+1
+	if (nn > InitiativeList:getInitiativeCount()) then
+		nn = 1
+	end
 	
-		if (delayUntil) then
-			if (type(delayUntil)~='number') then
-				print ("delayUntil is not a number")
-				delayUntil = 0
-			end
-		else
-			delayUntil = 0
-		end
-		print ("delayUntil=" .. delayUntil)
-		InitiativeList:sortInitiatives( )
+	group:insert( newStepper )
+	newStepper.x = display.contentCenterX
 
-	end
 end
+
+
 
 function scene:hide( event )
 	print ("delayInit:scene:hide called")

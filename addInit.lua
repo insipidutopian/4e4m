@@ -28,7 +28,28 @@ local nameTF
 local initNumToMod = -1
 local init
 
+local function findInitByRow( rowNum )
+	local offsetIni = -1
 
+	local currentInitIndex = InitiativeList:getCurrentInitiativeIndex()
+	local initCount = InitiativeList:getInitiativeCount()
+
+	print ("%%% findInitByRow(): current init is " .. currentInitIndex .. ", looking for init at row #" .. rowNum)
+			
+	if (currentInitIndex + rowNum == initCount+2) then
+		print ("  init at row #" .. rowNum .. " is the row boundary, skipping...")
+		init = nil
+	else 
+		print ("  init at row #" .. rowNum .. " is not a boundary.")
+		offsetIni = rowNum
+		if ( rowNum + currentInitIndex > initCount +1) then
+			offsetIni = rowNum - 1
+		end
+	end
+
+	return offsetIni
+
+end
 
 --Create the scene
 function scene:create( event )
@@ -49,9 +70,13 @@ function scene:create( event )
 end
 
 function deleteInitiativeEntity (  )
-	print ("Deleting initiative #" .. initNumToMod)
+	print ("Deleting initiative at Slot #" .. initNumToMod)
+	--local initSlot = findInitByRow(initNumToMod)
+	print ("  Deleting Init #" .. initNumToMod)
 	
+	--print ("modifyInitiativeEntity(): found init slot " .. initSlot)
 	InitiativeList:deleteInitiative(initNumToMod)
+	InitiativeList:writeInitiativeFile()
 
 	--storyboard.hideOverlay( "addInit", popOptions )
 	composer.hideOverlay( "addInit", popOptions )
@@ -60,13 +85,14 @@ end
 
 
 function addInitiativeEntity( entityName, entityType, entityInit, entityBonus )
-	if entityInit == "" then
+	if entityInit == nil or entityInit == "" then
 		entityInit = math.random(20)+1
 	end
-	if entityBonus == "" then
+	if entityBonus == nil or entityBonus == "" then
 		entityBonus = math.random(2) + math.random(2)
 	end
 
+	print("addInitiativeEntity: name=" .. entityName .. ", entityType=" .. entityType .. ", entityInit=" .. entityInit .. ", entityBonus=" .. entityBonus)
 	if entityName == "" then
 		if entityType == "player" then
 			entityName = RandGenUtil.generateName()
@@ -82,6 +108,7 @@ function addInitiativeEntity( entityName, entityType, entityInit, entityBonus )
 	newInit.iType = entityType
 	newInit.initVal = tonumber(entityInit)
 	newInit.initBon = tonumber(entityBonus)
+	newInit.initBonusSaved = newInit.initBon or 2
 	InitiativeList:addInitiative(newInit)
 
 	composer.hideOverlay( "addInit", popOptions )
@@ -91,18 +118,25 @@ end
 function modifyInitiativeEntity( newInit, entityName, entityType, entityInit, entityBonus )
 	print ("Modifying initiative #" .. initNumToMod)
 
-	if entityInit == "" then
+	local initSlot = findInitByRow(initNumToMod)
+	print ("modifyInitiativeEntity(): found init slot " .. initSlot)
+	
+	if entityInit == nil then
+		entityInit = math.random(20)+1
+	end
+
+	if entityInit == "text" then
 		entityInit = math.random(20)+1
 	else
 		entityInit = tonumber(entityInit)
 	end
-	if entityBonus == "" then
+	if entityBonus == "text" then
 		entityBonus = math.random(2) + math.random(2)
 	else
 		entityBonus = tonumber(entityBonus)
 	end
 
-	if entityName == "" then
+	if entityName == "text" then
 		if entityType == "player" then
 			entityName = RandGenUtil.generateName()
 		else
@@ -110,7 +144,7 @@ function modifyInitiativeEntity( newInit, entityName, entityType, entityInit, en
 		end
 	end
 
-	print("modifyInitiativeEntity - modifying '".. entityName .. "' with init=" .. entityInit)
+	print("modifyInitiativeEntity - modifying '".. entityName .. "' with init=" ..  0)
 	print("modifyInitiativeEntity - modifying type=".. entityType)
 	
 	--local newInit = initiative.new(entityName)
@@ -118,6 +152,7 @@ function modifyInitiativeEntity( newInit, entityName, entityType, entityInit, en
 	newInit.iType = entityType
 	newInit.initVal = entityInit
 	newInit.initBon = entityBonus
+	newInit.initBonusSaved = entityBonus
 	InitiativeList:updateInitiative(initNumToMod, newInit)
 
 	--storyboard.hideOverlay( "addInit", popOptions )
@@ -142,9 +177,15 @@ function scene:show( event )
 		if event.params.initNumber then
 			print ("Entering scene to Modify, not add!")
 			--load the details of the initiative at initNumber 
-			init = InitiativeList:getInitiative(event.params.initNumber)
-			print ("Modifying " .. init.iType .. " " .. init.name)
-			initNumToMod = event.params.initNumber
+			
+			local iniSlot = findInitByRow( event.params.initNumber )
+			print ("Found ini slot " .. iniSlot .. " to modify.")
+			if (iniSlot > -1 ) then
+
+				init = InitiativeList:getOffsetInitiative(iniSlot)
+				print ("Modifying " .. init.iType .. " " .. init.name)
+				initNumToMod = iniSlot
+			end
 		end
 	else
 		init = nil
@@ -155,6 +196,18 @@ function scene:show( event )
 
 	group:insert (addInitBox)
 
+
+	local startY = titleBarHeight + buttonHeight/2
+	-- Create text field
+	nameTF = native.newTextField( 85, startY + inputFontSize * 0.5, 150, tHeight)
+	if init then
+		nameTF.text = init.name
+	else
+		nameTF.placeholder = "(Name)"
+	end
+
+
+	group:insert(nameTF)
 	if init then -- We loaded an init, so we're modifying
 		selectedEntityType = init.iType
 		local modifyButton = widget.newButton
@@ -214,17 +267,9 @@ function scene:show( event )
 		group:insert(deleteButton)
 	end
 
-	local startY = titleBarHeight + buttonHeight/2
 
 
-	-- Create text field
-	nameTF = native.newTextField( 85, startY + inputFontSize * 0.5, 150, tHeight)
-	if init then
-		nameTF.text = init.name
-	else
-		nameTF.placeholder = "(Name)"
-	end
-	group:insert(nameTF)
+	
 
 
 	startY = startY + buttonHeight/2 + ySpace
@@ -269,7 +314,7 @@ function scene:show( event )
 	-- Create text field
 	initTF = native.newTextField( 120, startY + inputFontSize * 0.5, 50, tHeight)
 	if init then
-		initTF.text = init.initVal
+		initTF.text = tostring(init.initVal)
 	else
 		initTF.placeholder = "(10)"
 	end
@@ -285,7 +330,7 @@ function scene:show( event )
 	-- Create text field
 	initBonusTF = native.newTextField( 120, startY + inputFontSize * 0.5, 50, tHeight)
 	if init then
-		initBonusTF.text = init.initBon
+		initBonusTF.text = tostring(init.initBon)
 	else
 		initBonusTF.placeholder = "(0)"
 	end

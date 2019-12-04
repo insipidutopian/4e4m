@@ -3,7 +3,7 @@ settings =
 	orientation =
 	{
 		default = "portrait",
-		supported = { "portrait" }
+		supported = { "portrait", "landscapeLeft", "landscapeRight", "portraitUpsideDown" }
 	},
 	iphone =
 	{
@@ -29,4 +29,8 @@ settings =
 			},
 		},
 	},
+	content =
+	{
+		scale="zoomEven"
+	}
 }
