@@ -178,6 +178,8 @@ end
 
 function RandGenUtil.generateQuest( )
 	local qTmp = "";
+	print("==========================================================")
+	print("RandGenUtil.generateQuest() called")
 	local newQuest = quest.new("New Quest", "")
 
 	local questStyle =  math.random( 4 )

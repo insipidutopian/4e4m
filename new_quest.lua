@@ -32,8 +32,13 @@ local addQuestName = ""
 local function update ()
 	newQuest = Randomizer:generateQuest()
 	if ( questGoodnessText == nil) then
-		questGoodnessText = ""
-		questDetailsText = ""
+
+		questGoodnessText = display.newText( { text = "",  x= display.contentCenterX, y = yStart + 30 + inputFontSize * .5 , 
+										 font = native.systemFontBold, fontSize = inputFontSize
+									   } )
+		questDetailsText = display.newText( { text = "",  x= display.contentCenterX, y = yStart + 120 + inputFontSize * .5 , 
+										 font = native.systemFontBold, fontSize = inputFontSize
+									   } )
 	end
 	questGoodnessText.text = newQuest.description
 	questDetailsText.text = newQuest.details
@@ -84,7 +89,7 @@ local scrollView = widget.newScrollView{
 
 
 function addQuest()
---	print ("Adding quest '"..addQuestName.."'")
+	print ("Adding quest '"..addQuestName.."'")
 	local qDesc = newQuest.description
 	local qDetails = newQuest.details
 	if (qDesc == "") then
@@ -118,7 +123,7 @@ function scene:create( event )
  	background.y = scrollView.height / 2
  	background:scale(0.8, 0.8)
  	background.alpha = 0.5
- 	scrollView:insert(background)
+ 	group:insert(background)
 	
 	-- Create title bar to go at the top of the screen
 	local titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, titleBarHeight )
@@ -155,6 +160,8 @@ function scene:create( event )
 	    inputFontSize = inputFontSize - 4
 	end
 
+	print ("new_quest:createScene - " , newQuestType)
+
 	if (newQuestType == 'new') then 
 		print ("new_quest:createScene - New Quest" )
 		local questNameText = display.newText( { text = "Quest Name: ", 
@@ -163,7 +170,7 @@ function scene:create( event )
 									   } )
 		questNameText.anchorX = 0 -- left align
 		questNameText:setFillColor( 1, 0, 0)
-		scrollView:insert( questNameText )
+		group:insert( questNameText )
 
 
 		local questDescText = display.newText( { text = "Description: ", 
@@ -219,7 +226,7 @@ function scene:create( event )
 		label = "Random",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress = function() newQuestType='rando'; storyboard.gotoScene( "new_quest" ); end,
+		onPress = function() update ( ); storyboard.gotoScene( "new_quest" ); end,
 		scaleX = 0.2,
 		isVisible = true,
 		x = 130,
@@ -237,6 +244,7 @@ function scene:enter( event )
 	-- Generate a name...
 	-- local rand = math.random( 100 )
 	-- local newQuest = QuestClass.new(" new quest"..rand)
+	print("scene:enter: newQuestType = ", newQuestType)
 
 	if (newQuestType == 'new') then 
 		-- Create text field
@@ -262,25 +270,26 @@ function scene:enter( event )
 										 font = native.systemFontBold, fontSize = inputFontSize +2
 									   } )
 		questGoodnessText.anchorX = 0 -- left align
-		questGoodnessText:setFillColor( 1, 0, 0)
-		scrollView:insert( questGoodnessText )
+		questGoodnessText:setFillColor( 0, 1, 0)
+		group:insert( questGoodnessText )
 
 		questDetailsText = display.newText( { text = newQuest.details, 
 										 x= leftPadding, y = yStart + 150 + inputFontSize * .5, 
 										 font = native.systemFontBold, fontSize = inputFontSize +2
 									   } )
 		questDetailsText.anchorX = 0 -- left align
-		questDetailsText:setFillColor( 1, 0, 0)
-		scrollView:insert( questDetailsText )
+		questDetailsText:setFillColor( 0, 1, 0)
+		group:insert( questDetailsText )
 
 	end
 	
 	-- native.setKeyboardFocus( questNameTF )
 end
 
-function scene:exit( event )
+function scene:destroy( event )
 	local group = self.view
 
+	print("new_quest:exit called")
 	-- remove any native objects, since widget objects will be cleaned automatically, but native ones won't
 	if questNameTF then
 		questNameTF:removeSelf()
@@ -303,7 +312,7 @@ function scene:exit( event )
 	end
 
 	if questDetailsText then
-		questDetailsText:removeSelf()
+		group.questDetailsText:removeSelf()
 		questDetailsText = nil
 	end
 end
@@ -311,6 +320,8 @@ end
 
 --Add the createScene listener
 scene:addEventListener( "create", scene )
-scene:addEventListener( "enter", scene )
-scene:addEventListener( "exit", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
+
 return scene

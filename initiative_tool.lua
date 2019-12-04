@@ -159,8 +159,10 @@ local function onRowTouch( event )
 		print( "Pressed row: " .. row.index )
 
 	elseif "release" == phase then
-		if row.index -1 <= InitiativeList:getInitiativeCount() then
+		if row.index -1 <= 1+InitiativeList:getInitiativeCount() then
 			composer.showOverlay( "addInit", { params = { initNumber = row.index-1, } })
+		else
+			print ("storyboard.showOverlay( { params = { initNumber = " .. row.index-1 .. ", } })")
 		end
 		print( "Tapped and/or Released row: " .. row.index )
 	end
@@ -197,15 +199,26 @@ local function onRowRender( event )
 	row.nameText.anchorY = 0.5
 	row.nameText:setFillColor( 0 )
 	row.nameText.y = 19
-	row.nameText.x = 100
+	row.nameText.x = 60
+
+	--if params.initSlot then
+		print ("initSlot= " .. params.initSlot)
+		row.orderText = display.newEmbossedText( params.initSlot, 12, 0, native.systemFontBold, 16 )
+		row.orderText.anchorX = 0
+		row.orderText.anchorY = 0.5
+		row.orderText:setFillColor( 0 )
+		row.orderText.y = 19
+		row.orderText.x = 20
+	--end
 
 	if params.isHeader == true then
 		print ("Header row")
 		row.initText = display.newEmbossedText( params.initVal, 12, 0, native.systemFont, 16 )
 		row.nameText:setFillColor( 0 )
 		row.initText:setFillColor( 0 )
+		row.orderText.x = 5
 	else
-		local initStr = (params.initVal + params.initBon) .. " (" .. params.initVal .. "+" .. params.initBon .. ")"
+		local initStr = ((params.initVal or 0) + (params.initBon or 0)).. " (" .. (params.initVal or 0) .. "+" .. (params.initBon or 0) .. ")"
 		row.initText = display.newEmbossedText( initStr, 12, 0, native.systemFont, 14 )
 
 		row.rightArrow = display.newImageRect( "rowArrow.png", 15 , 10, 10 )
@@ -224,9 +237,12 @@ local function onRowRender( event )
 	row.initText.anchorX = 0
 	row.initText.anchorY = 0.5
 	row.initText.y = 19
-	row.initText.x = 10
+	row.initText.x = display.contentWidth - 100
 	
-
+	if row.initSlot then 
+		row:insert( row.orderText )
+	end
+	row:insert( row.orderText )
 	row:insert( row.nameText )
 	row:insert( row.initText )
 	return true
@@ -263,12 +279,13 @@ function scene:show( event )
 		height = 24,
 		rowColor = { default={ 0.8, 0.8, 0.8, 0.8 } },
 		lineColor = { 0.5, 0.5, 0.5 },
-		params = { isHeader = true, name = "Name", initVal = "Init"  },
+		params = { isHeader = true, name = "Name", initVal = "Init", initSlot = "Order", initBon = "", iType="", initBonusSaved="" },
 		isCategory = true
 	}
 
 	InitiativeList:loadInitiative()
-	InitiativeList:sortInitiatives( )
+	InitiativeList:sortInitiativesBySlot( )
+	InitiativeList:orderInitiatives( )
  	local cc = InitiativeList:getInitiativeCount()
 
  	for i = 1, cc do
@@ -282,9 +299,13 @@ function scene:show( event )
  	end
 
  	roundNum = InitiativeList:getRoundNumber()
-	initiativeFoundText = display.newText("Round: "..roundNum, centerX, display.contentHeight - 70, native.systemFontBold, 16 )
-	initiativeFoundText:setFillColor( 1, 0, 0)
-	group:insert( initiativeFoundText )
+ 	if RoundNumberText then
+		RoundNumberText:removeSelf()
+		RoundNumberText = nil
+	end
+	RoundNumberText = display.newText("Round: "..roundNum, centerX, display.contentHeight - 70, native.systemFontBold, 16 )
+	RoundNumberText:setFillColor( 1, 0, 0)
+	group:insert( RoundNumberText )
 	group:insert( InitiativeListDisplay )
 end
 
@@ -299,21 +320,20 @@ function scene:hide( event )
 		InitiativeListDisplay:removeSelf()
 		InitiativeListDisplay = nil
 	end
-	if initiativeFoundText then
-		initiativeFoundText:removeSelf()
-		initiativeFoundText = nil
+	if RoundNumberText then
+		RoundNumberText:removeSelf()
+		RoundNumberText = nil
 	end
 	print("initiative:exitScene")
 end	
 
 
-
-
+--Add the initiative at i to the InitiativeListDisplay in the scene
 function showInitiative( i )
 	print ("initiative_tool:showInitiative() called")
 
-	local c = InitiativeList:getOffsetInitiative( i )
-	if c then
+	local init = InitiativeList:getOffsetInitiative( i )
+	if init then
 		print ("INSERT ROW CALLED")
 		InitiativeListDisplay:insertRow
 		{
@@ -323,7 +343,7 @@ function showInitiative( i )
 				default = { 1, 1, 1, 0 },
 			},
 			lineColor = { 0.5, 0.5, 0.5 },
-			params = { name = c.name, initVal = c.initVal, initBon = c.initBon, iType = c.iType }
+			params = { name = init.name, initVal = init.initVal, initBon = init.initBon, iType = init.iType, initSlot = init.initSlot or 0, initBonusSaved=""}
 		}
 	else 
 		print ("error finding initiative " .. i)
@@ -338,13 +358,15 @@ function showInitiative( i )
 				default = { 1, 1, 1, 0},
 			},
 			lineColor = { 0.5, 0.5, 0.5 },
-			params = { isHeader = true, roundMarker = InitiativeList:getRoundNumber() }
+			params = { isHeader = true, roundMarker = InitiativeList:getRoundNumber() },
+			isCategory = true
 		}
 	end
 end
 
 
 
+--Create a new initiative
 function createInitiative()	
 	print ("initiative_tool:createInitiative() called")
 	rand = math.random( 100 )
@@ -374,7 +396,13 @@ end
 
 function scene:overlayEnded( event )
    print( "The following overlay scene was removed: " .. event.sceneName )
-   InitiativeList:sortInitiatives( )
+	if (event.sceneName == "delayInit") then
+   		InitiativeList:sortInitiativesBySlot( )
+	else
+   		InitiativeList:sortInitiatives( )
+	end
+   
+   	InitiativeList:orderInitiatives( )
    
    --brute force a refresh of the list
    composer.gotoScene( "initiative_tool" )

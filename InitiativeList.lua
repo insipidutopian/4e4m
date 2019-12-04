@@ -72,8 +72,94 @@ function InitiativeList.nextInitiative(self)
 
 end
 
+
+
+function InitiativeList.delayInitiative(self, newInit)
+	local curInit = self.currentInitiativeIndex
+	print ("-------------------------------------------------------------------------")
+	print ("InitiativeList.delayInitiative() called.  current Initiative slot is: " .. curInit)
+	if newInit then
+		print ("InitiativeList.delayInitiative() called.  new Initiative slot is after: " .. newInit)
+	--else
+		--print ("oops...can't delay past end of round...")
+	end
+	local nextInit = curInit+1
+
+	if newInit then
+    	nextInit = newInit
+    end
+
+	if nextInit == 0 then -- just starting...
+		nextInit = 2
+	elseif nextInit > #self.iList then
+		print ("oops...can't delay past end of round...")
+		newInit = 1
+		InitiativeList:nextInitiative()
+	end
+
+	if nextInit > #self.iList then
+		self.roundCount = self.roundCount+1
+		nextInit = 1
+	end
+    
+    
+	if newInit then
+		local curInitE = self.iList[self.currentInitiativeIndex]
+		print ("Moving " .. curInitE.name .. " to after " .. self.iList[newInit].name )
+		niv = self.iList[newInit].initVal + self.iList[newInit].initBon
+		print ("Moving " .. curInitE.name .. " from init slot " .. self.iList[self.currentInitiativeIndex].initVal .. " to init slot " .. niv )
+		self.iList[self.currentInitiativeIndex].initVal = niv
+		self.iList[self.currentInitiativeIndex].initBon = 0
+
+		
+		if (self.currentInitiativeIndex < newInit) then
+			for i=self.currentInitiativeIndex,newInit-1 do
+				print ("Swapping " .. self.iList[i].name .. " <--> " .. self.iList[i+1].name)
+				local curInit = self.iList[i]
+				local slotTmp = self.iList[i].initSlot
+				self.iList[i].initSlot = self.iList[i+1].initSlot
+				self.iList[i+1].initSlot = slotTmp
+				self.iList[i] = self.iList[i+1]
+	    		self.iList[i+1] = curInit
+			end
+		else
+			-- move to the start of the list
+			for i=self.currentInitiativeIndex,newInit+2,-1 do
+				print ("Swapping "..i.." with prev init")
+				print ("Swapping " .. self.iList[i].name .. " <--> " .. self.iList[i-1].name)
+				local slotTmp = self.iList[i].initSlot
+				self.iList[i].initSlot = self.iList[i-1].initSlot
+	    		self.iList[i-1].initSlot = slotTmp
+				local curInit = self.iList[i]
+				self.iList[i] = self.iList[i-1]
+	    		self.iList[i-1] = curInit
+	    		
+	    		print ("Done Swapping " .. self.iList[i].name .. " <--> " .. curInit.name)
+			end
+
+		end
+	else
+		--swap inits
+	    local curInit = self.iList[self.currentInitiativeIndex]
+	    curInit.initSlot = self.currentInitiativeIndex+1
+	    self.iList[self.currentInitiativeIndex] = self.iList[nextInit]
+	    self.iList[self.currentInitiativeIndex].initSlot = self.currentInitiativeIndex
+	    self.iList[nextInit] = curInit
+		self.iList[nextInit].initVal = self.iList[self.currentInitiativeIndex].initVal + self.iList[self.currentInitiativeIndex].initBon
+		self.iList[nextInit].initBon = 0 --todo don't actually reset this, use another val which gets set at add/modify time
+	end
+
+	--print ("InitiativeList.nextInitiative() called.  setting next Initiative to: " .. nextInit)
+	--self.currentInitiativeIndex = nextInit
+	InitiativeList:writeInitiativeFile()
+	InitiativeList:writeInitiativeStateFile()
+	InitiativeList:sortInitiativesBySlot()
+	InitiativeList:orderInitiatives()
+
+end
+
 function InitiativeList.getInitiativeCount(self)
-  print ("InitiativeList.getInitiativeCount() - count=" .. #self.iList)
+  print ("InitiativeList.getInitiativeCount(): count=" .. #self.iList)
   return #self.iList
 end
 
@@ -87,13 +173,39 @@ function _sortInits(a,b)
 	return aIni>bIni
 end
 
+function _sortInitsBySlot(a,b)
+	print ("a="..a.initSlot..",b="..b.initSlot)
+	return a.initSlot<b.initSlot
+end
+
+function InitiativeList.quickPrintInits(self)
+	for i=1,#self.iList do
+		print (i..". " .. self.iList[i].name)
+	end
+end
+
+function InitiativeList.sortInitiativesBySlot(self)
+	print ("InitiativeList.sortInitiativesBySlot()")
+	self:quickPrintInits()
+	if self then 
+		table.sort( self.iList, _sortInitsBySlot  )
+	end
+	self:quickPrintInits()
+end
+
 function InitiativeList.sortInitiatives(self)
-	print("InitiativeList.sortInitiatives() called")
+	print ("InitiativeList.sortInitiatives()")
 	if self then 
 		table.sort( self.iList, _sortInits  )
 	end
 end
 
+function InitiativeList.orderInitiatives(self)
+	for i=1, #self.iList do
+		self.iList[i].initSlot = i
+		print ("InitiativeList.orderInitiatives(): " .. self.iList[i].initSlot ..": " .. self.iList[i].name)
+	end
+end
 
 function InitiativeList.isLast(self, i)
 	if self.currentInitiativeIndex == -1 then
@@ -133,8 +245,8 @@ function InitiativeList.getOffsetInitiative(self, i)
 		return nil
 	end
 
-	print ("InitiativeList.getInitiative() - found Initiative, name=" .. self.iList[offset].name)
-	print ("                               - init =" .. self.iList[offset].initVal .. " bonus = " .. self.iList[offset].initBon)
+	print ("InitiativeList.getOffsetInitiative() - found Initiative, name=" .. self.iList[offset].name)
+	print ("                                     - init =" .. "self.iList[offset].initVal" .. " bonus = " .. "self.iList[offset].initBon")
 	return self.iList[offset]
 
 end
@@ -159,7 +271,7 @@ end
 
 
 function InitiativeList.loadInitiativeFile(self, fName)
-	print ("InitiativeList.loadInitiativeFile() - loading Initiative file")
+	print ("InitiativeList.loadInitiativeFile() - loading Initiative file " .. fName)
 	if (fName == nil) then
 		print ("Can't load nil Initiative file")
 		return
@@ -262,7 +374,9 @@ function InitiativeList.resetInitiatives(self)
 
 	self.currentInitiativeIndex = -1
 	self.roundCount = 1
-
+	for i=1,#self.iList do
+		self.iList[i].initBon = self.iList[i].initBonusSaved
+	end
 	InitiativeList:writeInitiativeFile()
 	InitiativeList:writeInitiativeStateFile()	
 
@@ -281,8 +395,10 @@ function InitiativeList.removeEnemyInitiatives( self )
 
 end
 function InitiativeList.updateInitiative(self, initNumToMod, init)
-	print ("InitiativeList.updateInitiative() - updating Initiative ==" .. init.name)
-	self.iList[initNumToMod] = init
+	print ("InitiativeList.updateInitiative() - updating Initiative == " .. init.name)
+	print ("InitiativeList.updateInitiative() - replacing " ..self.iList[initNumToMod].name .. " at #"..initNumToMod )
+	print ("")
+	-- self.iList[initNumToMod] = init
 
 	print ("InitiativeList.updateInitiative() - Writing Initiative to disk" )
 	InitiativeList:writeInitiativeFile()

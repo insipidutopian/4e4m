@@ -25,6 +25,8 @@ local widgetGroup = display.newGroup()
 
 
 
+
+
 --Create the scene
 function scene:create( event )
 	local group = self.view
@@ -40,8 +42,8 @@ function scene:create( event )
 	
 
 	appSettings = { fileVersion = 1, 
-					appName = "4e4m", 
-					appVersion = "1.0", 
+					appName = "DM Assistant", 
+					appVersion = "1.0.1", 
 					campaignCounter=0,
 					questCounter=0,
 					encounterCounter=0,
@@ -91,11 +93,11 @@ function scene:show( event )
 
 
 	welcomeTitleText = display.newText("Welcome.", centerX, display.contentHeight - 100, native.systemFontBold, 16 )
-	welcomeTitleText:setFillColor( 1, 0, 0)
+	welcomeTitleText:setFillColor( 1,0 , 0)
 	group:insert( welcomeTitleText )
 
 	welcomeText = display.newText("Welcome to " .. appSettings["appName"] .. " v" .. appSettings["appVersion"], centerX, display.contentHeight - 200, native.systemFontBold, 16 )
-	welcomeTitleText:setFillColor( 1, 0, 0)
+	welcomeText:setFillColor(1, 0,0)
 	group:insert( welcomeText )
 end
 
@@ -129,5 +131,6 @@ scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
+
 
 return scene

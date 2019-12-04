@@ -21,14 +21,18 @@ end
 -- PUBLIC FUNCTIONS
 -------------------------------------------------
  
-function initiative.new( name, iType, initVal, initBon )	-- constructor
+function initiative.new( name, iType, initVal, initBon, initSlot )	-- constructor
 	print ("initiative.new() called")
 	local newInitiative = {
 		id = 0,
 		name = name or "Unnamed",
 		iType = iType or "player",
 		initVal = initVal or 10,
-		initBon = initBon or 0
+		initBon = initBon or 0,
+		initBonusSaved = initBonusSaved or 0,
+		initSlot = initSlot or 0,
+		hasDelayed = false,
+		turnTime = turnTime or 0
 	}
 	-- if (debugFlag == 1) then
 	-- 	print ("initiative.new - DEBUG=TRUE - generating initiative keywords")
@@ -48,22 +52,24 @@ function initiative.newInitiative( initiative )	-- constructor
 	local newInitiative = {
 		id = initiative.id,
 		name = initiative.name or "Unnamed",
-		description = initiative.description or "description",
-		keywords = initiative.keywords,
-		questList = initiative.questList,
-		npcList = initiative.npcList,
-		encounterList = initiative.encounterList
+		iType = initiative.iType or "player",
+		initVal = initiative.initVal,
+		initBon = initiative.initBon or 0,
+		initBonusSaved = initiative.initBonusSaved or 0,
+		initSlot = initiative.initSlot or 0,
+		hasDelayed = initiative.hasDelayed,
+		turnTime = initiative.turnTime or 0
 	}
-	print ("initiative.newInitiative - creating name=" .. newInitiative.name .. ", desc=" .. newInitiative.description)
+	print ("initiative.newInitiative - creating name=" .. newInitiative.name .. ", type=" .. newInitiative.iType)
 	
 	return setmetatable( newInitiative, initiative_mt )
 end
 -------------------------------------------------
  
-function initiative:setDescription(desc)
+function initiative:setInititiativeType(iType)
 --	self.cList.insert(initiative)
-	print ("initiative:setDescription - setting initiative description = " .. desc)
-	self.description = desc
+	print ("initiative:setInititiativeType - setting initiative type = " .. iType)
+	self.iType = iType
 end
 
 
@@ -77,10 +83,10 @@ function initiative:addKeyword(keyword)
 	end
 end
 
-function initiative:getDescription()
+function initiative:getInitiativeType()
 --	self.cList.insert(initiative)
-	print ("initiative:getDescription - getting initiative description = " .. self.description)
-	return self.description
+	print ("initiative:getInitiativeType - getting initiative type = " .. self.iType)
+	return self.iType
 end
 
 return initiative
