@@ -346,7 +346,6 @@ local function onRowRender( event )
 		row.orderText.anchorY = 0.5
 		row.orderText:setFillColor( 0 )
 		row.orderText.y = 19
-		
 	--end
 
 	if params.isHeader == true then

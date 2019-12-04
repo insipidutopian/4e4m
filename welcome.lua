@@ -43,6 +43,8 @@ function cleanSelf()
 end
 
 
+
+
 --Create the scene
 function scene:create( event )
 	local group = self.view

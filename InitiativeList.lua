@@ -223,6 +223,7 @@ function InitiativeList.reorderSlots(self)
 	end
 
 end
+
 function InitiativeList.sortInitiatives(self)
 	print ("InitiativeList.sortInitiatives()")
 	if self then 

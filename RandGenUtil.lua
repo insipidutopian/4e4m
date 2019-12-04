@@ -246,7 +246,6 @@ end
 -- 	return newQuest
 
 -- end
-
 function RandGenUtil.genPrepPhrase()
 
 	local prep = math.random ( 3 )
