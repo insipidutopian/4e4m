@@ -42,13 +42,9 @@ function resetCurrentInitiatives( )
 	 if resetEnemiesFlag == "true" then
     	InitiativeList:removeEnemyInitiatives()
     end
-	
-	roundTimeElapsed = 0
-	turnTimeElapsed = 0
-    
+
     InitiativeList:resetInitiatives()
 	composer.hideOverlay( "resetInit", popOptions ); 
-
 end
 
 function resetInit:show( event )

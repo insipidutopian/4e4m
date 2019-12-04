@@ -4,17 +4,15 @@
 -- Version: 1.0
 -- 
 
---local quest = require ( "quest" )
+local quest = require ( "quest" )
 
 local names = {"an", "dor", "in", "al", "gar", "zi", "ip", "er", "ar", "el", "if", "ap", "nar",
 			   "jo", "jon", "dar", "raf", "cha", "le", "o", "lo", "ri", "a", "pip", "kal", "jab",
-			   "kor", "kan", "bin", "ban", "la", "gre", "gra", "pho", "pha", "cid", "li", "lu", "eb",
-			   "on",  "en", "un", "aen", "ian", "be", "bo", "ba", "wo", "wi", "we", "wa", "wu", "ze", 
-			   "za", "zo", "zed", "ka", "ke", "x", "red"}
+			   "kor", "kal", "bin", "ban", "la", "gre", "gra", "pho", "pha", "cid" }
 
 local adjectives = {"old", "forgotten", "iron", "golden", "pleasant", "dusty", "dark", "gloomy", "bright",
 					"murky", "misty", "sullen", "wintry", "burned", "crumbling", "shadowy", "night" }
-local colorNames = {"blue", "green", "white", "red", "black", "grey", "gold", "yellow", "brown", "crimson" }
+local colorNames = {"blue", "green", "white", "red", "black", "grey", "gold" }
 local placeNames = {"hills", "forest", "mountains", "plains", "river", "valley", "peaks", "pass", 
 					"castle", "fort", "fortress", "ruins", "downs", "keep", "haven", "hold",
 					"brook", "road", "vale", "citadel", "desert", "grasslands", "sea", "ocean", "lake", 
@@ -28,14 +26,8 @@ local thingNames = {"sword", "bow", "dagger", "staff", "wand", "axe", "spear", "
 					"shield", "armor", "helmet", "helm", "buckler", "breastplate", "boots"}
 
 local adversaries = {"orcs", "a dragon", "kobolds", "bandits", "mercenaries", "giants", "trolls",
-					 "a rust monster", "minotaurs", "drow", "duergar", "goblins", "troglodytes", "cultists",
-					 "hobgoblins", "wolves", "bear", "stirges", "owlbear", "will-o-wisp", "skeletons", "zombies",
-					 "wights", "shadows", "werewolves", "werebeasts", "doppleganger", "thugs", "ghasts", "ghouls",
-					 "mummy", "vampires", "mad wizard", "wyverns"}
-local adversaryType = {"archer", "warrior", "fighter", "mage", "brawler", "slinger", "caster", "hex caller", "guardian",
-					    "swordsman"}
-local adversary = { "orc", "kobold", "drow", "bandit", "mercenary", "giant", "troll", "minotaur", "duegar", "goblin",
-					"troglodyte", "cultist", "hobgoblin", "skeleton", "zombie", "thug"}
+					 "a rust monster", "minotaurs", "drow", "duergar"}
+
 local obstacles = {"washed out road", "ruined bridge", "flooded river", "slaughtered caravan"}
 local RandGenUtil = {Instances={}}
 --local RandGenUtil = {}
@@ -161,22 +153,8 @@ end
 function RandGenUtil.generateAdversary( ) 
 	local tmpName = "";
 
-	local nameStyle =  math.random( 3 )
+	tmpName = adversaries[math.random(#adversaries)]	
 
-	if (nameStyle == 1) then -- Orcs type name
-		tmpName = adversaries[math.random(#adversaries)]	
-	elseif (nameStyle == 2) then -- Orc Archers type name...
-		tmpName = adversary[math.random(#adversary)] .. " " .. adversaryType[math.random(#adversaryType)]
-	else -- Crimson Ardier type name...
-		local t = math.random(3)
-		if (t == 1) then
-			tmpName = colorNames[math.random(#colorNames)] .. " " .. RandGenUtil.generateName()
-		elseif (t == 2) then
-			tmpName = RandGenUtil.generateName() .. " of the " .. placeNames[math.random(#placeNames)]
-		else
-			tmpName = RandGenUtil.generateName() .. " the " .. colorNames[math.random(#colorNames)]
-		end
-	end
 		
 	tmpName = tmpName:gsub("^%l", string.upper)
 	print("  adversary generated: " .. tmpName)
@@ -198,54 +176,57 @@ function RandGenUtil.generateObstacle( )
 end
 
 
--- function RandGenUtil.generateQuest( )
--- 	local qTmp = "";
--- 	local newQuest = quest.new("New Quest", "")
+function RandGenUtil.generateQuest( )
+	local qTmp = "";
+	print("==========================================================")
+	print("RandGenUtil.generateQuest() called")
+	local newQuest = quest.new("New Quest", "")
 
--- 	local questStyle =  math.random( 4 )
+	local questStyle =  math.random( 4 )
 
--- 	newQuest:addQuestGiver( RandGenUtil:generateName() )
+	newQuest:addQuestGiver( RandGenUtil:generateName() )
 
--- 	if (questStyle == 1) then -- Gather: X has asked you to go to Y to retrieve Z
--- 		local thing = RandGenUtil:generateThingName()
--- 		qTmp = qTmp .. newQuest.questGiver .. " has asked you to go to \n"
--- 		qTmp = qTmp .. RandGenUtil:generatePlaceName() .. " to retrieve his \n"
--- 		qTmp = qTmp .. thing
--- 		newQuest:setName(newQuest.questGiver .. "'s " .. thing)
--- 	elseif (questStyle == 2) then -- Investigate: X has done/is doing Y at Z
--- 		local place = RandGenUtil:generatePlaceName()
--- 		local adversary = RandGenUtil:generateAdversary()
--- 		qTmp = qTmp .. newQuest.questGiver .. " has asked you to go to \n"
--- 		qTmp = qTmp .. place .. " to investigate \n"
--- 		qTmp = qTmp .. adversary -- TODO: add more investigation topics
--- 		newQuest:setName( adversary .. " of " .. place)
--- 	elseif (questStyle == 3) then -- Kill: 
--- 		local adversary = RandGenUtil:generateAdversary()
--- 		local place = RandGenUtil:generatePlaceName()
--- 		qTmp = qTmp .. newQuest.questGiver .. " has asked you to go to \n"
--- 		qTmp = qTmp .. place .. " to kill \n"
--- 		qTmp = qTmp .. adversary
--- 		newQuest:setName( "Kill " .. adversary .. " of " .. place)
--- 	elseif (questStyle == 4) then -- Deliver: 
--- 		local thing = RandGenUtil:generateThingName()
--- 		qTmp = qTmp .. newQuest.questGiver .. " has asked you to bring his\n"
--- 		qTmp = qTmp .. thing .. " to " .. RandGenUtil:generateName()
--- 		qTmp = qTmp .. "\nin " .. RandGenUtil:generatePlaceName()
--- 		newQuest:setName( thing .. " delivery")
--- 	elseif (questStyle == 5) then -- Escort: 
--- 		qTmp = qTmp .. newQuest.questGiver .. " has asked you to escort"
--- 	elseif (questStyle == 6) then -- Liberate:
--- 		qTmp = qTmp .. newQuest.questGiver .. " has asked you to save"
--- 	elseif (questStyle == 7) then -- Summon/Build: 
--- 		qTmp = qTmp .. newQuest.questGiver .. " has asked you to build a"
--- 	end
+	if (questStyle == 1) then -- Gather: X has asked you to go to Y to retrieve Z
+		local thing = RandGenUtil:generateThingName()
+		qTmp = qTmp .. newQuest.questGiver .. " has asked you to go to \n"
+		qTmp = qTmp .. RandGenUtil:generatePlaceName() .. " to retrieve his \n"
+		qTmp = qTmp .. thing
+		newQuest:setName(newQuest.questGiver .. "'s " .. thing)
+	elseif (questStyle == 2) then -- Investigate: X has done/is doing Y at Z
+		local place = RandGenUtil:generatePlaceName()
+		local adversary = RandGenUtil:generateAdversary()
+		qTmp = qTmp .. newQuest.questGiver .. " has asked you to go to \n"
+		qTmp = qTmp .. place .. " to investigate \n"
+		qTmp = qTmp .. adversary -- TODO: add more investigation topics
+		newQuest:setName( adversary .. " of " .. place)
+	elseif (questStyle == 3) then -- Kill: 
+		local adversary = RandGenUtil:generateAdversary()
+		local place = RandGenUtil:generatePlaceName()
+		qTmp = qTmp .. newQuest.questGiver .. " has asked you to go to \n"
+		qTmp = qTmp .. place .. " to kill \n"
+		qTmp = qTmp .. adversary
+		newQuest:setName( "Kill " .. adversary .. " of " .. place)
+	elseif (questStyle == 4) then -- Deliver: 
+		local thing = RandGenUtil:generateThingName()
+		qTmp = qTmp .. newQuest.questGiver .. " has asked you to bring his\n"
+		qTmp = qTmp .. thing .. " to " .. RandGenUtil:generateName()
+		qTmp = qTmp .. "\nin " .. RandGenUtil:generatePlaceName()
+		newQuest:setName( thing .. " delivery")
+	elseif (questStyle == 5) then -- Escort: 
+		qTmp = qTmp .. newQuest.questGiver .. " has asked you to escort"
+	elseif (questStyle == 6) then -- Liberate:
+		qTmp = qTmp .. newQuest.questGiver .. " has asked you to save"
+	elseif (questStyle == 7) then -- Summon/Build: 
+		qTmp = qTmp .. newQuest.questGiver .. " has asked you to build a"
+	end
 
--- 	newQuest:setDescription(qTmp)
--- 	newQuest:setDetails( RandGenUtil.generateQuestDetails(newQuest) )
--- 	print ("RandGenUtil.generateQuest - Random Quest Generated: " .. qTmp)
--- 	return newQuest
+	newQuest:setDescription(qTmp)
+	newQuest:setDetails( RandGenUtil.generateQuestDetails(newQuest) )
+	print ("RandGenUtil.generateQuest - Random Quest Generated: " .. qTmp)
+	return newQuest
 
--- end
+end
+
 function RandGenUtil.genPrepPhrase()
 
 	local prep = math.random ( 3 )
@@ -261,42 +242,42 @@ function RandGenUtil.genPrepPhrase()
 	return prepPhrase
 end
 
--- function RandGenUtil.generateQuestDetails( quest)
--- 	local qTmp = "";
+function RandGenUtil.generateQuestDetails( quest)
+	local qTmp = "";
 
--- 	local questDetailsCount =  math.random( 3 )
--- 	local prepPhrase = ""
+	local questDetailsCount =  math.random( 3 )
+	local prepPhrase = ""
 
--- 	for i=1, questDetailsCount do
--- 		local wrinkleType =  math.random( 3 )
--- 		local prepPhrase = RandGenUtil.genPrepPhrase()
+	for i=1, questDetailsCount do
+		local wrinkleType =  math.random( 3 )
+		local prepPhrase = RandGenUtil.genPrepPhrase()
 
--- 		-- if (prep == 1) then
--- 		-- 	prepPhrase = "On the way is"
--- 		-- elseif (prep == 2) then
--- 		-- 	prepPhrase = "On the way back is"
--- 		-- elseif (prep == 3) then
--- 		-- 	if (wrinkleType == 2) then 
--- 		-- 		prepPhrase = "Guarding it is"
--- 		-- 	else
--- 		-- end
+		-- if (prep == 1) then
+		-- 	prepPhrase = "On the way is"
+		-- elseif (prep == 2) then
+		-- 	prepPhrase = "On the way back is"
+		-- elseif (prep == 3) then
+		-- 	if (wrinkleType == 2) then 
+		-- 		prepPhrase = "Guarding it is"
+		-- 	else
+		-- end
 
--- 		if (wrinkleType == 1) then -- Obstacle:
--- 			while ( prepPhrase == "Guarding it is") do
--- 				prepPhrase = RandGenUtil.genPrepPhrase()
--- 			end
--- 			qTmp = qTmp .. "Wrinkle: " .. prepPhrase .. " " .. RandGenUtil:generateObstacle() .. "\n"
--- 		elseif (wrinkleType == 2) then -- Monster: 
--- 			qTmp = qTmp .. "Wrinkle: " .. prepPhrase .. " " .. RandGenUtil:generateAdversary() .. "\n"
--- 		elseif (wrinkleType == 3) then -- Prerequisite: 
--- 			qTmp = qTmp .. "Wrinkle: First you must find " .. quest.questGiver .. "'s\n"
--- 			qTmp = qTmp .. "    " .. RandGenUtil:generateThingName() .. "\n"
--- 		end
--- 	end
+		if (wrinkleType == 1) then -- Obstacle:
+			while ( prepPhrase == "Guarding it is") do
+				prepPhrase = RandGenUtil.genPrepPhrase()
+			end
+			qTmp = qTmp .. "Wrinkle: " .. prepPhrase .. " " .. RandGenUtil:generateObstacle() .. "\n"
+		elseif (wrinkleType == 2) then -- Monster: 
+			qTmp = qTmp .. "Wrinkle: " .. prepPhrase .. " " .. RandGenUtil:generateAdversary() .. "\n"
+		elseif (wrinkleType == 3) then -- Prerequisite: 
+			qTmp = qTmp .. "Wrinkle: First you must find " .. quest.questGiver .. "'s\n"
+			qTmp = qTmp .. "    " .. RandGenUtil:generateThingName() .. "\n"
+		end
+	end
 	
--- 	print ("RandGenUtil.generateQuest - Random Quest Details Generated: " .. qTmp)
--- 	return qTmp
--- end
+	print ("RandGenUtil.generateQuest - Random Quest Details Generated: " .. qTmp)
+	return qTmp
+end
 
  -- Initialize the RandGenUtil
 RandGenUtil:new()

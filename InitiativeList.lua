@@ -57,8 +57,6 @@ function InitiativeList.nextInitiative(self)
 	print ("InitiativeList.nextInitiative() called.  current Initiative is: " .. self.currentInitiativeIndex)
 	local nextInit = self.currentInitiativeIndex+1
 
-	turnTimeElapsed = 0
-
 	if nextInit == 0 then -- just starting...
 		nextInit = 2
 	end
@@ -66,9 +64,6 @@ function InitiativeList.nextInitiative(self)
 	if nextInit > #self.iList then
 		self.roundCount = self.roundCount+1
 		nextInit = 1
-		roundTimeElapsed = 0
-	else
-		print("**** nextInit = " .. nextInit)
 	end
 
 	print ("InitiativeList.nextInitiative() called.  setting next Initiative to: " .. nextInit)
@@ -77,23 +72,6 @@ function InitiativeList.nextInitiative(self)
 
 end
 
-function InitiativeList.previousInitiative(self)
-
-	print ("InitiativeList.previousInitiative() called.  current Initiative is: " .. self.currentInitiativeIndex)
-	local prevInit = self.currentInitiativeIndex-1
-
-	turnTimeElapsed = 0 -- TODO - need to look it up from the prev init...
-
-	if prevInit < 1 then
-		self.roundCount = self.roundCount-1
-		prevInit = #self.iList
-	end
-
-	print ("InitiativeList.previousInitiative() called.  setting previous Initiative to: " .. prevInit)
-	self.currentInitiativeIndex = prevInit
-	InitiativeList:writeInitiativeStateFile()
-
-end
 
 
 function InitiativeList.delayInitiative(self, newInit)
@@ -196,7 +174,7 @@ function _sortInits(a,b)
 end
 
 function _sortInitsBySlot(a,b)
-	--print ("a="..a.initSlot..",b="..b.initSlot)
+	print ("a="..a.initSlot..",b="..b.initSlot)
 	return a.initSlot<b.initSlot
 end
 
@@ -213,15 +191,6 @@ function InitiativeList.sortInitiativesBySlot(self)
 		table.sort( self.iList, _sortInitsBySlot  )
 	end
 	self:quickPrintInits()
-end
-
-function InitiativeList.reorderSlots(self)
-	print("InitiativeList.reorderSlots() called.")
-	for i=1, #self.iList do
-
-		self.iList[i].initSlot = i
-	end
-
 end
 
 function InitiativeList.sortInitiatives(self)
@@ -393,26 +362,14 @@ function InitiativeList.getNewInitiativeId(self)
 end
 
 
-function InitiativeList.deleteInitiative( self, initSlotToDel )
-	print ("InitiativeList.deleteInitiative: Deleting initiative " .. initSlotToDel .. "...")
-	ini = InitiativeList:getOffsetInitiative(initSlotToDel)
-
-	print("Deleting Initiative of " .. ini.name .. " at slot " .. ini.initSlot)
-
-	for i=#self.iList,1,-1 do
-		if self.iList[i].name == ini.name then
-			if self.iList[i].initSlot < self.currentInitiativeIndex then
-				self.currentInitiativeIndex = self.currentInitiativeIndex - 1
-			end
-			table.remove(self.iList, i)
-		end
-	end
+function InitiativeList.deleteInitiative( self, initNumToDel )
+	print ("InitiativeList.removeEnemyInitiatives: Deleting initiative " .. initNumToDel .. "...")
+	table.remove(self.iList, initNumToDel)
 
 end
 
 
 function InitiativeList.resetInitiatives(self)
-	print ("****************************************")
 	print ("InitiativeList.resetInitiatives() called")
 
 	self.currentInitiativeIndex = -1
@@ -420,13 +377,9 @@ function InitiativeList.resetInitiatives(self)
 	for i=1,#self.iList do
 		self.iList[i].initBon = self.iList[i].initBonusSaved
 	end
-	
-	InitiativeList:sortInitiatives()
-	InitiativeList:reorderSlots()
-
 	InitiativeList:writeInitiativeFile()
 	InitiativeList:writeInitiativeStateFile()	
-print ("****************************************")
+
 end
 
 
@@ -446,68 +399,24 @@ function InitiativeList.updateInitiative(self, initNumToMod, init)
 	print ("InitiativeList.updateInitiative() - replacing " ..self.iList[initNumToMod].name .. " at #"..initNumToMod )
 	print ("")
 	-- self.iList[initNumToMod] = init
-	
-	InitiativeList:sortInitiatives()
-	InitiativeList:reorderSlots()
 
 	print ("InitiativeList.updateInitiative() - Writing Initiative to disk" )
 	InitiativeList:writeInitiativeFile()
 	InitiativeList:writeInitiativeStateFile()
 end
 
-
-
-function InitiativeList.addInitAtSlot(self, init, i)
-	print ("Adding init for " .. init.name .. " at slot " .. i)
-	table.insert(self.iList, i, init)
-	InitiativeList:reorderSlots()
-	return
-end
-
 function InitiativeList.addInitiative(self, init)
 --	self.iList.insert(Initiative)
-	print ("InitiativeList.addInitiative() - adding Initiative == " .. init.name)
+	print ("InitiativeList.updateInitiative() - adding Initiative ==" .. init.name)
 	if (init.type) then
-		print ("InitiativeList.addInitiative() -    type ==" .. init.type)
+		print ("InitiativeList.updateInitiative() -    type ==" .. init.type)
 	end
 	init.id = InitiativeList.getNewInitiativeId()
 
-	local inserted = 0
-	if (#self.iList == 0) then
-		print ("first in list")
-		InitiativeList:addInitAtSlot(init, 1)
-		inserted = 1
-	else
-		for i=1, #self.iList do
-			if (init.initVal+init.initBon > self.iList[i].initVal + self.iList[i].initBon) then
-				if (inserted == 0 ) then
-					print (init.name .. " should go at init " .. i)
-					InitiativeList:addInitAtSlot(init, i)
-					inserted = 1
-				end
-			elseif (init.initVal+init.initBon == self.iList[i].initVal + self.iList[i].initBon) then
-				print ("TIED INITIATIVES at " .. init.initVal+init.initBon .. " new init bonus=" .. 
-						init.initBon .. " vs encumbant at " .. self.iList[i].initBon)
-				if (init.initBon > self.iList[i].initBon) then
-					if (inserted == 0 ) then
-						print (init.name .. " should go at init " .. i)
-						InitiativeList:addInitAtSlot(init, i)
-						inserted = 1
-					end
-				end
-			end
-		end
-	end
-	if (inserted == 0) then
-		InitiativeList:addInitAtSlot(init, #self.iList+1)
-	end
+	self.iList[#self.iList+1] = init
+	print ("InitiativeList.updateInitiative() - " .. #self.iList .. " Initiatives now found after add.")
 
-	--self.iList[#self.iList+1] = init
-	InitiativeList.sortInitiatives()
-	self:reorderSlots()
-	print ("InitiativeList.addInitiative() - " .. #self.iList .. " Initiatives now found after add.")
-
-	print ("InitiativeList.addInitiative() - Writing Initiative to disk" )
+	print ("InitiativeList.updateInitiative() - Writing Initiative to disk" )
 	InitiativeList:writeInitiativeFile()
 	InitiativeList:writeInitiativeStateFile()
 
