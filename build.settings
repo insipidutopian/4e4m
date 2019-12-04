@@ -9,7 +9,6 @@ settings =
 	{
 		plist =
 		{
-			CFBundleIconFile = "Icon.png",
 			CFBundleIconFiles =
 			{
                 "Icon.png", 

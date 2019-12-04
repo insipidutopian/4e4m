@@ -5,6 +5,7 @@
 -- 
 --
 ------------------------------------------------------------
+debugFlag = 1
 
 local widget = require ( "widget" )
 --local storyboard = require ( "storyboard" )
@@ -13,17 +14,35 @@ local composer = require ( "composer" )
 display.setStatusBar( display.HiddenStatusBar ) 
 display.setDefault( "background", 1 )
 
+currentScene = "welcome"
+local currentOrientation
+
 CampaignList = require ("CampaignList")
 InitiativeList = require ("InitiativeList")
 QuestList = require ("QuestList")
 Randomizer = require ("RandGenUtil")
 FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
+newQuestType='new'
 
 appSettings = {fileVersion = 7, appName = "foo", appVersion = "1.0" }
 
-newQuestType='new'
-debugFlag = 1
+--Orientation
+print( "INITIAL ORIENTATION: "..system.orientation )
+
+function onOrientationChange( event )
+    print( "Current orientation: " .. system.orientation )
+    print( "display.contentCenterX now: " .. display.contentCenterX)
+	print( "display.contentCenterY now: " .. display.contentCenterY)
+	print( "display.contentWidth now: " .. display.contentWidth)
+	print( "display.contentHeight now: " .. display.contentHeight)
+
+	composer.gotoScene( currentScene )
+end
+
+
+
+
 
 
 titleGradient = {
@@ -33,6 +52,7 @@ titleGradient = {
 	direction = "down"
 }
 
+
 titleBarHeight = 40
 leftPadding = 10
 rightPadding = 10
@@ -41,6 +61,9 @@ squareButtonWidth = 7
 buttonHeight = 30
 yPadding = 10
 inputFontSize = 12
+
+roundTimeElapsed = 0 
+turnTimeElapsed = 0
 
 math.randomseed( os.time() )
 
@@ -97,7 +120,7 @@ local demoTabs = widget.newTabBar
 }
 
 
---local readResult = FileUtil:loadAppFile("test.test")
+
 
 -- Load App Settings
 local readResult = FileUtil:loadSettingsFile("settings.cfg", appSettings)
@@ -112,15 +135,13 @@ local readResult = FileUtil:loadSettingsFile("settings.cfg", appSettings)
 
 
 --print ("Load of settings file result: read " .. readResult )
-if (readResult == "") then -- First time run
-	composer.gotoScene( "welcome" ) 
-	--storyboard.gotoScene( "welcome" ) 
-else -- Loaded settings
+if (readResult ~= "") then -- First time run
 	print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
 	print ("4e4m App Name              : " .. appSettings['appName'])
 	print ("4e4m App Version           : " .. appSettings['appVersion'])
-	
-	composer.gotoScene( "welcome" )
-	--storyboard.gotoScene( "campaigns" )
-end
+end	
+composer.gotoScene( "welcome" )
 
+
+
+Runtime:addEventListener( "orientation", onOrientationChange )
