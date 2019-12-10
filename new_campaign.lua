@@ -6,14 +6,13 @@
 --
 -- This file is used to  
 
-local storyboard = require ( "composer" )
---local storyboard = require ( "storyboard" )
+local composer = require ( "composer" )
 local widget = require ( "widget" )
 local CampaignClass = require ( "campaign" )
 
 
---Create a storyboard scene for this module
-local scene = storyboard.newScene()
+--Create a scene for this module
+local scene = composer.newScene()
 local campaignNameTF, campaignDescTB
 local campaignNameText, campaignDescText
 
@@ -39,9 +38,14 @@ local function textListener( event )
 end
 
 function addCampaign()
---	print ("Adding campaign '"..addCampaignName.."'")
-	local cName = campaignNameTF.text
-	local cDesc = campaignDescTB.text
+	print ("Adding campaign '"..addCampaignName.."'")
+	local cName = '' 
+	local cDesc = ''
+	if (campaignNameTF ~= nil) then
+		cName = campaignNameTF.text 
+		cDesc = campaignDescTB.text
+	end
+
 	if (cName == "") then
 		print (" generating random campaign name")
 		rand = math.random( 100 )
@@ -57,13 +61,14 @@ function addCampaign()
 	end
     CampaignList:addCampaign(newCampaign)
     local cc = CampaignList:getCampaignCount()
-    print("Capaign count now " .. cc)
+    print("Campaign count now " .. cc)
 end
 
 --Create the scene
 function scene:create( event )
 	local group = self.view
 	
+	print("new_campaign:create called")
 	local background = display.newImage("images/dragon01.jpg") 
 	background.x = display.contentWidth / 2
  	background.y = display.contentHeight / 2
@@ -93,7 +98,7 @@ function scene:create( event )
 		label = "Back",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress =  function() storyboard.gotoScene( "campaigns" ); end,
+		onPress =  function() composer.gotoScene( "campaigns" ); end,
 		x =  buttonWidth + rightPadding,
 		y = titleBarHeight/2,
 	}
@@ -140,7 +145,7 @@ function scene:create( event )
 		label = "Add",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress =  function() addCampaign( ); storyboard.gotoScene( "campaigns" ); end,
+		onPress =  function() addCampaign( ); composer.gotoScene( "campaigns" ); end,
 		x =  buttonWidth + rightPadding,
 		y = display.contentHeight - 100,
 	}
@@ -150,13 +155,10 @@ function scene:create( event )
 
 end
 
-function scene:enter( event )
+function scene:show( event )
 	local group = self.view
 
-	-- Generate a name...
-	-- local rand = math.random( 100 )
-	-- local newCampaign = CampaignClass.new(" new campaign"..rand)
-
+	print("new_campaign:show called")
 	-- Create text field
 	campaignNameTF = native.newTextField( display.contentWidth - rightPadding, yStart + inputFontSize * 0.5, 150, tHeight)
 	campaignNameTF:addEventListener( "userInput", textListener )
@@ -173,12 +175,15 @@ function scene:enter( event )
 	campaignDescTB.anchorX = 1 -- right align
 	campaignDescTB.isEditable = true
 	campaignDescTB.text = "Add campaign notes here..."
+	group:insert(campaignNameTF)
+	group:insert(campaignDescTB)
 
 	
 	-- native.setKeyboardFocus( campaignNameTF )
 end
 
-function scene:exit( event )
+function scene:hide( event )
+	print ("new_campaign: scene:destroy started")
 	local group = self.view
 
 	-- remove any native objects, since widget objects will be cleaned automatically, but native ones won't
@@ -196,11 +201,17 @@ function scene:exit( event )
 		campaignDescTB:removeSelf()
 		campaignDescTB = nil
 	end
-end
 
 
---Add the createScene listener
+	print("new_campaign: scene:hide finished")
+end	
+
+
+
+--Add the createScene, enterScene, and exitScene listeners
 scene:addEventListener( "create", scene )
-scene:addEventListener( "enter", scene )
-scene:addEventListener( "exit", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
+
+
 return scene

@@ -111,6 +111,19 @@ function FileUtil.writeSettingsFile(self, fName, settings)
 	file = nil
 end
 
+function FileUtil.initializeSettingsFileIfNotExists(self, fName, settings)
+	print("initializeSettingsFileIfNotExists called: ", fName)
+    local filePath = system.pathForFile( fName, system.DocumentsDirectory )
+	local fileHandle = io.open( filePath, "r" )
+	if (fileHandle) then
+		print("initializeSettingsFileIfNotExists: File Exists")
+		io.close(fileHandle)
+		return
+	else
+		print("initializeSettingsFileIfNotExists: Initializing Settings")
+		writeSettingsFile(fName, settings)
+	end
+end
 
 function FileUtil.loadAppFile(self, fName)
 	--local fName = "myFile.txt"

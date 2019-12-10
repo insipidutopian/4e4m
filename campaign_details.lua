@@ -5,13 +5,11 @@
 -- 
 --
 
---local storyboard = require ( "storyboard" )
-local storyboard = require ( "composer" )
+local composer = require ( "composer" )
 local widget = require ( "widget" )
 CampaignList = require ("CampaignList")
 
---Create a storyboard scene for this module
-local scene = storyboard.newScene()
+local scene = composer.newScene()
 
 local campaignNameText, campaignDescriptionText, questListDisplay, campaignKeywordsHeaderText, campaignKeywordsText
 local currentCampaign
@@ -24,9 +22,9 @@ local titleText = display.newEmbossedText( "Campaign Details", display.contentCe
 											native.systemFontBold, 20 )
 
 --Create the scene
-function scene:createScene( event )
+function scene:create( event )
 	local group = self.view
-	
+	print("Entered campaign_details scene")
 	-- currentCampaign = CampaignList:getCampaign( i )
 
 	local background = display.newImage("images/world-map.jpg") 
@@ -52,7 +50,7 @@ function scene:createScene( event )
 		label = "Back",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress =  function() storyboard.gotoScene( "campaigns" ); end,
+		onPress =  function() composer.gotoScene( "campaigns" ); end,
 		x =  buttonWidth + rightPadding,
 		y = titleBarHeight/2,
 	}
@@ -61,10 +59,10 @@ function scene:createScene( event )
 end
 
 
-function scene:enterScene( event )
+function scene:show( event )
 	local group = self.view
 
-	print("campaign_details:enterScene")
+	print("campaign_details:show")
 
 	local i = CampaignList:getCurrentCampaignIndex()
 	if (i==-1) then
@@ -112,8 +110,20 @@ function scene:enterScene( event )
 
 end
 
-function scene:exitScene( event )
+
+function scene:destroy( event )
+	print ("campaign_details: scene:destroy started")
 	local group = self.view
+
+	if titleText then
+		titleText:removeSelf()
+		titleText = nil
+	end
+
+	if titleBar then
+		titleBar:removeSelf()
+		titleBar = nil
+	end
 
 	if campaignKeywordsText then
 		campaignKeywordsText:removeSelf()
@@ -137,10 +147,12 @@ function scene:exitScene( event )
 
 	print("campaigns:exitScene")
 end	
---Add the createScene listener
-scene:addEventListener( "createScene", scene )
-scene:addEventListener( "enterScene", scene )
-scene:addEventListener( "exitScene", scene )
+
+
+--Add the createScene, enterScene, and exitScene listeners
+scene:addEventListener( "create", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "destroy", scene )
 
 
 return scene

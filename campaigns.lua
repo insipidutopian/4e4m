@@ -6,15 +6,13 @@
 --
 -- This file is used to display the corresponding screen content when the user clicks the tab bar. 
 
---local storyboard = require ( "storyboard" )
-local storyboard = require ( "composer" )
+local composer = require ( "composer" )
 local widget = require ( "widget" )
 local campaign = require ( "campaign" )
 CampaignList = require ("CampaignList")
 
 
---Create a storyboard scene for this module
-local scene = storyboard.newScene()
+local scene = composer.newScene()
 
 local campaignsFoundText, campaignListDisplay
 local LEFT_PADDING = 10
@@ -49,7 +47,7 @@ end
 function scene:create( event )
 	local group = self.view
 
-	print("campaigns:createScene")
+	print("campaigns:create")
 	
 	local background = display.newImage("images/world-map.jpg") 
 	background.x = display.contentWidth / 2
@@ -73,14 +71,6 @@ function scene:create( event )
 	widgetGroup:insert( backButton )
 
 
-	--Create a text object that displays the current scene name and insert it into the scene's view
-	-- local screenText = display.newText( "Campaign", centerX, 50, native.systemFontBold, 18 )
-	-- screenText:setFillColor( 1, 0, 0 )
-	-- group:insert( screenText )
--- 	screenText.x = display.contentWidth / 2 - 210;
---	screenText.y = display.contentHeight - 20;
-
-
 	
 	-- Create title bar to go at the top of the screen
 	local titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, titleBarHeight )
@@ -99,13 +89,15 @@ function scene:create( event )
 		label = "Add",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress = function() storyboard.gotoScene( "new_campaign" ); end,
+		onPress = function() composer.gotoScene( "new_campaign" ); end,
 		scaleX = 0.2,
 		isVisible = true,
 		x = display.contentWidth - buttonWidth - leftPadding,
 		y = titleBarHeight/2,
 	}
 	group:insert(newCampaignButton)
+
+	CampaignList:loadCampaigns()
 end
 
 
@@ -121,20 +113,15 @@ local function onRowTouch( event )
 
 	elseif "release" == phase then
 		-- Update the item selected text
+		print("released")
 		local c = CampaignList:getCampaign( row.index )
 		-- itemSelected.text = c.name
 		 
 		CampaignList:setCurrentCampaignIndex( row.index )
 		
 		--Transition out the list, transition in the item selected text and the back button
-		storyboard.gotoScene( "campaign_details" )
-
-		-- The table x origin refers to the center of the table in Graphics 2.0, so we translate with half the object's contentWidth
-		-- transition.to( campaignListDisplay, { x = - campaignListDisplay.contentWidth * 0.5, time = 400, transition = easing.outExpo } )
-		-- transition.to( campaignsFoundText, { x = - campaignsFoundText.contentWidth * 0.5, time = 400, transition = easing.outExpo } )
-		-- transition.to( itemSelected, { x = display.contentCenterX, time = 400, transition = easing.outExpo } )
-		-- transition.to( backButton, { alpha = 1, time = 400, transition = easing.outQuad } )
-		-- transition.to( newCampaignButton, { x = - newCampaignButton.contentWidth * 0.5, time = 400, transition = easing.outExpo } )
+		composer.gotoScene( "campaign_details" )
+		return
 		
 		print( "Tapped and/or Released row: " .. row.index )
 	end
@@ -162,8 +149,6 @@ local function onRowRender( event )
 	else
 		rowTitle = display.newText( row, "Campaign " .. row.index, 0, 0, native.systemFontBold, 16 )
 	end
-	-- in Graphics 2.0, the row.x is the center of the row, no longer the top left.
-	-- rowTitle.x = LEFT_PADDING
 
 	-- we also set the anchorX of the text to 0, so the object is x-anchored at the left
 	rowTitle.y = groupContentHeight * 0.5 -- centered in the row
@@ -186,8 +171,8 @@ end
 function scene:show( event )
 	local group = self.view
 
-	print("campaigns:enterScene")
-	-- Create a tableView
+	print("campaigns:show")
+
 	campaignListDisplay = widget.newTableView
 	{
 		top = 38,
@@ -199,12 +184,6 @@ function scene:show( event )
 		onRowTouch = onRowTouch,
 	}
 
-
-	--if ( #campaigns == 0 ) then
-	--	for i = 1, 5 do
-	--		campaigns[i] = createCampaign()
-	--	end
-	--end
 	CampaignList:loadCampaigns()
 	
  	local cc = CampaignList:getCampaignCount()
@@ -213,6 +192,10 @@ function scene:show( event )
 		showCampaign(i)
  	end
 
+
+ 	if campaignsFoundText then
+ 		campaignsFoundText:removeSelf()
+ 	end
 	campaignsFoundText = display.newText(cc.." Campaigns found.", centerX, display.contentHeight - 100, native.systemFontBold, 16 )
 	campaignsFoundText:setFillColor( 1, 0, 0)
 	group:insert( campaignsFoundText )
@@ -222,6 +205,7 @@ end
 function scene:destroy( event )
 	local group = self.view
 
+	print("campaigns:destroy")
 	if campaignListDisplay then
 		campaignListDisplay:removeSelf()
 		campaignListDisplay = nil
@@ -230,7 +214,7 @@ function scene:destroy( event )
 		campaignsFoundText:removeSelf()
 		campaignsFoundText = nil
 	end
-	print("campaigns:exitScene")
+	
 end	
 
 function showCampaign( i )
@@ -249,6 +233,7 @@ function showCampaign( i )
 end
 
 function createCampaign()	
+	print("createCampaign() called")
 	rand = math.random( 100 )
 	local newCampaign = campaign.new("campaign"..rand)
 	campaignListDisplay:insertRow

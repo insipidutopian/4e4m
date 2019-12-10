@@ -6,15 +6,14 @@
 --
 -- This file is used to create a new quest
 
-local storyboard = require ( "composer" )
--- local storyboard = require ( "storyboard" )
+local composer = require ( "composer" )
 local widget = require ( "widget" )
 local QuestClass = require ( "quest" )
 QuestList = require ("QuestList")
 
 
---Create a storyboard scene for this module
-local scene = storyboard.newScene()
+--Create a scene for this module
+local scene = composer.newScene()
 local questNameText, questDescText, questGoodnessText
 
 local centerX = display.contentCenterX
@@ -59,7 +58,7 @@ function scene:create( event )
 		label = "Back",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress =  function() storyboard.gotoScene( "quests" ); end,
+		onPress =  function() composer.gotoScene( "quests" ); end,
 		x =  buttonWidth + rightPadding,
 		y = titleBarHeight/2,
 	}
@@ -103,7 +102,7 @@ function scene:create( event )
 		label = "Add New",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress =  function() storyboard.gotoScene( "encounters" ); end,
+		onPress =  function() composer.gotoScene( "encounters" ); end,
 		x =  buttonWidth + rightPadding,
 		y  = yStart + 230 + inputFontSize * .5,
 	}
@@ -111,17 +110,23 @@ function scene:create( event )
 
 end
 
-function scene:enter( event )
+function scene:show( event )
 	local group = self.view
 
+	print("quest_details:show called")
 	local index = QuestList:getCurrentQuestIndex()
 	local currentQuest = QuestList:getQuest( index)
+	if (questGoodnessText ~= nil) then
+		questGoodnessText:removeSelf()
+		questDetailsText:removeSelf()
+	end
+
 	questGoodnessText = display.newText( { text = currentQuest.description, 
 									 x= leftPadding, y = yStart + 50 + inputFontSize * .5, 
 									 font = native.systemFontBold, fontSize = inputFontSize +2
 								   } )
 	questGoodnessText.anchorX = 0 -- left align
-	questGoodnessText:setFillColor( 1, 0, 0)
+	questGoodnessText:setFillColor( 0, 0, 0)
 	group:insert( questGoodnessText )
 
 	-- local newRandoQuestDetails = Randomizer:generateQuestDetails()
@@ -130,14 +135,15 @@ function scene:enter( event )
 									 font = native.systemFontBold, fontSize = inputFontSize +2
 								   } )
 	questDetailsText.anchorX = 0 -- left align
-	questDetailsText:setFillColor( 1, 0, 0)
+	questDetailsText:setFillColor( 0, 0, 0)
 	group:insert( questDetailsText )
 
 end
 
-function scene:exit( event )
+function scene:hide( event )
 	local group = self.view
 
+	print("quest_details:destroy called")
 	-- remove any native objects, since widget objects will be cleaned automatically, but native ones won't
 
 	if questKeywords then
@@ -159,6 +165,6 @@ end
 
 --Add the createScene listener
 scene:addEventListener( "create", scene )
-scene:addEventListener( "enter", scene )
-scene:addEventListener( "exit", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
 return scene

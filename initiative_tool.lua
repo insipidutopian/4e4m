@@ -562,7 +562,8 @@ function scene:hide( event )
 		RoundTimeText:removeSelf()
 		RoundTimeText = nil
 	end
-if TurnTimeText then
+
+	if TurnTimeText then
 		TurnTimeText:removeSelf()
 		TurnTimeText = nil
 	end

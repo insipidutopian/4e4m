@@ -69,7 +69,9 @@ function scene:create( event )
 					initiativeCounter=0,
 	}
 
-	FileUtil:writeSettingsFile("settings.cfg", appSettings)
+	FileUtil:initializeSettingsFileIfNotExists("settings.cfg", appSettings)
+	readResult = FileUtil:loadSettingsFile("settings.cfg", appSettings)
+	--FileUtil:writeSettingsFile("settings.cfg", appSettings)
 	
 	-- Create title bar to go at the top of the screen
 	titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, 

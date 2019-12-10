@@ -73,11 +73,13 @@ function CampaignList.loadCampaignFile(self, fName)
 	end
 	local fData = FileUtil:loadUserFile(fName)
 	if (fData and fData ~= "") then
-		print ("CampaignList.loadCampaignFile() - adding campaign ==" .. fName)
+		print ("CampaignList.loadCampaignFile() - loading campaign ==" .. fName)
 		--local cFileData = "cname="..c.name.."\ncId="..c.id.."\ncDesc="..c.description.."\n"
 		local c = json.decode(fData)
 		print ("  name=" .. c.name .. ", desc=" .. c.description)
 		local newCampaign = CampaignClass.newCampaign(c)
+		local i =  #self.cList+1
+		print("::::" .. i .. "::::")
 		self.cList[#self.cList+1] = newCampaign
 	end
 	
@@ -101,13 +103,15 @@ function CampaignList.writeCampaignFile(self, c)
 end
 
 function CampaignList.getNewCampaignId(self)
-	-- print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
-	-- print ("4e4m App Name              : " .. appSettings['appName'])
-	-- print ("4e4m App Version           : " .. appSettings['appVersion'])
-	-- print ("4e4m Campaign Count        : " .. appSettings['campaignCounter'])	
-
+	print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
+	print ("4e4m App Name              : " .. appSettings['appName'])
+	print ("4e4m App Version           : " .. appSettings['appVersion'])
+	print ("4e4m Campaign Count Old    : " .. appSettings['campaignCounter'])	
 	cId = appSettings['campaignCounter'] + 1
 	appSettings['campaignCounter'] = appSettings['campaignCounter'] + 1
+    
+    print ("4e4m Campaign Count        : " .. appSettings['campaignCounter'])	
+
 
 	FileUtil:writeSettingsFile("settings.cfg", appSettings)
 
@@ -125,7 +129,7 @@ function CampaignList.addCampaign(self, c)
 	self.cList[#self.cList+1] = c
 	print ("CampaignList.addCampaign() - " .. #self.cList .. " campaigns now found after add.")
 
-	print ("CampaignList.addCampaign() - Writing Campaign to disk" )
+	print ("CampaignList.addCampaign() - Writing Campaigns to disk" )
 	CampaignList:writeCampaignFile(c)
 
 end
@@ -155,10 +159,12 @@ end
 function CampaignList.loadCampaigns(self)
 	if (self.loaded == 0) then
 		for i=1, appSettings['campaignCounter'] do
+			print(".................................")
 			CampaignList:loadCampaignFile("campaign_" .. i ..".4ec")
-			self.loaded = 1
+			
 		end
 	end
+	self.loaded = 1
 end
 -------------------------------------------------
  

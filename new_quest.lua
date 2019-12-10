@@ -6,15 +6,15 @@
 --
 -- This file is used to create a new quest
 
-local storyboard = require ( "composer" )
+local composer = require ( "composer" )
 -- local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 local QuestClass = require ( "quest" )
 QuestList = require ("QuestList")
 
 
---Create a storyboard scene for this module
-local scene = storyboard.newScene()
+--Create a scene for this module
+local scene = composer.newScene()
 local questNameTF, questDescTB
 local newQuest
 local questNameText, questDescText, questGoodnessText
@@ -147,7 +147,7 @@ function scene:create( event )
 		label = "Back",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress =  function() storyboard.gotoScene( "quests" ); end,
+		onPress =  function() composer.gotoScene( "quests" ); end,
 		x =  buttonWidth + rightPadding,
 		y = titleBarHeight/2,
 	}
@@ -213,7 +213,7 @@ function scene:create( event )
 		label = "Add",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress =  function() addQuest( ); storyboard.gotoScene( "quests" ); end,
+		onPress =  function() addQuest( ); composer.gotoScene( "quests" ); end,
 		x =  buttonWidth + rightPadding,
 		y = display.contentHeight - 100,
 	}
@@ -226,7 +226,7 @@ function scene:create( event )
 		label = "Random",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
-		onPress = function() update ( ); storyboard.gotoScene( "new_quest" ); end,
+		onPress = function() update ( ); composer.gotoScene( "new_quest" ); end,
 		scaleX = 0.2,
 		isVisible = true,
 		x = 130,
@@ -238,13 +238,10 @@ function scene:create( event )
 
 end
 
-function scene:enter( event )
+function scene:show( event )
 	local group = self.view
 
-	-- Generate a name...
-	-- local rand = math.random( 100 )
-	-- local newQuest = QuestClass.new(" new quest"..rand)
-	print("scene:enter: newQuestType = ", newQuestType)
+	print("new_quest:show: newQuestType = ", newQuestType)
 
 	if (newQuestType == 'new') then 
 		-- Create text field
@@ -265,12 +262,16 @@ function scene:enter( event )
 		questDescTB.text = "Add quest notes here..."
 	else
 		newQuest = Randomizer:generateQuest()
+		if (questGoodnessText ~= nil) then
+			questGoodnessText:removeSelf()
+			questDetailsText:removeSelf()
+		end
 		questGoodnessText = display.newText( { text = newQuest.description, 
 										 x= leftPadding, y = yStart + 50 + inputFontSize * .5, 
 										 font = native.systemFontBold, fontSize = inputFontSize +2
 									   } )
 		questGoodnessText.anchorX = 0 -- left align
-		questGoodnessText:setFillColor( 0, 1, 0)
+		questGoodnessText:setFillColor( 0, 0, 0)
 		group:insert( questGoodnessText )
 
 		questDetailsText = display.newText( { text = newQuest.details, 
@@ -278,7 +279,7 @@ function scene:enter( event )
 										 font = native.systemFontBold, fontSize = inputFontSize +2
 									   } )
 		questDetailsText.anchorX = 0 -- left align
-		questDetailsText:setFillColor( 0, 1, 0)
+		questDetailsText:setFillColor( 0, 0, 0)
 		group:insert( questDetailsText )
 
 	end
@@ -289,7 +290,7 @@ end
 function scene:destroy( event )
 	local group = self.view
 
-	print("new_quest:exit called")
+	print("new_quest:destroy called")
 	-- remove any native objects, since widget objects will be cleaned automatically, but native ones won't
 	if questNameTF then
 		questNameTF:removeSelf()

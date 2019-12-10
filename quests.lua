@@ -148,9 +148,10 @@ function scene:create( event )
 	group:insert(randomQuestButton)
 end
 
-function scene:exit ( event )
+function scene:hide ( event )
 	local group = self.view
-
+	print("quests:hide")
+	
 	if questsFoundText then
 		questsFoundText:removeSelf()
 		questsFoundText = nil
@@ -162,10 +163,10 @@ function scene:exit ( event )
 	end
 end
 
-function scene:enter( event )
+function scene:show( event )
 	local group = self.view
 	
-	print("quests:enterScene")
+	print("quests:show")
 	-- Create a tableView
 	questListDisplay = widget.newTableView
 	{
@@ -178,6 +179,7 @@ function scene:enter( event )
 		onRowTouch = onRowTouch,
 	}
 
+	group:insert(questListDisplay)
 	QuestList:loadQuests()
 
 	local qc = QuestList:getQuestCount()
@@ -198,7 +200,7 @@ end
 
 --Add the createScene, enterScene, and exitScene listeners
 scene:addEventListener( "create", scene )
-scene:addEventListener( "enter", scene )
-scene:addEventListener( "exit", scene )
+scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
 
 return scene
