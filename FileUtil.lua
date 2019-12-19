@@ -121,7 +121,7 @@ function FileUtil.initializeSettingsFileIfNotExists(self, fName, settings)
 		return
 	else
 		print("initializeSettingsFileIfNotExists: Initializing Settings")
-		writeSettingsFile(fName, settings)
+		FileUtil:writeSettingsFile(fName, settings)
 	end
 end
 

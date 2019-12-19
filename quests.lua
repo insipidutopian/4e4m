@@ -148,9 +148,9 @@ function scene:create( event )
 	group:insert(randomQuestButton)
 end
 
-function scene:hide ( event )
+function scene:destroy ( event )
 	local group = self.view
-	print("quests:hide")
+	print("quests:destroy")
 	
 	if questsFoundText then
 		questsFoundText:removeSelf()
@@ -168,30 +168,32 @@ function scene:show( event )
 	
 	print("quests:show")
 	-- Create a tableView
-	questListDisplay = widget.newTableView
-	{
-		top = 38,
-		width = 320, 
-		height = 400,
-		hideBackground = true,
-		maskFile = "mask-320x448.png",
-		onRowRender = onRowRender,
-		onRowTouch = onRowTouch,
-	}
+	if (questListDisplay == nil) then
+		questListDisplay = widget.newTableView
+		{
+			top = 38,
+			width = 320, 
+			height = 400,
+			hideBackground = true,
+			maskFile = "mask-320x448.png",
+			onRowRender = onRowRender,
+			onRowTouch = onRowTouch,
+		}
 
-	group:insert(questListDisplay)
-	QuestList:loadQuests()
+		group:insert(questListDisplay)
+		QuestList:loadQuests()
 
-	local qc = QuestList:getQuestCount()
+		local qc = QuestList:getQuestCount()
 
- 	for i = 1, qc do
- 		print ("Showing Quest #" .. i)
-		showQuest(i)
- 	end
+	 	for i = 1, qc do
+	 		print ("Showing Quest #" .. i)
+			showQuest(i)
+	 	end
 
-	questsFoundText = display.newText(qc.." Quests found.", centerX, display.contentHeight - 100, native.systemFontBold, 16 )
-	questsFoundText:setFillColor( 1, 0, 0)
-	group:insert( questsFoundText )
+		questsFoundText = display.newText(qc.." Quests found.", centerX, display.contentHeight - 100, native.systemFontBold, 16 )
+		questsFoundText:setFillColor( 1, 0, 0)
+		group:insert( questsFoundText )
+	end
 	-- group:insert( questsFoundText )
 end
 
@@ -201,6 +203,6 @@ end
 --Add the createScene, enterScene, and exitScene listeners
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
-scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
 
 return scene

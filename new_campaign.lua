@@ -160,23 +160,28 @@ function scene:show( event )
 
 	print("new_campaign:show called")
 	-- Create text field
-	campaignNameTF = native.newTextField( display.contentWidth - rightPadding, yStart + inputFontSize * 0.5, 150, tHeight)
-	campaignNameTF:addEventListener( "userInput", textListener )
-	campaignNameTF.placeholder = "Campaign Name"
-	campaignNameTF.anchorX = 1 -- right align
+	if ( campaignNameTF == nil  ) then
+		campaignNameTF = native.newTextField( display.contentWidth - rightPadding, yStart + inputFontSize * 0.5, 150, tHeight)
+		campaignNameTF:addEventListener( "userInput", textListener )
+		campaignNameTF.placeholder = "Campaign Name"
+		campaignNameTF.anchorX = 1 -- right align
+		group:insert(campaignNameTF)
+	end
 
-	-- Create text box
-	campaignDescTB = native.newTextBox( display.contentWidth - rightPadding, 
-										yStart + (tHeight * 5 * 0.5) + 60, 
-										display.contentWidth - leftPadding - rightPadding, 
-										tHeight * 5)
-	campaignDescTB:addEventListener( "userInput", textListener )
-	campaignDescTB.placeholder = "Add Notes Here"
-	campaignDescTB.anchorX = 1 -- right align
-	campaignDescTB.isEditable = true
-	campaignDescTB.text = "Add campaign notes here..."
-	group:insert(campaignNameTF)
-	group:insert(campaignDescTB)
+	if ( campaignDescTB == nil  ) then
+		-- Create text box
+		campaignDescTB = native.newTextBox( display.contentWidth - rightPadding, 
+											yStart + (tHeight * 5 * 0.5) + 60, 
+											display.contentWidth - leftPadding - rightPadding, 
+											tHeight * 5)
+		campaignDescTB:addEventListener( "userInput", textListener )
+		campaignDescTB.placeholder = "Add Notes Here"
+		campaignDescTB.anchorX = 1 -- right align
+		campaignDescTB.isEditable = true
+		campaignDescTB.text = "Add campaign notes here..."
+		
+		group:insert(campaignDescTB)
+	end
 
 	
 	-- native.setKeyboardFocus( campaignNameTF )
@@ -212,6 +217,8 @@ end
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
+scene:addEventListener( "destroy", scene )
+
 
 
 return scene

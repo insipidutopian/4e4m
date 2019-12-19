@@ -173,40 +173,46 @@ function scene:show( event )
 
 	print("campaigns:show")
 
-	campaignListDisplay = widget.newTableView
-	{
-		top = 38,
-		width = 320, 
-		height = 448,
-		hideBackground = true,
-		maskFile = "mask-320x448.png",
-		onRowRender = onRowRender,
-		onRowTouch = onRowTouch,
-	}
-
 	CampaignList:loadCampaigns()
+
+	if ( campaignListDisplay == nil ) then 
+		print("campaigns:show: creating List Display")
+		campaignListDisplay = widget.newTableView
+		{
+			top = 38,
+			width = 320, 
+			height = 448,
+			hideBackground = true,
+			maskFile = "mask-320x448.png",
+			onRowRender = onRowRender,
+			onRowTouch = onRowTouch,
+		}
+
+		group:insert( campaignListDisplay )
+
 	
- 	local cc = CampaignList:getCampaignCount()
+		CampaignList:loadCampaigns()
+	 
+	 	
+		local cc = CampaignList:getCampaignCount()
 
- 	for i = 1, cc do
-		showCampaign(i)
- 	end
+	 	for i = 1, cc do
+			showCampaign(i)
+	 	end
 
-
- 	if campaignsFoundText then
- 		campaignsFoundText:removeSelf()
- 	end
-	campaignsFoundText = display.newText(cc.." Campaigns found.", centerX, display.contentHeight - 100, native.systemFontBold, 16 )
-	campaignsFoundText:setFillColor( 1, 0, 0)
-	group:insert( campaignsFoundText )
-	group:insert( campaignListDisplay )
+	 	if ( campaignsFoundText == nil ) then 
+			campaignsFoundText = display.newText(cc.." Campaigns found.", centerX, display.contentHeight - 100, native.systemFontBold, 16 )
+			campaignsFoundText:setFillColor( 1, 0, 0)
+			group:insert( campaignsFoundText )
+		end
+	end
 end
 
-function scene:destroy( event )
+function scene:hide( event )
 	local group = self.view
 
-	print("campaigns:destroy")
-	if campaignListDisplay then
+	print("campaigns:hide")
+	if campaignListDisplay ~= nil then
 		campaignListDisplay:removeSelf()
 		campaignListDisplay = nil
 	end
@@ -217,6 +223,13 @@ function scene:destroy( event )
 	
 end	
 
+
+function scene:destroy( event )
+	local group = self.view
+
+	print("campaigns:destroy")
+
+end
 function showCampaign( i )
 
 	local c = CampaignList:getCampaign( i )
@@ -261,6 +274,7 @@ end
 --Add the createScene, enterScene, and exitScene listeners
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
+scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
 
 return scene

@@ -74,14 +74,23 @@ function scene:show( event )
 	currentCampaign = CampaignList:getCurrentCampaign()
 
 	titleText.text = currentCampaign.name
+	if campaignNameText then
+		campaignNameText:removeSelf()
+	end
 	campaignNameText = display.newText(currentCampaign.name, centerX, 50, native.systemFontBold, 16 )
 	campaignNameText:setFillColor( 1, 0, 0)
 	group:insert( campaignNameText )
 
+	if campaignDescriptionText then
+		campaignDescriptionText:removeSelf()
+	end
 	campaignDescriptionText = display.newText(currentCampaign.description, centerX, 70, native.systemFontBold, 16 )
 	campaignDescriptionText:setFillColor( 0, 0, 0)
 	group:insert( campaignDescriptionText )
 
+	if campaignKeywordsHeaderText then
+		campaignKeywordsHeaderText:removeSelf()
+	end
 	campaignKeywordsHeaderText = display.newText('Keywords: ', rightPadding, 90, native.systemFontBold, 16 )
 	campaignKeywordsHeaderText:setFillColor( 0, 0, 0)
 	campaignKeywordsHeaderText.anchorX=0.0

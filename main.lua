@@ -25,7 +25,8 @@ FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
 newQuestType='new'
 
-appSettings = {fileVersion = 7, appName = "foo", appVersion = "1.0" }
+appSettings = {fileVersion = 1, appName = "GameMastery", appVersion = "1.0.1", 
+				campaignCounter = 0, encounterCounter = 0,  questCounter = 0, initiativeCounter = 0}
 
 --Orientation
 print( "INITIAL ORIENTATION: "..system.orientation )
@@ -123,7 +124,7 @@ local demoTabs = widget.newTabBar
 
 
 -- Load App Settings
-local readResult = FileUtil:loadSettingsFile("settings.cfg", appSettings)
+local readResult = FileUtil:initializeSettingsFileIfNotExists("settings.cfg", appSettings)
 		
 -- print ("************************")
 -- print ("Fonts: ")
