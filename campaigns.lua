@@ -72,8 +72,11 @@ function scene:create( event )
 
 
 	
-	-- Create title bar to go at the top of the screen
-	local titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, titleBarHeight )
+	-- Create title bar to go at the top of the screen (x,y,w,h)
+	local titleBar = display.newRect( display.contentCenterX, titleBarHeight/2 + yOffset/2, 
+		display.contentWidth, titleBarHeight+yOffset )
+	--local titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, 
+	--	display.contentWidth, titleBarHeight )
 	titleBar:setFillColor( titleGradient ) 
 	-- titleBar.y = display.screenOriginY + titleBar.contentHeight * 0.5
 	group:insert ( titleBar )

@@ -8,11 +8,10 @@
 debugFlag = 1
 
 local widget = require ( "widget" )
---local storyboard = require ( "storyboard" )
 local composer = require ( "composer" )
 
 display.setStatusBar( display.HiddenStatusBar ) 
-display.setDefault( "background", 1 )
+display.setDefault( "background", 1, 1, 1 )
 
 currentScene = "welcome"
 local currentOrientation
@@ -24,6 +23,17 @@ Randomizer = require ("RandGenUtil")
 FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
 newQuestType='new'
+
+-- Fonts --
+titleFont = "Fiddums Family.ttf"
+mainFont = "kellunc.ttf"
+
+btnFont = "fonts/kellunc.ttf"
+btnFontSize = 14
+
+titleBarHeight = 50
+
+
 
 appSettings = {fileVersion = 1, appName = "GameMastery", appVersion = "1.0.1", 
 				campaignCounter = 0, encounterCounter = 0,  questCounter = 0, initiativeCounter = 0}
@@ -41,9 +51,25 @@ function onOrientationChange( event )
 	composer.gotoScene( currentScene )
 end
 
+function initPage( group)
+	titleBar = display.newRect( display.contentCenterX, titleBarHeight/2 + yOffset/2, 
+		display.contentWidth, titleBarHeight + yOffset )
 
+	titleBar:setFillColor( titleGradientDark ) 
+	
+	display.setDefault( "background", 0, 0, 0 )
 
+	titleText = display.newEmbossedText(appSettings["appName"], display.contentCenterX, 
+		titleBarHeight/2 + yOffset, titleFont, 40 )
+	titleText:setFillColor(0.6,0,0 )
+	group:insert ( titleText )
+end
 
+delayMultiplier = 5
+
+if debugFlag then
+	delayMultiplier = 1
+end
 
 
 titleGradient = {
@@ -53,8 +79,21 @@ titleGradient = {
 	direction = "down"
 }
 
+titleGradientRed = {
+	type = 'gradient',
+	color1 = { 204/255, 51/255, 51/255, 255/255 }, 
+	color2 = { 153/255, 51/255, 51/255, 255/255 },
+	direction = "down"
+}
 
-titleBarHeight = 40
+titleGradientDark = {
+	type = 'gradient',
+	color1 = { 204/255, 0/255, 0/255, 122/255 }, 
+	color2 = { 0/255, 0/255, 0/255, 122/255 },
+	direction = "down"
+}
+
+
 leftPadding = 10
 rightPadding = 10
 buttonWidth = 30
@@ -62,63 +101,40 @@ squareButtonWidth = 7
 buttonHeight = 30
 yPadding = 10
 inputFontSize = 12
+--yOffset = 35
+yOffset = 10
+
+if (system.getInfo("platform")=="ios" and 
+	(string.find( system.getInfo("architectureInfo"),"iPhone10,3")~= nil) or 
+	 (string.find(system.getInfo("architectureInfo"),"iPhone10,6" )~= nil)) or 
+     (system.getInfo("environment")=="simulator" 
+     and display.pixelHeight==2436 and display.pixelWidth==1125) then
+
+ 		-- CODE would go here if 1) actual device is iOS and iPhoneX and 2) 
+ 		print("iPhone X")
+
+ 		yOffset = 35
+else
+	print(":( :( :( :(")
+end
+
+if debugFlag then 
+	print("SYSTEM: " .. system.getInfo("platform"))
+	print("ARCH:   " .. system.getInfo("architectureInfo"))
+	print("ENV:    " .. system.getInfo("environment"))
+	print("HEIGHT: " .. display.viewableContentHeight)
+	print("WIDTH:  " .. display.viewableContentWidth)
+	print("dHght:  " .. display.pixelHeight)
+	print("dWdth:  " .. display.pixelWidth)
+end
+
 
 roundTimeElapsed = 0 
 turnTimeElapsed = 0
 
 math.randomseed( os.time() )
 
--- Create buttons table for the tab bar
-local tabButtons = 
-{
-	{
-		width = 32, height = 32,
-		defaultFile = "assets/tabIcon.png",
-		overFile = "assets/tabIcon-down.png",
-		label = "Campaigns",
-		onPress = function() composer.gotoScene( "campaigns" ); end,
---		onPress = function() storyboard.gotoScene( "campaigns" ); end,
-		selected = true
-	},
-	{
-		width = 32, height = 32,
-		defaultFile = "assets/tabIcon.png",
-		overFile = "assets/tabIcon-down.png",
-		label = "Quests",
-		-- onPress = function() storyboard.gotoScene( "quests" ); end,
-		onPress = function() composer.gotoScene( "quests" ); end,
-	},
-	{
-		width = 32, height = 32,
-		defaultFile = "assets/tabIcon.png",
-		overFile = "assets/tabIcon-down.png",
-		label = "Encounters",
-		onPress = function() composer.gotoScene( "encounters" ); end,
-		--onPress = function() storyboard.gotoScene( "encounters" ); end,
-	},
-	{
-		width = 32, height = 32,
-		defaultFile = "assets/tabIcon.png",
-		overFile = "assets/tabIcon-down.png",
-		label = "Tools",
-		onPress = function() composer.gotoScene( "tools" ); end,
-		--onPress = function() storyboard.gotoScene( "tools" ); end,
-	}
-}
 
---Create a tab-bar and place it at the bottom of the screen
-local demoTabs = widget.newTabBar
-{
-	top = display.contentHeight - 50,
-	width = display.contentWidth,
-	backgroundFile = "assets/tabbar.jpg",
-	tabSelectedLeftFile = "assets/tabBar_tabSelectedLeft.png",
-	tabSelectedMiddleFile = "assets/tabBar_tabSelectedMiddle.png",
-	tabSelectedRightFile = "assets/tabBar_tabSelectedRight.png",
-	tabSelectedFrameWidth = 20,
-	tabSelectedFrameHeight = 52,
-	buttons = tabButtons
-}
 
 
 
@@ -126,16 +142,6 @@ local demoTabs = widget.newTabBar
 -- Load App Settings
 local readResult = FileUtil:initializeSettingsFileIfNotExists("settings.cfg", appSettings)
 		
--- print ("************************")
--- print ("Fonts: ")
--- local fonts = native.getFontNames()
--- for i=1, #fonts do
--- 	print ( i .. ": " .. fonts[i])
--- end
--- print ("************************")
-
-
---print ("Load of settings file result: read " .. readResult )
 if (readResult ~= "") then -- First time run
 	print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
 	print ("4e4m App Name              : " .. appSettings['appName'])
@@ -143,6 +149,17 @@ if (readResult ~= "") then -- First time run
 end	
 composer.gotoScene( "welcome" )
 
+
+
+--[[print ("************************")
+print ("Fonts: ")
+local fonts = native.getFontNames()
+for i=1, #fonts do
+	print ( i .. ": " .. fonts[i])
+end
+print ("************************")
+
+--]]
 
 
 Runtime:addEventListener( "orientation", onOrientationChange )

@@ -27,20 +27,9 @@ local titleBar
 local titleText
 background = nil
 local shown=nil
- 
-function cleanSelf()
 	
 
-	if welcomeTitleText then
-		welcomeTitleText:removeSelf()
-		welcomeTitleText = nil
-	end
 
-	if welcomeText then
-		welcomeText:removeSelf()
-		welcomeText = nil
-	end
-end
 
 
 
@@ -74,8 +63,8 @@ function scene:create( event )
 	--FileUtil:writeSettingsFile("settings.cfg", appSettings)
 	
 	-- Create title bar to go at the top of the screen
-	titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, 
-		titleBarHeight )
+	titleBar = display.newRect( display.contentCenterX, titleBarHeight/2 + yOffset/2, 
+		display.contentWidth, titleBarHeight + yOffset )
 	titleBar:setFillColor( titleGradient ) 
 	-- titleBar.y = display.screenOriginY + titleBar.contentHeight * 0.5
 	group:insert ( titleBar )
@@ -103,9 +92,55 @@ end
 
 
 local function listener2( event )
-	print( "listener called" )
-	composer.gotoScene( "campaigns" );
+	print( "listener2 called" )
+	
+	if titleBar then
+		titleBar:removeSelf()
+		titleBar = nil
+	end
 
+	if titleText then
+		titleText.text = appSettings["appName"]
+		titleText:setFillColor(0.6,0,0 )
+	end
+
+	
+	if background then
+		background:removeSelf()
+		background = nil
+	end
+
+	if background2 then
+		background2:removeSelf()
+		background2 = nil
+	end
+
+	
+	if asgText then
+		asgText:removeSelf()
+		asgText = nil
+	end
+	if asgText1 then
+		asgText1:removeSelf()
+		asgText1 = nil
+	end
+	if asgText2 then
+		asgText2:removeSelf()
+		asgText2 = nil
+	end
+	if welcomeText then
+		welcomeText:removeSelf()
+		welcomeText = nil
+	end
+
+	if versionText then
+		versionText:removeSelf()
+		versionText = nil
+	end
+
+	display.setDefault( "background", 0, 0, 0 )
+
+	composer.gotoScene( "home" );
 
 end
 
@@ -133,8 +168,7 @@ local function listener1( event )
   	group:insert(background2)
 	group:insert( welcomeText )
 	group:insert( versionText )
-	--timer.performWithDelay( 2500, listener2 )
-	timer.performWithDelay( 500, listener2 )
+	timer.performWithDelay( 500*delayMultiplier, listener2 )
 end
 
 function scene:show( event )
@@ -153,18 +187,44 @@ function scene:show( event )
 		asgText.x = display.contentCenterX
 
 
-		timer.performWithDelay( 200, listener1 )
-		--timer.performWithDelay( 2000, listener1 )
+		timer.performWithDelay( 200*delayMultiplier, listener1 )
 	else
 		shown=1
 	end
 end
 
 
+function scene:destroy( event )
+	print("welcome:destroy")
+
+	if welcomeTitleText then
+		welcomeTitleText:removeSelf()
+		welcomeTitleText = nil
+	end
+
+	if welcomeText then
+		welcomeText:removeSelf()
+		welcomeText = nil
+	end
+
+
+end	
+
+
+
 function scene:hide( event )
 	print("welcome:hide")
 
-	cleanSelf()
+	if welcomeTitleText then
+		welcomeTitleText:removeSelf()
+		welcomeTitleText = nil
+	end
+
+	if welcomeText then
+		welcomeText:removeSelf()
+		welcomeText = nil
+	end
+
 
 end	
 

@@ -29,8 +29,8 @@ elseif string.sub(system.getInfo("model"),1,2) == "iP" and display.pixelHeight >
     {
         content =
         {
-            width = 320,
-            height = 568,
+            width = 321,  -- 1125/3.5
+            height = 696, -- 2436/3.5
             scale = "letterBox",
             xAlign = "center",
             yAlign = "center",
@@ -98,7 +98,7 @@ else
         content =
         {
             width = 320,
-            height = 512,
+            height = 480,
             scale = "letterBox",
             xAlign = "center",
             yAlign = "center",
@@ -107,14 +107,7 @@ else
                 ["@2x"] = 1.5,
                 ["@4x"] = 3.0,
             },
-        },
-        notification = 
-        {
-            iphone = {
-                types = {
-                    "badge", "sound", "alert"
-                }
-            }
         }
+        
     }
 end

@@ -118,11 +118,11 @@ function FileUtil.initializeSettingsFileIfNotExists(self, fName, settings)
 	if (fileHandle) then
 		print("initializeSettingsFileIfNotExists: File Exists")
 		io.close(fileHandle)
-		return
 	else
 		print("initializeSettingsFileIfNotExists: Initializing Settings")
 		FileUtil:writeSettingsFile(fName, settings)
 	end
+
 end
 
 function FileUtil.loadAppFile(self, fName)
