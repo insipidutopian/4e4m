@@ -9,6 +9,7 @@ local composer = require ( "composer" )
 local widget = require ( "widget" )
 CampaignList = require ("CampaignList")
 local campaign = require ( "campaign" )
+uiTools = require("uiTools")
 
 local scene = composer.newScene()
 
@@ -26,51 +27,12 @@ local campaignQuestsText
 local npcsGroup
 local questGroup
 
+local function updateCampaignNotes( updatedVar)
 
-local function textListener( event )
-
-    if ( event.phase == "began" ) then
-        -- User begins editing "defaultField"
-        print( "begin editing....")
- 
-    elseif ( event.phase == "ended" or event.phase == "submitted" ) then
-        -- Output resulting text from "defaultField"
-        print( "ended editing: " ..  event.target.text )
- 
-    elseif ( event.phase == "editing" ) then
-        print( "new: " .. event.newCharacters )
-        print( "old: " .. event.oldText )
-        print( "sp: " .. event.startPosition )
-        print( "et:" .. event.text )
-    end
-end
- 
-function toggleEditable( textBox )
-	if textBox then
-		isEditable = textBox.isEditable
-		print("ToggleEditable() called, textbox state is: " .. tostring( isEditable ))
-		if isEditable then
-			print("tbie: " .. tostring( textBox.isEditable ))
-			textBox.isEditable = false
-			print("tbie: " .. tostring( textBox.isEditable ))
-		else
-			textBox.isEditable = true
-		end
+	if currentCampaign then
+		currentCampaign.description = updatedVar
+		CampaignList:writeCampaignFile(currentCampaign)
 	end
-	
-	if textBox.isEditable then
-		print( "textbox now enabled" )
-		native.setKeyboardFocus( textBox )
-	else
-		print( "textbox now disabled" )
-		if currentCampaign then
-			currentCampaign.description = textBox.text
-			CampaignList:writeCampaignFile(currentCampaign)
-			native.setKeyboardFocus( nil )
-		end
-
-	end
-
 end
 
 
@@ -143,7 +105,7 @@ function scene:create( event )
 
 	
 	-- Create text box for the campaign description
-	campaignNotesText = createTextBox( 172, 120, 300, 75, textListener )
+	campaignNotesText = uiTools.createInputTextBox( 172, 120, 300, 75, uiTools.textListener )
 	campaignNotesText.text = currentCampaign.description
 	campaignNotesText.isEditable = true
 	group:insert(campaignNotesText)
@@ -151,7 +113,7 @@ function scene:create( event )
 	cntEditBtn = widget.newButton(
 	{   defaultFile = "images/big-gear.png", overFile="images/big-gear2.png",
         --onPress = options.onPress,
-        onPress = function() timer.performWithDelay(1000, toggleEditable(campaignNotesText)); end,
+        onPress = function() uiTools.toggleEditable(campaignNotesText, updateCampaignNotes); end,
         emboss = false,
         left = 0 , top = 110,
         width = 20, height=20
@@ -229,48 +191,10 @@ function scene:create( event )
  	
 end
 
-function createAndInsertButton(group, options)
-								  
-							--[[  { buttonName=currentCampaign.npcList[i].name, 
-									x=80, y=10 + 20*i,
-									width=150, align="right",
-									onPress=function() print("pressed button") end; 
-								  })--]]
-	print("create and Insert Button called.")
-	--print("createAndInsertButton() group is " .. group)
-	print("createAndInsertButton() buttonName is " .. options.buttonName)
-	print("createAndInsertButton() x=" .. options.x .. " y=" .. options.y)
-
-	newButton = widget.newButton(
-	{   label = options.buttonName,
-        --onPress = options.onPress,
-        onPress = function() composer.showOverlay(options.onPressScene, 
-        			{ isModal=true, 
-        			  params = options.onPressParams }); end,
-        emboss = false,
-        font=btnFont, fontSize=btnFontSize*0.7,
-        left = options.x , top = options.y,
-        width = options.width, height=15,
-        labelAlign=options.align,
-        labelColor = { default={.6,0,0,1}, over={0.4,0.0,0,1} },
-	})
-	group:insert(newButton)
-
-
-end
 
 
 
-function createTextBox(x, y, height, width, listener) 
-	print("createTextBox() called")
-	tb = native.newTextBox( x, y, height, width )
-	tb.hasBackground = false
-	tb.isEditable = true
-	tb.font = native.newFont(mainFont, mainFontSize-2)
-	tb:setTextColor(.6,0,0,1)
-	tb:addEventListener( "userInput", listener )
-	return tb
-end
+
 
 function scene:show( event )
 	local group = self.view
@@ -302,13 +226,13 @@ function scene:show( event )
 	for i=1, #currentCampaign.npcList do
 		print("NPC found: " .. currentCampaign.npcList[i].name)
 		if (i < 6) then
-			createAndInsertButton(npcsGroup, 
-								  { buttonName="* " .. currentCampaign.npcList[i].name, 
-									x=10, y=20*i,
-									width=150, align="left",
-									onPressScene = "editNpc",
-									onPressParams = { npc = currentCampaign.npcList[i] }
-								  })
+			uiTools.createAndInsertButton(npcsGroup, 
+					{   buttonName="* " .. currentCampaign.npcList[i].name, 
+					    x=10, y=20*i,
+						width=150, align="left",
+						onPressScene = "editNpc",
+						onPressParams = { npc = currentCampaign.npcList[i] }
+				  	})
 		else
 			npcsGroup:insert(display.newText({
 			    text = "more...",
@@ -327,13 +251,13 @@ function scene:show( event )
 	for i=1, #currentCampaign.questList do
 		print("Quest found: " .. currentCampaign.questList[i].name)
 		if (i < 6) then
-			createAndInsertButton(questGroup, 
-								  { buttonName="* " .. currentCampaign.questList[i].name, 
-									x=10, y=20*i,
-									width=150, align="left",
-									onPressScene = "editQuest",
-									onPressParams = { quest = currentCampaign.questList[i] }
-								  })
+			uiTools.createAndInsertButton(questGroup, 
+					{   buttonName="* " .. currentCampaign.questList[i].name, 
+						x=10, y=20*i,
+						width=150, align="left",
+						onPressScene = "editQuest",
+						onPressParams = { quest = currentCampaign.questList[i] }
+					})
 		else
 			questGroup:insert(display.newText({
 			    text = "more...",
@@ -352,7 +276,7 @@ function scene:show( event )
 		--group:insert(campaignNotesText)
 		print(campaignNotesText)
 		if not campaignNotesText then
-			campaignNotesText = createTextBox(172, 120, 300, 75, textListener)
+			campaignNotesText = uiTools.createInputTextBox(172, 120, 300, 75, uiTools.textListener)
 			campaignNotesText.isEditable = true
 			
 			group:insert(campaignNotesText)
@@ -371,13 +295,6 @@ function scene:destroy( event )
 	print(currentScene .. ":destroy started")
 	local group = self.view
 
-	--if campaignNotesText then
-		--print("*** destroy.removing campaignNotesText")
-		--campaignNotesText:removeEventListener( "userInput", textListener )
-		--campaignNotesText:removeSelf()
-		--campaignNotesText = nil
-	--end
-
 	print(currentScene .. ":exitScene")
 end	
 
@@ -388,12 +305,8 @@ function scene:hide( event )
 	if event.phase == "will" then
 		if campaignNotesText then
 			print("**** hide.removing campaignNotesText")
-			--campaignNotesText:removeEventListener( "userInput", textListener )
-			--campaignNotesText:removeSelf()
-			print("CNT: " .. type(campaignNotesText))
 			campaignNotesText:removeSelf()
 			campaignNotesText = nil
-			print("CNT: " .. type(campaignNotesText))
 			--
 		end
 	elseif event.phase == "did" then
