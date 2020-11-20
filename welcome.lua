@@ -10,8 +10,8 @@ local composer = require ( "composer" )
 -- local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
 FileUtil = require ("FileUtil")
-local mainFont = "kellunc.ttf"
-local ASGFont = "Fiddums Family.ttf"
+local mainFont = "fonts/kellunc.ttf"
+local ASGFont = "fonts/Aclonica.ttf"
 
 
 --Create a storyboard scene for this module
@@ -28,8 +28,6 @@ local titleText
 background = nil
 local shown=nil
 	
-
-
 
 
 
@@ -51,15 +49,18 @@ function scene:create( event )
 
 	appSettings = { fileVersion = 1, 
 					appName = "GameMastery", 
-					appVersion = "1.0.1", 
+					appVersion = "1.0.3", 
 					campaignCounter=0,
 					questCounter=0,
 					encounterCounter=0,
 					initiativeCounter=0,
+					currentCampaign=-1,
 	}
 
 	FileUtil:initializeSettingsFileIfNotExists("settings.cfg", appSettings)
 	readResult = FileUtil:loadSettingsFile("settings.cfg", appSettings)
+
+
 	--FileUtil:writeSettingsFile("settings.cfg", appSettings)
 	
 	-- Create title bar to go at the top of the screen

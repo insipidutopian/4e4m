@@ -194,8 +194,8 @@ function scene:create( event )
 	-- if (standalone == "false") then 
 	-- local backButton = widget.newButton
 	-- {
-	-- 	defaultFile = "buttonRedSmall.png",
-	-- 	overFile = "buttonRedSmallOver.png",
+	-- 	defaultFile = "assets/buttonRedSmall.png",
+	-- 	overFile = "assets/buttonRedSmallOver.png",
 	-- 	labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 	-- 	label = "Back",
 	-- 	emboss = true,
@@ -208,8 +208,8 @@ function scene:create( event )
 
 	local backButton = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Back",
 		emboss = true,
@@ -222,8 +222,8 @@ function scene:create( event )
 
 	local addButton = widget.newButton
 	{
-		defaultFile = "buttonGreySquare.png",
-		overFile = "buttonGreySquareOver.png",
+		defaultFile = "assets/buttonGreySquare.png",
+		overFile = "assets/buttonGreySquareOver.png",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "+",
 		emboss = true,
@@ -236,8 +236,8 @@ function scene:create( event )
 
 	local nextButton = widget.newButton
 	{
-		defaultFile = "buttonGreySquare.png",
-		overFile = "buttonGreySquareOver.png",
+		defaultFile = "assets/buttonGreySquare.png",
+		overFile = "assets/buttonGreySquareOver.png",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "->",
 		emboss = true,
@@ -249,8 +249,8 @@ function scene:create( event )
 
 	local delayButton = widget.newButton
 	{
-		defaultFile = "buttonGreySmall.png",
-		overFile = "buttonGreySmallOver.png",
+		defaultFile = "assets/buttonGreySmall.png",
+		overFile = "assets/buttonGreySmallOver.png",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Delay",
 		emboss = true,
@@ -262,8 +262,8 @@ function scene:create( event )
 
 	local resetButton = widget.newButton
 	{
-		defaultFile = "buttonGreySmall.png",
-		overFile = "buttonGreySmallOver.png",
+		defaultFile = "assets/buttonGreySmall.png",
+		overFile = "assets/buttonGreySmallOver.png",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "Reset",
 		emboss = true,

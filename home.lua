@@ -8,49 +8,32 @@
 local composer = require ( "composer" )
 local widget = require ( "widget" )
 FileUtil = require ("FileUtil")
-
-local newCampBtn
-
+CampaignList = require ("CampaignList")
+local CampaignClass = require ( "campaign" )
 
 --Create a storyboard scene for this module
 local scene = composer.newScene()
 
 local welcomeTitleText
-
-
+local newCampBtn
 local titleText
 local shown=nil
 
 local cBtns = {}
 local gBtns = {}
-local 
+local cBtnNameList
+
 cBtnsFlag = false
 gBtnsFlag = false
 
-
-
--- Function to handle button events
-local function handleCButtonEvent( event )
- 
-    if ( "ended" == event.phase ) then
-        print( "Campaigns Button was pressed and released" )
-    end
-end
+local generateBtn
 
 -- Function to handle button events
 local function handleTButtonEvent( event )
  
     if ( "ended" == event.phase ) then
         print( "Tools Button was pressed and released" )
-        composer.gotoScene("tools")
-    end
-end
-
--- Function to handle button events
-local function handleGButtonEvent( event )
- 
-    if ( "ended" == event.phase ) then
-        print( "Generate Button was pressed and released" )
+        composer.gotoScene("tools", { effect = "fade", time = 400})
     end
 end
 
@@ -94,6 +77,84 @@ local function getBtnX( mainButtonX, orient, numBtns, i)
 	
 end
 
+local function toggleCamp( on )
+	if on == true then
+		if not cBtnsFlag then
+
+			print("showing camp buttons")
+	    	for i=1,#cBtns do
+	    		cBtns[i].alpha = 1.0
+		    	cBtns[i].isEnabled=true
+	    	end
+	    	cBtnsFlag = true
+	    else
+	    	toggleCamp(false)
+	    end
+    else
+    	print("hiding camp buttons")
+    	for i=1,#cBtns do
+	    	cBtns[i].alpha = 0
+	    	cBtns[i].isEnabled=false
+	    end
+	    cBtnsFlag = false
+    end
+end
+
+
+local function toggleGen( on ) 
+	if on == true then
+		print("on is true <---------  gBtnsFlag is " .. tostring(gBtnsFlag))
+		if not gBtnsFlag then
+			print("showing gen buttons")
+	    	for i=1,#gBtns do
+	    		gBtns[i].alpha = 1
+	    		gBtns[i].isEnabled=true
+	    	end	    
+	    	gBtnsFlag = true
+	    else
+	    	toggleGen( false )
+	    end
+	    
+    else
+    	print("hiding gen buttons")
+    	for i=1,#gBtns do
+	    	gBtns[i].alpha = 0
+	    	gBtns[i].isEnabled=false
+	    end
+	    gBtnsFlag = false
+		
+    end
+end
+
+local function tapListener( event )
+ 
+    -- Code executed when the button is tapped
+    if event then
+   		print( "Campaign Object tapped: " .. tostring(event.target) )  
+   		toggleCamp(true)
+   		toggleGen(false)
+   	end
+    		-- "event.target" is the tapped object
+    
+    
+
+    return true
+end
+
+
+local function tapListenerG( event )
+ 
+    -- Code executed when the button is tapped
+    if event then
+    	print( "Generate Object tapped: " .. tostring(event.target) )  
+    	toggleGen(true)
+    	toggleCamp(false)
+    end
+    		-- "event.target" is the tapped object
+    return true
+end
+
+
 
 local function addBtns( btnNames, x, y, orient )
 	local btns = {}
@@ -105,11 +166,11 @@ local function addBtns( btnNames, x, y, orient )
 
 
 	for i=1,#btnNames do
-		print ("Creating button for "..btnNames[i])
+		print ("Creating button for "..btnNames[i][1])
 		btns[i] = widget.newButton(
 	    {
-	        label = btnNames[i], labelAlign=labOrient,
-	        onPress = function() print(btnNames[i] .. " Pressed"); end,
+	        label = btnNames[i][1], labelAlign=labOrient,
+	        onPress = btnNames[i][2],
 	        emboss = false,
 	        -- Properties for a rounded rectangle button
 	        shape = "roundedRect", width = 60, height = 20, cornerRadius = 2,
@@ -124,6 +185,48 @@ local function addBtns( btnNames, x, y, orient )
 
     return btns
 end
+
+
+local function gotoCampaign( campaign )
+	print("Transitioning to campaign view")
+	print("*** "..campaign.name.."*** called, id:" .. campaign.id);
+
+	composer.gotoScene("editCampaign", { effect = "fade", time = 400, params = { campaign = campaign }})
+
+end
+
+local function loadSavedCampaigns( group )
+	print(currentScene .. ":loadSavedCampaigns() called")
+
+	CampaignList:reloadCampaigns()
+	local cc = CampaignList:getCampaignCount()
+	cBtnNameList = {{'new', function() print("New Campaign fxn() called..."); composer.showOverlay( "newCampaign", popOptions ); end}}
+
+
+	print ("loadSavedCampaigns(): currentCampaign = " .. appSettings.currentCampaign)
+ 	for i = 1, cc do
+ 		if i < 5 then
+ 			local c = CampaignList:getCampaign( i )
+ 			if tonumber(appSettings.currentCampaign) == i then 
+ 				cName = "[ " .. c.name .. " ]"
+ 			else
+ 				cName = c.name
+ 			end
+ 			cBtnNameList[i+1] = {cName, function() gotoCampaign(c); end}
+ 		end
+ 	end
+
+ 	cBtns = addBtns(cBtnNameList,
+					campBtnX+75, campBtnY, 'right')
+	
+    for i=1, #cBtns do
+    	cBtns[i].alpha = 0
+    	cBtns[i].isEnabled=false
+		group:insert(cBtns[i])
+	end
+end
+
+
 
 --Create the scene
 function scene:create( event )
@@ -142,54 +245,9 @@ function scene:create( event )
 					initiativeCounter=0,
 	}
 
+	cBtnsFlag = false
+	gBtnsFlag = false
 
-
-	local function tapListener( event )
-	 
-	    -- Code executed when the button is tapped
-	    print( "Campaign Object tapped: " .. tostring(event.target) )  
-	    		-- "event.target" is the tapped object
-
-	    if cBtnsFlag == true then
-	    	for i=1,#cBtns do
-	    		cBtns[i].alpha = 0
-	    		cBtns[i].isEnabled=false
-	    	end
-	    	cBtnsFlag = false
-	    else
-	    	for i=1,#cBtns do
-		    	cBtns[i].alpha = 1.0
-		    	cBtns[i].isEnabled=true
-		    end
-	    	cBtnsFlag = true
-	    end
-
-	    return true
-	end
-
-	local function tapListenerG( event )
-	 
-	    -- Code executed when the button is tapped
-	    print( "Generate Object tapped: " .. tostring(event.target) )  
-	    		-- "event.target" is the tapped object
-
-	    if gBtnsFlag == true then
-	    	for i=1,#gBtns do
-	    		gBtns[i].alpha = 0
-	    		gBtns[i].isEnabled=false
-	    	end
-    		gBtnsFlag = false
-	    	
-	    else
-	    	for i=1,#gBtns do
-		    	gBtns[i].alpha = 1.0
-		    	gBtns[i].isEnabled=true
-		    end
-	    	gBtnsFlag = true
-	    end
-
-	    return true
-	end
 
 
 	FileUtil:initializeSettingsFileIfNotExists("settings.cfg", appSettings)
@@ -241,8 +299,8 @@ function scene:create( event )
 
 	genBtnX = display.contentWidth-90
 	genBtnY = 90 + yOffset*2 + titleBarHeight
-
-	local generateBtn = widget.newButton(
+   
+    generateBtn = widget.newButton(
     {
         label = "  Quick\nGenerate",
         emboss = false,
@@ -259,22 +317,21 @@ function scene:create( event )
         x = genBtnX,
       	y = genBtnY
     })
-   
+
+	generateBtn:addEventListener( "tap", tapListenerG)  -- Add a "tap" listener to the object
 	group:insert(generateBtn)
+
+	loadSavedCampaigns(group);
 
 
 	--btns = addBtns({'new','Salemish','Darkness Ascends', 'Ripharial\'s Legacy'})
-	cBtns = addBtns({'new','Salemish','Darkness Ascends', 'IV', 'Five is a really long title '},
-					campBtnX+75, campBtnY, 'right')
 	
-	generateBtn:addEventListener( "tap", tapListenerG)  -- Add a "tap" listener to the object
-    for i=1, #cBtns do
-    	cBtns[i].alpha = 0
-    	cBtns[i].isEnabled=false
-		group:insert(cBtns[i])
-	end
 
-	gBtns = addBtns({'NPC','Place','Thing'},
+	gBtns = addBtns({ 
+			{'NPC', function() print ("home:npcGen"); composer.showOverlay( "npcGen", popOptions ); end}, 
+			{'Place',function() print ("home:placeGen"); composer.showOverlay( "placeGen", popOptions ); end},
+			{'Thing',function() print ("home:thingGen"); composer.showOverlay( "thingGen", popOptions ); end},
+			{'Quest',function() print ("home:questGen"); composer.showOverlay( "questGen", popOptions ); end}},
 					genBtnX-140, genBtnY, 'left')
 
 	for i=1, #gBtns do
@@ -290,15 +347,17 @@ end
 function scene:show( event )
 	local group = self.view
 
+
+	CampaignList:loadCampaigns()
+
 	currentScene = "home"
 	if not shown then
 		print(currentScene .. ":SHOW")		
-
-		
-
 		shown=1
 	else
 		print(currentScene .. ":show skipped")
+		toggleCamp(false)
+		loadSavedCampaigns(group);
 	end
 end
 

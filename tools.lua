@@ -22,7 +22,7 @@ local function handlePress( event )
  
     if ( "ended" == event.phase ) then
         print( "Home Button was pressed" )
-        composer.gotoScene("home")
+        composer.gotoScene("home", { effect = "fade", time = 400})
     end
 end
 
@@ -123,7 +123,7 @@ function scene:create( event )
         labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
         fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
         strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
-        onPress = function() composer.gotoScene( "home" ); end,
+        onPress = function()  composer.gotoScene("home", { effect = "fade", time = 400}) end,
     	x = display.contentWidth-90,
       	y = display.contentHeight-90
     })

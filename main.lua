@@ -8,13 +8,9 @@
 debugFlag = 1
 
 local widget = require ( "widget" )
+--widget.setTheme("widget_theme_ios7")
 local composer = require ( "composer" )
-
-display.setStatusBar( display.HiddenStatusBar ) 
-display.setDefault( "background", 1, 1, 1 )
-
-currentScene = "welcome"
-local currentOrientation
+-- My Local Imports
 
 CampaignList = require ("CampaignList")
 InitiativeList = require ("InitiativeList")
@@ -22,21 +18,32 @@ QuestList = require ("QuestList")
 Randomizer = require ("RandGenUtil")
 FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
+
+
+
+display.setStatusBar( display.HiddenStatusBar ) 
+display.setDefault( "background", 1, 1, 1 )
+
+currentScene = "welcome"
+local currentOrientation
+
 newQuestType='new'
 
 -- Fonts --
-titleFont = "Fiddums Family.ttf"
-mainFont = "kellunc.ttf"
+titleFont = "fonts/Fiddums Family.ttf"
+mainFont = "fonts/Aclonica.ttf"
+mainFontSize = 16
 
 btnFont = "fonts/kellunc.ttf"
 btnFontSize = 14
 
 titleBarHeight = 50
 
-
+popOptions = { isModal = true }
 
 appSettings = {fileVersion = 1, appName = "GameMastery", appVersion = "1.0.1", 
-				campaignCounter = 0, encounterCounter = 0,  questCounter = 0, initiativeCounter = 0}
+				campaignCounter = 0, encounterCounter = 0,  questCounter = 0, initiativeCounter = 0,
+			    currentCampaign = -1}
 
 --Orientation
 print( "INITIAL ORIENTATION: "..system.orientation )
@@ -115,7 +122,7 @@ if (system.getInfo("platform")=="ios" and
 
  		yOffset = 35
 else
-	print(":( :( :( :(")
+	print("Non-IPhone X display detected")
 end
 
 if debugFlag then 

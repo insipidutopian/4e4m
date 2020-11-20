@@ -65,6 +65,18 @@ function FileUtil.loadUserFile(self, fName)
 	return fContents
 end
 
+local function validateAppSettings()
+	if not appSettings.currentCampaign then
+		appSettings.currentCampaign = -1
+	end
+
+	appSettings.currentCampaign = tonumber(appSettings.currentCampaign)
+
+end
+
+
+
+
 function FileUtil.loadSettingsFile(self, fName, settings)
 	--local fName = "myFile.txt"
 	local path = system.pathForFile( fName, system.DocumentsDirectory )
@@ -87,6 +99,7 @@ function FileUtil.loadSettingsFile(self, fName, settings)
 		end
 		-- print ("read '" .. savedData .. "' from " .. fName)
 		io.close( file )
+		validateAppSettings()
 	else
 		print ("FileUtils.loadFile: could not open file, " .. fName)
 	end

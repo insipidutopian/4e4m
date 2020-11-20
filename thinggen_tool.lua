@@ -56,8 +56,8 @@ function scene:create( event )
 
 	local backButton = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "Back",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -70,8 +70,8 @@ function scene:create( event )
 
 	local nameGenButton = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "Gen!",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,

@@ -36,7 +36,7 @@ function CampaignList:initialize()
 	-- instance.cList = {}
 	print ("CampaignList:initialize() - Initializing CampaignList...")
 	table.insert(self.Instances, self)
-	self.currentCampaignIndex = -1
+	--self.currentCampaignIndex = appSettings.currentCampaign
 	self.loaded = 0
 	self.cList = {}
 
@@ -74,7 +74,7 @@ function CampaignList.loadCampaignFile(self, fName)
 	local fData = FileUtil:loadUserFile(fName)
 	if (fData and fData ~= "") then
 		print ("CampaignList.loadCampaignFile() - loading campaign ==" .. fName)
-		--local cFileData = "cname="..c.name.."\ncId="..c.id.."\ncDesc="..c.description.."\n"
+		
 		local c = json.decode(fData)
 		print ("  name=" .. c.name .. ", desc=" .. c.description)
 		local newCampaign = CampaignClass.newCampaign(c)
@@ -95,7 +95,7 @@ function CampaignList.writeCampaignFile(self, c)
 	local cFileName = "campaign_" .. c.id .. ".4ec"
 
 	print ("CampaignList.writeCampaignFile() - adding campaign ==" .. cFileName)
-	local cFileData = json.encode(c) -- "cname="..c.name.."\ncId="..c.id.."\ncDesc="..c.description.."\n"
+	local cFileData = json.encode(c) 
 	FileUtil:writeUserFile(cFileName, cFileData)
 
 	--local test = json.encode(c)
@@ -135,24 +135,30 @@ function CampaignList.addCampaign(self, c)
 end
 
 function CampaignList.setCurrentCampaignIndex(self, i)
-  print ("CampaignList.setCurrentCampaign() - setting current campaign to=" .. i)
-  self.currentCampaignIndex = i
+	print ("CampaignList.setCurrentCampaign() - setting current campaign to=" .. i)
+	self.currentCampaignIndex = i
+	appSettings.currentCampaign = i
+	FileUtil:writeSettingsFile("settings.cfg", appSettings)
 end
 
 
 function CampaignList.getCurrentCampaignIndex(self)
-  print ("CampaignList.getCurrentCampaign() - current campaign=" .. self.currentCampaignIndex)
-  return self.currentCampaignIndex
+	if self.currentCampaignIndex then
+		print ("CampaignList.getCurrentCampaign() - current campaign=" .. self.currentCampaignIndex)
+		return self.currentCampaignIndex
+	else
+		return -1
+	end
 end
 
 function CampaignList.getCurrentCampaign(self)
-  print ("CampaignList.getCurrentCampaign() - current campaign=" .. self.currentCampaignIndex)
-  if (self.currentCampaignIndex > -1) then
-  	return self.cList[self.currentCampaignIndex]
-  end
+	print ("CampaignList.getCurrentCampaign() - current campaign=" .. self.currentCampaignIndex)
+	if (self.currentCampaignIndex > -1) then
+		return self.cList[self.currentCampaignIndex]
+	end
 
-  print ("CampaignList.getCurrentCampaign() - no current campaign")
-  return nil
+	print ("CampaignList.getCurrentCampaign() - no current campaign")
+	return nil
 end
 
 
@@ -164,10 +170,62 @@ function CampaignList.loadCampaigns(self)
 			
 		end
 	end
+	currentCampaignIndex=appSettings.currentCampaign
 	self.loaded = 1
 end
+
+function CampaignList.reloadCampaigns(self)
+	print("reloadCampaigns(): count is :  ".. appSettings['campaignCounter'] )
+	self.cList = {}
+	for i=1, appSettings['campaignCounter'] do
+		print(".................................")
+		CampaignList:loadCampaignFile("campaign_" .. i ..".4ec")
+		
+	end
+	self.currentCampaignIndex=appSettings.currentCampaign
+end
 -------------------------------------------------
- 
+
+
+function CampaignList.addNpcToCampaign(self, newNpc)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		print("CampaignList:addNpc: count before is: " .. #c.npcList)
+		c.npcList[#c.npcList+1] = newNpc
+		print("CampaignList:addNpc: count after is: " .. #c.npcList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
+function CampaignList.addQuestToCampaign(self, newQuest)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		--print("CampaignList:addQuest: count before is: " .. #c.questList)
+		c.questList[#c.questList+1] = newQuest
+		print("CampaignList:addQuest: count after is: " .. #c.questList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
 
  -- Initialize the campaignList
 CampaignList:new()

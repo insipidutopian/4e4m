@@ -56,8 +56,8 @@ function scene:create( event )
 	-- create the back button to go back to the tools page
 	local backButton = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "Back",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -74,8 +74,8 @@ function scene:create( event )
 
 	local d4Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		label = "d4",
 		emboss = true,
@@ -89,8 +89,8 @@ function scene:create( event )
 
 	local d6Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "d6",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -104,8 +104,8 @@ function scene:create( event )
 
 	local d8Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "d8",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -119,8 +119,8 @@ function scene:create( event )
 
 	local d10Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "d10",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -134,8 +134,8 @@ function scene:create( event )
 
 	local d12Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "d12",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -149,8 +149,8 @@ function scene:create( event )
 
 	local d20Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "d20",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -164,8 +164,8 @@ function scene:create( event )
 
 	local d30Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "d30",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
@@ -179,8 +179,8 @@ function scene:create( event )
 
 	local d100Button = widget.newButton
 	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
+		defaultFile = "assets/buttonRedSmall.png",
+		overFile = "assets/buttonRedSmallOver.png",
 		label = "d100",
 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
 		emboss = true,
