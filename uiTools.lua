@@ -1,4 +1,5 @@
 -- uiTools.lua
+local composer = require ("composer")
 local widget = require ( "widget" )
 CampaignList = require ("CampaignList")
 
@@ -13,7 +14,7 @@ local debug = true
 function uiTools.createInputTextBox( x, y, height, width, listener) 
 	print("createInputTextBox() called")
 	tb = native.newTextBox( x, y, height, width )
-	tb.hasBackground = false
+	-- tb.hasBackground = false
 	tb.isEditable = true
 	tb.font = native.newFont(mainFont, mainFontSize-2)
 	tb:setTextColor(.6,0,0,1)
@@ -35,7 +36,7 @@ function uiTools.textListener( event )
     elseif ( event.phase == "editing" ) then
     	if debug then
 	        print( "new: " .. event.newCharacters )
-	        print( "old: " .. event.oldText )
+	        -- print( "old: " .. event.oldText )
 	        print( "sp: " .. event.startPosition )
 	        print( "et:" .. event.text )
 	    end

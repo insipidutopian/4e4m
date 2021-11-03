@@ -87,7 +87,8 @@ end
 
 function genPlaceName( numNames ) 
 	-- set the screen text
-	placeResultString.text = Randomizer:generatePlaceName()
+	local plType = Randomizer:generatePlaceType()
+	placeResultString.text = Randomizer:generatePlaceName("" .. plType)
 end
 
 --Add the createScene listener
