@@ -12,6 +12,8 @@ local widget = require ( "widget" )
 local composer = require ( "composer" )
 -- My Local Imports
 
+require("mobdebug").start()
+
 CampaignList = require ("CampaignList")
 InitiativeList = require ("InitiativeList")
 QuestList = require ("QuestList")

@@ -153,6 +153,7 @@ end
 
 function CampaignList.getCurrentCampaign(self)
 	print ("CampaignList.getCurrentCampaign() - current campaign=" .. self.currentCampaignIndex)
+	print ("Size of CLIST: " .. #self.cList)
 	if (self.currentCampaignIndex > -1) then
 		return self.cList[self.currentCampaignIndex]
 	end

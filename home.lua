@@ -195,12 +195,24 @@ local function gotoCampaign( campaign )
 
 end
 
+local function newCampaign( )
+	print("Transitioning to campaign view")
+	local name = Randomizer:generateName()
+	newCampaign = CampaignClass.new(name)
+	newCampaign.description = 'notes'
+	print("NEW "..newCampaign.name.." called, id:" .. newCampaign.id);
+
+	composer.gotoScene("editCampaign", { effect = "fade", time = 400, params = { campaign = newCampaign }})
+
+end
+
 local function loadSavedCampaigns( group )
 	print(currentScene .. ":loadSavedCampaigns() called")
 
 	CampaignList:reloadCampaigns()
 	local cc = CampaignList:getCampaignCount()
-	cBtnNameList = {{'new', function() print("New Campaign fxn() called..."); composer.showOverlay( "newCampaign", popOptions ); end}}
+	-- cBtnNameList = {{'new', function() print("New Campaign fxn() called..."); composer.showOverlay( "newCampaign", popOptions ); end}}
+	cBtnNameList = {{'new', function() print("About to add new campaign..."); newCampaign(); end}}
 
 
 	print ("loadSavedCampaigns(): currentCampaign = " .. appSettings.currentCampaign)

@@ -32,6 +32,7 @@ function uiTools.textListener( event )
     elseif ( event.phase == "ended" or event.phase == "submitted" ) then
         -- Output resulting text from "defaultField"
         print( "ended editing: " ..  event.target.text )
+        native.setKeyboardFocus( nil )
  
     elseif ( event.phase == "editing" ) then
     	if debug then
@@ -42,8 +43,23 @@ function uiTools.textListener( event )
 	    end
     end
 end
- 
-function uiTools.toggleEditable( textBox, updateFunction )
+
+
+function uiTools.toggleEditable( textBox, updateFunction, isEditable )
+		if isEditable then
+			print( "textbox now enabled" )
+			textBox.isEditable = true
+			native.setKeyboardFocus( textBox )
+		else
+			print( "textbox now disabled" )
+			textBox.isEditable = false
+			updateFunction( textBox.text)
+			native.setKeyboardFocus( nil )
+		end
+end
+
+
+function uiTools.toggleEditableOld( textBox, updateFunction )
 	if textBox then
 		isEditable = textBox.isEditable
 		print("ToggleEditable() called, textbox state is: " .. tostring( isEditable ))
@@ -87,11 +103,14 @@ function uiTools.createAndInsertButton(group, options)
         			{ isModal=true, 
         			  params = options.onPressParams }); end,
         emboss = false,
+        shape = "roundedRect", width = options.width, height = 15, cornerRadius = 2,
+        hasBackground = false,
         font=btnFont, fontSize=btnFontSize*0.7,
         left = options.x , top = options.y,
         width = options.width, height=15,
         labelAlign=options.align,
         labelColor = { default={.6,0,0,1}, over={0.4,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0,1,1} }
 	})
 	group:insert(newButton)
 
