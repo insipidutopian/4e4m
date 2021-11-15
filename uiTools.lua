@@ -8,7 +8,7 @@ local uiTools = {}
  
 print( "uiTools.lua has been loaded" )
  
-local debug = true
+-- local debug = true
 
 
 function uiTools.createInputTextBox( x, y, height, width, listener) 
@@ -39,19 +39,19 @@ function uiTools.textFieldListener( event )
 
     if ( event.phase == "began" ) then
         -- User begins editing "defaultField"
-        print( "TF begin editing....")
+        if debugFlag then print( "TF begin editing...."); end
  
     elseif ( event.phase == "ended" or event.phase == "submitted" ) then
         -- Output resulting text from "defaultField"
-        print( "TF ended editing: " ..  event.target.text )
+        if debugFlag then print( "TF ended editing: " ..  event.target.text ); end
         if (event.target["updateFunction"] ~= nil) then
-        	print("TF Calling update function!!!!")
+        	if debugFlag then print("TF Calling update function!!!!"); end
         	event.target["updateFunction"]()
 		end
         native.setKeyboardFocus( nil )
  
     elseif ( event.phase == "editing" ) then
-    	if debug then
+    	if debugFlag then
 	        print( "TF new: " .. event.newCharacters )
 	        -- print( "old: " .. event.oldText )
 	        print( "TF sp: " .. event.startPosition )
@@ -64,15 +64,15 @@ function uiTools.textBoxListener( event )
 
     if ( event.phase == "began" ) then
         -- User begins editing "defaultField"
-        print( "begin editing....")
+        if debugFlag then print( "begin editing...."); end
  
     elseif ( event.phase == "ended" or event.phase == "submitted" ) then
         -- Output resulting text from "defaultField"
-        print( "ended editing: " ..  event.target.text )
+        if debugFlag then print( "ended editing: " ..  event.target.text ); end
         native.setKeyboardFocus( nil )
  
     elseif ( event.phase == "editing" ) then
-    	if debug then
+    	if debugFlag then
 	        print( "new: " .. event.newCharacters )
 	        -- print( "old: " .. event.oldText )
 	        print( "sp: " .. event.startPosition )
@@ -83,7 +83,7 @@ end
 
 function uiTools.toggleTFEditable( textField, updateFunction, isEditable )
 		if isEditable then
-			print( "textfield now enabled" )
+			if debugFlag then print( "textfield now enabled" ); end
 			textField.isEditable = true
 			native.setKeyboardFocus( textBox )
 		else
@@ -96,11 +96,11 @@ end
 
 function uiTools.toggleTBEditable( textBox, updateFunction, isEditable )
 		if isEditable then
-			print( "textbox now enabled" )
+			if debugFlag then print( "textbox now enabled" ); end
 			textBox.isEditable = true
 			native.setKeyboardFocus( textBox )
 		else
-			print( "textbox now disabled" )
+			if debugFlag then print( "textbox now disabled" ); end
 			textBox.isEditable = false
 			updateFunction( textBox.text)
 			native.setKeyboardFocus( nil )
@@ -108,46 +108,14 @@ function uiTools.toggleTBEditable( textBox, updateFunction, isEditable )
 end
 
 
-function uiTools.toggleEditableOld( textBox, updateFunction )
-	if textBox then
-		isEditable = textBox.isEditable
-		print("ToggleEditable() called, textbox state is: " .. tostring( isEditable ))
-		if isEditable then
-			print("tbie: " .. tostring( textBox.isEditable ))
-			textBox.isEditable = false
-			print("tbie: " .. tostring( textBox.isEditable ))
-		else
-			textBox.isEditable = true
-		end
-	end
-	
-	if textBox.isEditable then
-		print( "textbox now enabled" )
-		native.setKeyboardFocus( textBox )
-	else
-		print( "textbox now disabled" )
-		updateFunction( textBox.text)
-		native.setKeyboardFocus( nil )
-
-	end
-
-end
-
 function uiTools.createAndInsertButton(group, options)
-								  
-							--[[  { buttonName=currentCampaign.npcList[i].name, 
-									x=80, y=10 + 20*i,
-									width=150, align="right",
-									onPress=function() print("pressed button") end; 
-								  })--]]
-	print("create and Insert Button called.")
-	--print("createAndInsertButton() group is " .. group)
-	print("createAndInsertButton() buttonName is " .. options.buttonName)
-	print("createAndInsertButton() x=" .. options.x .. " y=" .. options.y)
+	if debugFlag then print("create and Insert Button called."); end
+	if debugFlag then print("createAndInsertButton() group is " .. group); end
+	if debugFlag then print("createAndInsertButton() buttonName is " .. options.buttonName); end
+	if debugFlag then print("createAndInsertButton() x=" .. options.x .. " y=" .. options.y); end
 
 	newButton = widget.newButton(
 	{   label = options.buttonName,
-        --onPress = options.onPress,
         onPress = function() composer.showOverlay(options.onPressScene, 
         			{ isModal=true, 
         			  params = options.onPressParams }); end,

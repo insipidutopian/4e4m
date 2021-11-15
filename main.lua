@@ -5,7 +5,7 @@
 -- 
 --
 ------------------------------------------------------------
-debugFlag = 1
+debugFlag = false
 
 local widget = require ( "widget" )
 --widget.setTheme("widget_theme_ios7")
@@ -43,7 +43,7 @@ titleBarHeight = 50
 
 popOptions = { isModal = true }
 
-appSettings = {fileVersion = 1, appName = "GameMastery", appVersion = "1.0.2", 
+appSettings = {fileVersion = 1, appName = "GameMastery", appVersion = "1.0.0", 
 				campaignCounter = 0, encounterCounter = 0,  questCounter = 0, initiativeCounter = 0,
 			    currentCampaign = -1}
 
