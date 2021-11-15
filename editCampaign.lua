@@ -17,7 +17,7 @@ local scene = composer.newScene()
 local currentScene = "editCampaign"
 local shown=nil
 
-local campaignNameText
+local campaignNameTextField
 local currentCampaign
 local campaignSystemText
 local campaignNotesText
@@ -27,7 +27,24 @@ local campaignQuestsText
 
 local npcsGroup
 local questGroup
-local test = false
+local campaignNotesLock = false
+
+buttonsArr = {}
+
+
+local function saveButton(button) 
+	print("SAVING BUTTON " .. tostring(button) .." to " .. tostring(#buttonsArr+1))
+	buttonsArr[#buttonsArr+1] = button
+end
+
+local function clearButtons( )
+	print("CLEARING BUTTONS")
+	for i=1, #buttonsArr do
+		print("* REMOVING BUTTON")
+		buttonsArr[i]:removeSelf()
+	end
+end
+
 
 local function updateCampaignNotes( updatedVar)
 	print("updateCampaignNotes: " .. updatedVar)
@@ -37,12 +54,20 @@ local function updateCampaignNotes( updatedVar)
 	end
 end
 
-local function toggleTest( group, val )
-	test = not val
-	print("toggle was: " .. tostring(val) .. ", now: " .. tostring(test))
+local function updateCampaignName( )
+	print("updateCampaignName: " .. campaignNameTextField.text)
+	if currentCampaign then
+		currentCampaign.name = campaignNameTextField.text
+		CampaignList:writeCampaignFile(currentCampaign)
+	end
+end
+
+local function toggleCampaignNotesLock( group, val )
+	campaignNotesLock = not val
+	print("toggle was: " .. tostring(val) .. ", now: " .. tostring(campaignNotesLock))
 	local imageName = "images/padlock.png"
 	local overImageName = "images/padlock-open.png"
-	if test then
+	if campaignNotesLock then
 		imageName = "images/padlock-open.png"
 		overImageName = "images/padlock.png"
 	end
@@ -54,13 +79,13 @@ local function toggleTest( group, val )
 	cntEditBtn = widget.newButton(
 	{   defaultFile = imageName,  overFile = overImageName,
         --onPress = options.onPress,
-        onPress = function() uiTools.toggleEditable(campaignNotesText, updateCampaignNotes, toggleTest(group, test)); end,
+        onPress = function() uiTools.toggleTBEditable(campaignNotesText, updateCampaignNotes, toggleCampaignNotesLock(group, campaignNotesLock)); end,
         emboss = false,
         left = 0 , top = 110,
         width = 20, height=20
 	})
 	group:insert(cntEditBtn)
-	return test
+	return campaignNotesLock
 end
 
 --Create the scene
@@ -73,7 +98,7 @@ function scene:create( event )
 	local yStart = titleBarHeight + yPadding 
 	local buttonCount = 0
 
-
+	--if encountersGroup then encountersGroup:removeSelf() end
 	local encountersGroup = display.newGroup()
 	encountersGroup.x=0
 	encountersGroup.y=160
@@ -86,6 +111,7 @@ function scene:create( event )
 	encountersGroup:insert(encountersSquare)
 	group:insert(encountersGroup)
 	
+	if npcsGroup then npcsGroup:removeSelf() end
 	npcsGroup = display.newGroup()
 	npcsGroup.x=display.viewableContentWidth/2
 	npcsGroup.y=160
@@ -98,6 +124,7 @@ function scene:create( event )
 	npcsGroup:insert(npcsSquare)
 	group:insert(npcsGroup)
 
+	if questGroup then questGroup:removeSelf() end
 	questGroup = display.newGroup()
 	questGroup.x=0
 	questGroup.y=350
@@ -113,38 +140,47 @@ function scene:create( event )
 	
 	group:insert(questGroup)
 
-	if campaignNameText then campaignNameText:removeSelf() end;
+	--if campaignNameText then campaignNameText:removeSelf() end;
 
+	if campaignNameTextField then campaignNameTextField:removeSelf() end
 	if not currentCampaign then currentCampaign = CampaignClass.new("..."); end
-	campaignNameText = display.newText({
-	    text = "".. currentCampaign.name,     
-	    x = 170,
-	    y = 70, anchorY = 0,
-	    width = 320,
-	    font = mainFont,   
-	    fontSize = mainFontSize+6,
-		height=40,	    
-	    align = "center" 
-	})
-	campaignNameText:setFillColor( 0.6, 0, 0 )
-	-- print("Inserting name")
-	group:insert(campaignNameText)
+	campaignNameTextField = uiTools.createInputTextField( 170, 70, 320, 40, uiTools.textFieldListener, updateCampaignName)
+	campaignNameTextField.font = native.newFont(mainFont, mainFontSize+2)
+	campaignNameTextField.text = currentCampaign.name
+	campaignNameTextField.hasBackground = false
+	campaignNameTextField.isEditable = true
+	group:insert(campaignNameTextField)
+
+	-- campaignNameText = display.newText({
+	--     text = "".. currentCampaign.name,     
+	--     x = 170,
+	--     y = 70, anchorY = 0,
+	--     width = 320,
+	--     font = mainFont,   
+	--     fontSize = mainFontSize+6,
+	-- 	height=40,	    
+	--     align = "center" 
+	-- })
+	-- campaignNameText:setFillColor( 0.6, 0, 0 )
+	-- group:insert(campaignNameText)
 
 	
 	-- Create text box for the campaign description
-	campaignNotesText = uiTools.createInputTextBox( 172, 120, 300, 75, uiTools.textListener )
+	campaignNotesText = uiTools.createInputTextBox( 172, 120, 300, 75, uiTools.textBoxListener )
 	--campaignNotesText = native.newTextBox( display.contentCenterX, objectLabel.y+65, 260, 80 )
 	campaignNotesText.text = currentCampaign.description
 	campaignNotesText.hasBackground = false
 	campaignNotesText.isEditable = true
 	group:insert(campaignNotesText)
 
-	uiTools.toggleEditable(campaignNotesText, updateCampaignNotes, false)
+	uiTools.toggleTFEditable(campaignNameTextField, updateCampaignNotes, false)
+	
+	uiTools.toggleTBEditable(campaignNotesText, updateCampaignNotes, false)
 	
 	cntEditBtn = widget.newButton(
 	{   defaultFile = "images/padlock.png", overFile="images/padlock-open.png",
         --onPress = options.onPress,
-        onPress = function() uiTools.toggleEditable(campaignNotesText, updateCampaignNotes, toggleTest(group,test)); end,
+        onPress = function() uiTools.toggleTBEditable(campaignNotesText, updateCampaignNotes, toggleCampaignNotesLock(group,campaignNotesLock)); end,
         emboss = false,
         left = 0 , top = 110,
         width = 20, height=20
@@ -254,24 +290,26 @@ function scene:show( event )
 	if (currentCampaign == nil) then
 		print("**********CURRENT CAMPAIGN NIL, THAT IS BAD***********")
 	end
-	campaignNameText.text = currentCampaign.name
+	--campaignNameText.text = currentCampaign.name
 	
 	
 	campaignEncountersText.text = "Encounters: " .. #currentCampaign.encounterList
 
 
-
+	--if not npcsGroup then npcsGroup = display.newGroup(); end
 	campaignNpcsText.text = "NPCS: " .. #currentCampaign.npcList
 	for i=1, #currentCampaign.npcList do
 		print("NPC found: " .. currentCampaign.npcList[i].name)
 		if (i < 6) then
-			uiTools.createAndInsertButton(npcsGroup, 
+			print("Creating NPC button for " .. currentCampaign.npcList[i].name)
+			b = uiTools.createAndInsertButton(npcsGroup, 
 					{   buttonName="* " .. currentCampaign.npcList[i].name, 
 					    x=10, y=20*i,
 						width=140, align="left",
 						onPressScene = "editNpc",
 						onPressParams = { npc = currentCampaign.npcList[i] }
 				  	})
+			saveButton(b)
 		else
 			npcsGroup:insert(display.newText({
 			    text = "more...",
@@ -291,13 +329,14 @@ function scene:show( event )
 	for i=1, #currentCampaign.questList do
 		print("Quest found: " .. currentCampaign.questList[i].name)
 		if (i < 6) then
-			uiTools.createAndInsertButton(questGroup, 
+			b = uiTools.createAndInsertButton(questGroup, 
 					{   buttonName="* " .. currentCampaign.questList[i].name, 
 						x=10, y=20*i,
 						width=180, align="left",
 						onPressScene = "editQuest",
 						onPressParams = { quest = currentCampaign.questList[i] }
 					})
+			saveButton(b)
 		else
 			questGroup:insert(display.newText({
 			    text = "more...",
@@ -316,7 +355,7 @@ function scene:show( event )
 		--group:insert(campaignNotesText)
 		print(campaignNotesText)
 		if not campaignNotesText then
-			campaignNotesText = uiTools.createInputTextBox(172, 120, 300, 75, uiTools.textListener)
+			campaignNotesText = uiTools.createInputTextBox(172, 120, 300, 75, uiTools.textBoxListener)
 			campaignNotesText.isEditable = true
 			campaignNotesText.hasBackground = false
 
@@ -324,7 +363,17 @@ function scene:show( event )
 			group:insert(campaignNotesText)
 			--campaignNotesText.isEditable = false
 		end
+		if not campaignNameTextField then
+			campaignNameTextField = uiTools.createInputTextField(170, 70, 320, 40, uiTools.textFieldListener, updateCampaignName)
+			campaignNameTextField.isEditable = true
+			campaignNameTextField.hasBackground = false
+
+			
+			group:insert(campaignNotesText)
+			--campaignNotesText.isEditable = false
+		end
 		campaignNotesText.text = currentCampaign.description
+		campaignNameTextField.text = currentCampaign.name
 	else
 		print(currentScene .. ":SHOW DID PHASE")
 		print("--> event.params.campaign: " .. event.params.campaign.id)
@@ -344,6 +393,7 @@ function scene:hide( event )
 	print(currentScene .. ":hide started")
 	local group = self.view
 
+	--npcsGroup:removeSelf()
 	if event.phase == "will" then
 		if campaignNotesText then
 			print("**** hide.removing campaignNotesText")
@@ -351,6 +401,14 @@ function scene:hide( event )
 			campaignNotesText = nil
 			--
 		end
+		if campaignNameTextField then
+			print("**** hide.removing campaignNameTextField")
+			campaignNameTextField:removeSelf()
+			campaignNameTextField = nil
+			--
+		end
+
+		clearButtons()
 	elseif event.phase == "did" then
 		--composer.removeScene( currentScene )
 	end

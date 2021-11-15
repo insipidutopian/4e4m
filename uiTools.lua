@@ -22,8 +22,45 @@ function uiTools.createInputTextBox( x, y, height, width, listener)
 	return tb
 end
 
+function uiTools.createInputTextField( x, y, height, width, listener, updateFunction) 
+	print("createInputTextBox() called")
+	tf = native.newTextField( x, y, height, width )
+	-- tf.hasBackground = false
+	tf.isEditable = true
+	tf.font = native.newFont(mainFont, mainFontSize-2)
+	tf:setTextColor(.6,0,0,1)
+	tf:addEventListener( "userInput", listener )
+	tf["updateFunction"] = updateFunction
+	return tf
+end
 
-function uiTools.textListener( event )
+
+function uiTools.textFieldListener( event )
+
+    if ( event.phase == "began" ) then
+        -- User begins editing "defaultField"
+        print( "TF begin editing....")
+ 
+    elseif ( event.phase == "ended" or event.phase == "submitted" ) then
+        -- Output resulting text from "defaultField"
+        print( "TF ended editing: " ..  event.target.text )
+        if (event.target["updateFunction"] ~= nil) then
+        	print("TF Calling update function!!!!")
+        	event.target["updateFunction"]()
+		end
+        native.setKeyboardFocus( nil )
+ 
+    elseif ( event.phase == "editing" ) then
+    	if debug then
+	        print( "TF new: " .. event.newCharacters )
+	        -- print( "old: " .. event.oldText )
+	        print( "TF sp: " .. event.startPosition )
+	        print( "TF et:" .. event.text )
+	    end
+    end
+end
+
+function uiTools.textBoxListener( event )
 
     if ( event.phase == "began" ) then
         -- User begins editing "defaultField"
@@ -44,8 +81,20 @@ function uiTools.textListener( event )
     end
 end
 
+function uiTools.toggleTFEditable( textField, updateFunction, isEditable )
+		if isEditable then
+			print( "textfield now enabled" )
+			textField.isEditable = true
+			native.setKeyboardFocus( textBox )
+		else
+			print( "textfield now disabled" )
+			textField.isEditable = false
+			updateFunction( textField.text)
+			native.setKeyboardFocus( nil )
+		end
+end
 
-function uiTools.toggleEditable( textBox, updateFunction, isEditable )
+function uiTools.toggleTBEditable( textBox, updateFunction, isEditable )
 		if isEditable then
 			print( "textbox now enabled" )
 			textBox.isEditable = true
@@ -113,7 +162,7 @@ function uiTools.createAndInsertButton(group, options)
         fillColor = { default={0,0,0,1}, over={0.1,0,1,1} }
 	})
 	group:insert(newButton)
-
+	return newButton
 
 end
 
