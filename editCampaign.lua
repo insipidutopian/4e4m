@@ -11,6 +11,9 @@ CampaignList = require ("CampaignList")
 local campaign = require ( "campaign" )
 local CampaignClass = require ( "campaign" )
 uiTools = require("uiTools")
+local manageNpc = require("manageNpc")
+local managePlace = require("managePlace")
+local manageQuest = require("manageQuest")
 
 local scene = composer.newScene()
 
@@ -21,16 +24,20 @@ local campaignNameTextField
 local currentCampaign
 local campaignSystemText
 local campaignNotesText
-local campaignEncountersText
-local campaignNpcsText
 local campaignQuestsText
 
 local npcsGroup
 local questGroup
+local placesGroup
 local campaignNotesLock = false
+local placesButton
 
 buttonsArr = {}
 
+debugFlag = true
+
+-- Common SSK Helper Modules
+local easyIFC = ssk.easyIFC;local persist = ssk.persist
 
 local function saveButton(button) 
 	if debugFlag then print("SAVING BUTTON " .. tostring(button) .." to " .. tostring(#buttonsArr+1)); end
@@ -40,7 +47,7 @@ end
 local function clearButtons( )
 	if debugFlag then print("CLEARING BUTTONS"); end
 	for i=1, #buttonsArr do
-		if debugFlag then print("* REMOVING BUTTON"); end
+		if debugFlag then print("* REMOVING BUTTON " .. tostring(i)); end
 		buttonsArr[i]:removeSelf()
 	end
 end
@@ -85,6 +92,49 @@ local function toggleCampaignNotesLock( group, val )
 	return campaignNotesLock
 end
 
+local function truncate(name, len)
+	if string.len(name) > len-1 then
+		return string.sub(name, 1, len-1) .. "..."
+	else
+		return name
+	end
+end
+
+local function doUpdate()
+	print("****************** DO UPDATE CALLBACK: editCampaign ******************")
+	composer.gotoScene("editCampaign", {  params = { campaign = currentCampaign }})
+end
+
+
+local function titleListener ( event )
+	--print("TitleListener: got an event")
+	local debugFlag = true
+    if ( event.phase == "began" ) then
+        -- User begins editing "defaultField"
+        if debugFlag then print( "TF begin editing...."); end
+        --print( "TF begin editing....");
+ 
+    elseif ( event.phase == "ended" or event.phase == "submitted" ) then
+        if debugFlag then print( "TF ended editing: " ..  event.target.text ); end
+        if (event.target["updateFunction"] ~= nil) then
+        	if debugFlag then print("TF Calling update function!!!!"); end
+        	event.target["updateFunction"]()
+        else
+        	print("No update function to call")
+		end
+        native.setKeyboardFocus( nil )
+ 
+    elseif ( event.phase == "editing" ) then
+    	--if debugFlag then
+	        print( "TF new: " .. event.newCharacters )
+	        -- print( "old: " .. event.oldText )
+	        print( "TF sp: " .. event.startPosition )
+	        print( "TF et:" .. event.text )
+	    --end
+    end
+end
+
+
 --Create the scene
 function scene:create( event )
 	local group = self.view
@@ -95,54 +145,49 @@ function scene:create( event )
 	local yStart = titleBarHeight + yPadding 
 	local buttonCount = 0
 
-	local encountersGroup = display.newGroup()
-	encountersGroup.x=0
-	encountersGroup.y=160
 
-	local encountersSquare = display.newRect( 80, 70, 160, 140 )
-	encountersSquare.stroke = {1,0,0}
-	encountersSquare.strokeWidth = 2
-	encountersSquare.fill = {0,0,0}
-	encountersGroup:insert(encountersSquare)
-	group:insert(encountersGroup)
+	if placesGroup then placesGroup:removeSelf() end
+	local placesGroup = display.newGroup()
+	placesGroup.x=0
+	placesGroup.y=160
+
+	local placesSquare = display.newRect( display.viewableContentWidth/4, 90, display.viewableContentWidth/2 - 5, 180 )
+	placesSquare.stroke = {1,0,0}
+	placesSquare.strokeWidth = 2
+	placesSquare.fill = {0,0,0}
+	placesGroup:insert(placesSquare)
+	group:insert(placesGroup)
 	
+
 	if npcsGroup then npcsGroup:removeSelf() end
 	npcsGroup = display.newGroup()
 	npcsGroup.x=display.viewableContentWidth/2
 	npcsGroup.y=160
 
-	local npcsSquare = display.newRect( 80, 70, 160, 140 )
+	local npcsSquare = display.newRect(display.viewableContentWidth/4, 90, display.viewableContentWidth/2 - 5, 180 )
 	npcsSquare.stroke = {1,0,0}
 	npcsSquare.strokeWidth = 2
 	npcsSquare.fill = {0,0,0}
 	npcsGroup:insert(npcsSquare)
 	group:insert(npcsGroup)
 
+
 	if questGroup then questGroup:removeSelf() end
 	questGroup = display.newGroup()
 	questGroup.x=0
 	questGroup.y=350
 
-	
-
-	local questSquare = display.newRect( 100, 100, 200, 200 )
+	local questSquare = display.newRect( display.contentWidth/2, 150, display.contentWidth-10, 300 )
 	questSquare.stroke = {1,0,0}
 	questSquare.strokeWidth = 2
 	questSquare.fill = {0,0,0}
 	questGroup:insert(questSquare)
-	
 	group:insert(questGroup)
 
 
-	if campaignNameTextField then campaignNameTextField:removeSelf() end
-	if not currentCampaign then currentCampaign = CampaignClass.new("..."); end
-	campaignNameTextField = uiTools.createInputTextField( 170, 70, 320, 40, uiTools.textFieldListener, updateCampaignName)
-	campaignNameTextField.font = native.newFont(mainFont, mainFontSize+2)
-	campaignNameTextField.text = currentCampaign.name
-	campaignNameTextField.hasBackground = false
-	campaignNameTextField.isEditable = true
-	group:insert(campaignNameTextField)
-
+	
+	currentCampaign = CampaignList:getCurrentorNewCampaign() 
+	
 	
 	-- Create text box for the campaign description
 	campaignNotesText = uiTools.createInputTextBox( 172, 120, 300, 75, uiTools.textBoxListener )
@@ -151,7 +196,7 @@ function scene:create( event )
 	campaignNotesText.isEditable = true
 	group:insert(campaignNotesText)
 
-	uiTools.toggleTFEditable(campaignNameTextField, updateCampaignNotes, false)
+	-- uiTools.toggleTFEditable(campaignNameTextField, updateCampaignNotes, false)
 	
 	uiTools.toggleTBEditable(campaignNotesText, updateCampaignNotes, false)
 	
@@ -164,47 +209,6 @@ function scene:create( event )
 	})
 	group:insert(cntEditBtn)
 	
-
-	if campaignEncountersText then campaignEncountersText:removeSelf() end;
-	campaignEncountersText = display.newText({
-	    text = "Encounters: ".. #currentCampaign.encounterList,     
-	    x = 80,
-	    y = 10,
-	    width = 150,
-	    font = mainFont,   
-	    fontSize = mainFontSize,
-	    align = "left" 
-	})
-	campaignEncountersText:setFillColor( 0.6, 0, 0 )
-	encountersGroup:insert(campaignEncountersText)
-
-	if campaignNpcsText then campaignNpcsText:removeSelf() end;
-	campaignNpcsText = display.newText({
-	    text = "NPCs: ".. #currentCampaign.npcList,     
-	    x = 80,
-	    y = 10,
-	    width = 150,
-	    font = mainFont,   
-	    fontSize = mainFontSize,
-	    align = "left"
-	})
-	campaignNpcsText:setFillColor( 0.6, 0, 0 )
-	npcsGroup:insert(campaignNpcsText)
-
-
-	if campaignQuestsText then campaignQuestsText:removeSelf() end;
-	campaignQuestsText = display.newText({
-	    text = "Quests: ".. #currentCampaign.questList,     
-	    x = 100,
-	    y = 10,
-	    width = 190,
-	    --height = 40,
-	    font = mainFont,   
-	    fontSize = mainFontSize,
-	    align = "left" 
-	})
-	questGroup:insert(campaignQuestsText)
-	campaignQuestsText:setFillColor( 0.6, 0, 0 )
 
 	local homeBtn = widget.newButton(
     {
@@ -220,7 +224,12 @@ function scene:create( event )
 
 	group:insert(homeBtn)
 
- 	
+	--ssk.easyIFC:presetPush( group, "appButton", 50, display.contentHeight-160, 80, 30, "Encounters", rerollQuest )
+	encountersButton = ssk.easyIFC:presetPush(group, "appButton", 50, display.contentHeight-130, 80, 30, 
+											  "Things", 
+											  function()  composer.gotoScene("manageThings", { effect = "fade", time = 400}) end, 
+											  {labelHorizAlign="left", labelSize=14} )
+
 end
 
 
@@ -250,73 +259,69 @@ function scene:show( event )
 	end
 	CampaignList:setCurrentCampaignIndex(i)
 	print ("Current campaign number=" .. i)
-	currentCampaign = CampaignList:getCurrentCampaign()
+	currentCampaign = CampaignList:getCurrentorNewCampaign()
 
-	if (currentCampaign == nil) then
-		print("**********CURRENT CAMPAIGN NIL, THAT IS BAD***********")
-	end
 	--campaignNameText.text = currentCampaign.name
 	
+	if not npcsGroup then 
+		npcsGroup = display.newGroup(); 
+		npcsGroup.x=display.viewableContentWidth/2
+		npcsGroup.y=160
+	end
+
 	
-	campaignEncountersText.text = "Encounters: " .. #currentCampaign.encounterList
-
-
-	--if not npcsGroup then npcsGroup = display.newGroup(); end
-	campaignNpcsText.text = "NPCS: " .. #currentCampaign.npcList
-	for i=1, #currentCampaign.npcList do
-		print("NPC found: " .. currentCampaign.npcList[i].name)
-		if (i < 6) then
-			if debugFlag then print("Creating NPC button for " .. currentCampaign.npcList[i].name); end
-			b = uiTools.createAndInsertButton(npcsGroup, 
-					{   buttonName="* " .. currentCampaign.npcList[i].name, 
-					    x=10, y=20*i,
-						width=140, align="left",
-						onPressScene = "editNpc",
-						onPressParams = { npc = currentCampaign.npcList[i] }
-				  	})
-			saveButton(b)
-		else
-			npcsGroup:insert(display.newText({
-			    text = "more...",
-			    x = 80,
-			    y = 130,
-			    width = 140,
-			    font = mainFont,
-			    fontSize = mainFontSize-2,
-			    align = "right"
-			}))
-		end
+	if not placesGroup then 
+		placesGroup = display.newGroup(); 
+		placesGroup.x=0
+		placesGroup.y=160
 	end
-	campaignQuestsText.text = "Quests: " .. #currentCampaign.questList
+	
+	
+	
+	
 
-
-
-	for i=1, #currentCampaign.questList do
-		print("Quest found: " .. currentCampaign.questList[i].name)
-		if (i < 6) then
-			b = uiTools.createAndInsertButton(questGroup, 
-					{   buttonName="* " .. currentCampaign.questList[i].name, 
-						x=10, y=20*i,
-						width=180, align="left",
-						onPressScene = "editQuest",
-						onPressParams = { quest = currentCampaign.questList[i] }
-					})
-			saveButton(b)
-		else
-			questGroup:insert(display.newText({
-			    text = "more...",
-			    x = 100,
-			    y = 130,
-			    width = 180,
-			    font = mainFont,   
-			    fontSize = mainFontSize-2,
-			    align = "right"
-			}))
-		end
-	end
 
 	if event.phase == "will" then
 		print(currentScene .. ":SHOW WILL PHASE")
+
+		if not overlayGroup then 
+			overlayGroup = display.newGroup(); 
+			overlayGroup.x=display.viewableContentWidth/2
+			overlayGroup.y=display.viewableContentHeight/2
+		end
+
+		b = ssk.easyIFC:presetPush(npcsGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+											  "NPCs: " .. #currentCampaign.npcList, 
+											  function()  composer.gotoScene("manageNpcs", { effect = "fade", time = 400}) end, 
+											  {labelHorizAlign="left", labelSize=14} )
+		saveButton(b)
+
+		for i=1, #currentCampaign.npcList do
+			print("NPC found: " .. currentCampaign.npcList[i].name)
+			if (i < 9) then
+				if debugFlag then print("Creating NPC button for " .. currentCampaign.npcList[i].name); end
+				npcButton = ssk.easyIFC:presetPush( npcsGroup, "linkButton", display.contentWidth/4, 20+18*i, 140, 30, "* " .. currentCampaign.npcList[i].name, 
+					function() manageNpc.openViewNpcDialog(currentCampaign.npcList[i], overlayGroup, false, doUpdate); end, 
+					{labelHorizAlign="left", labelSize=12} )
+				saveButton(npcButton)
+			end
+		end
+		
+		placesButton = ssk.easyIFC:presetPush(placesGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+											  "Places: " .. #currentCampaign.placeList, 
+											  function()  composer.gotoScene("managePlaces", { effect = "fade", time = 400}) end, 
+											  {labelHorizAlign="left", labelSize=14} )
+		saveButton(placesButton)
+		for i=1, #currentCampaign.placeList do
+			print("Place found: " .. currentCampaign.placeList[i].name)
+			if (i < 9) then
+				b = ssk.easyIFC:presetPush( placesGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.placeList[i].name, 
+					function() managePlace.openViewPlaceDialog(currentCampaign.placeList[i], overlayGroup, false, doUpdate); end, 
+					{labelHorizAlign="left", labelSize=11} )
+				saveButton(b)
+			end
+		end
+		
 		
 		if not campaignNotesText then
 			campaignNotesText = uiTools.createInputTextBox(172, 120, 300, 75, uiTools.textBoxListener)
@@ -324,19 +329,37 @@ function scene:show( event )
 			campaignNotesText.hasBackground = false
 			group:insert(campaignNotesText)
 		end
-		if not campaignNameTextField then
-			campaignNameTextField = uiTools.createInputTextField(170, 70, 320, 40, uiTools.textFieldListener, updateCampaignName)
-			campaignNameTextField.isEditable = true
-			campaignNameTextField.hasBackground = false
-			group:insert(campaignNotesText)
-		end
+		
+
 		campaignNotesText.text = currentCampaign.description
-		campaignNameTextField.text = currentCampaign.name
+
+		questsButton = ssk.easyIFC:presetPush(questGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+											  "Quests: " .. #currentCampaign.questList, 
+											  function()  composer.gotoScene("manageQuests", { effect = "fade", time = 400}) end, 
+											  {labelHorizAlign="left", labelSize=14} )
+		saveButton(questsButton)
+		for i=1, #currentCampaign.questList do
+			print("Quest found: " .. currentCampaign.questList[i].name)
+			if (i < 9) then
+				b = ssk.easyIFC:presetPush( questGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.questList[i].name, 
+					function() manageQuest.openViewQuestDialog(currentCampaign.questList[i], overlayGroup, false, doUpdate); end, 
+					{labelHorizAlign="left", labelSize=11} )
+				saveButton(b)
+			end
+		end
+
+
 	else
 		print(currentScene .. ":SHOW DID PHASE")
 		print("--> event.params.campaign.id : " .. event.params.campaign.id)
-		local i = event.params.campaign.id --CampaignList:getCurrentCampaignIndex()
+		local i = event.params.campaign.id
+
+		if campaignNameTextField then campaignNameTextField:removeSelf() end
+		campaignNameTextField = ssk.easyIFC:presetTextInput(group, "title", currentCampaign.name, 100, 70, 
+			{listener=titleListener, updateFunction=updateCampaignName})
+		
 	end
+
 end
 
 
@@ -358,13 +381,16 @@ function scene:hide( event )
 			campaignNotesText = nil
 			--
 		end
+	
+		--tf3:removeSelf()
+
 		if campaignNameTextField then
 			if debugFlag then print("**** hide.removing campaignNameTextField"); end
 			campaignNameTextField:removeSelf()
 			campaignNameTextField = nil
 			--
 		end
-
+		--thingsButton:removeSelf()
 		clearButtons()
 	elseif event.phase == "did" then
 		--composer.removeScene( currentScene )

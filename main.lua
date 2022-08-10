@@ -1,11 +1,9 @@
 -- 
--- Abstract: 4e4m Application
+-- GameMastery Mobile Application
 --  
--- Version: 1.0.2
--- 
 --
 ------------------------------------------------------------
-debugFlag = false
+debugFlag = true
 
 local widget = require ( "widget" )
 --widget.setTheme("widget_theme_ios7")
@@ -21,6 +19,30 @@ Randomizer = require ("RandGenUtil")
 FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
 
+GAMEMASTERY_VERSION = "1.3.0"
+-- SSK2 Begin Load
+io.output():setvbuf("no")
+display.setStatusBar(display.HiddenStatusBar)
+-- =============================================================
+_G.fontN 	= "Raleway-Light.ttf" 
+_G.fontB 	= "Raleway-Black.ttf" 
+-- =============================================================
+--require "com.roaminggamer.ssk.loadSSK"
+-- =============================================================
+
+require "ssk2.loadSSK"
+_G.ssk.init( { launchArgs 				= ..., 
+	            gameFont 				= "fonts/Aclonica.ttf",
+	            measure 					= true,
+	            math2DPlugin 			= false,
+	            enableAutoListeners 	= true,
+	            exportColors 			= true,
+	            exportCore 				= true,
+	            exportSystem 			= true,
+	            debugLevel 				= 0 } )
+
+-- SSK2 Finished Load
+require("skin")
 
 
 display.setStatusBar( display.HiddenStatusBar ) 
@@ -43,7 +65,12 @@ titleBarHeight = 50
 
 popOptions = { isModal = true }
 
-appSettings = {fileVersion = 1, appName = "GameMastery", appVersion = "1.0.0", 
+largeFormat = false
+if system.getInfo("platform")=="macos" then
+	largeFormat = true
+end
+
+appSettings = {fileVersion = 1, appName = "GameMastery", appVersion = GAMEMASTERY_VERSION, 
 				campaignCounter = 0, encounterCounter = 0,  questCounter = 0, initiativeCounter = 0,
 			    currentCampaign = -1}
 
@@ -65,6 +92,7 @@ function initPage( group)
 		display.contentWidth, titleBarHeight + yOffset )
 
 	titleBar:setFillColor( titleGradientDark ) 
+	group:insert(titleBar)
 	
 	display.setDefault( "background", 0, 0, 0 )
 
@@ -149,13 +177,16 @@ math.randomseed( os.time() )
 
 
 -- Load App Settings
-local readResult = FileUtil:initializeSettingsFileIfNotExists("settings.cfg", appSettings)
-		
-if (readResult ~= "") then -- First time run
-	print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
-	print ("4e4m App Name              : " .. appSettings['appName'])
-	print ("4e4m App Version           : " .. appSettings['appVersion'])
-end	
+FileUtil:initializeSettingsFileIfNotExists("settings.cfg", appSettings)
+FileUtil:loadSettingsFile("settings.cfg", appSettings)
+print("Campaign count: " .. appSettings['campaignCounter'])
+FileUtil:upgradeSettingsFileIfNeeded(appSettings)
+
+print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
+print ("4e4m App Name              : " .. appSettings['appName'])
+print ("4e4m App Version           : " .. appSettings['appVersion'])
+
+
 composer.gotoScene( "welcome" )
 
 

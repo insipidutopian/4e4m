@@ -49,7 +49,7 @@ function scene:create( event )
 
 	appSettings = { fileVersion = 1, 
 					appName = "GameMastery", 
-					appVersion = "1.0.3", 
+					appVersion = GAMEMASTERY_VERSION, 
 					campaignCounter=0,
 					questCounter=0,
 					encounterCounter=0,
@@ -153,7 +153,7 @@ local function listener1( event )
 			display.contentCenterX, display.contentCenterY - 45, mainFont, 20 )
 	welcomeText:setFillColor( 1, 1, 1)
 
-    versionText = display.newText( " v" .. appSettings["appVersion"], 
+    versionText = display.newText( " v" .. GAMEMASTERY_VERSION, 
 			display.contentCenterX, display.contentCenterY + 45, mainFont, 18 )
 	versionText:setFillColor( 1, 1, 1)
 

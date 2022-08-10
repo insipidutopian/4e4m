@@ -27,19 +27,15 @@ function campaign.new( name, description )	-- constructor
 		id = 0,
 		name = name or "Unnamed",
 		description = description or "description",
+		system = "5e",
 		keywords = {},
 		questList = {},
 		npcList = {},
-		encounterList = {}
+		encounterList = {},
+		thingList = {},
+		placeList = {}
 	}
-	-- if (debugFlag == 1) then
-	-- 	print ("campaign.new - DEBUG=TRUE - generating campaign keywords")
-	-- 	rand = math.random( 3 ) + 1
-	-- 	for i = 1, rand do
-	-- 		print ("generating random keyword for campaign.")
-	-- 		keywords[i] = "keyword" .. i
-	-- 	end
-	-- end
+	
 	print ("campaign.new - creating name=" .. newCampaign.name .. ", desc=" .. newCampaign.description)
 	
 	return setmetatable( newCampaign, campaign_mt )
@@ -51,10 +47,13 @@ function campaign.newCampaign( campaign )	-- constructor
 		id = campaign.id,
 		name = campaign.name or "Unnamed",
 		description = campaign.description or "description",
+		system = campaign.system or "5e",
 		keywords = campaign.keywords,
 		questList = campaign.questList,
 		npcList = campaign.npcList,
-		encounterList = campaign.encounterList
+		encounterList = campaign.encounterList,
+		thingList = campaign.thingList,
+		placeList = campaign.placeList
 	}
 	print ("campaign.newCampaign - creating name=" .. newCampaign.name .. ", desc=" .. newCampaign.description)
 	
@@ -78,6 +77,29 @@ function campaign:addKeyword(keyword)
 		self.keywords[1] = keyword
 	end
 end
+
+function campaign.addThing(self, thing)
+--	self.cList.insert(campaign)
+	--print ("campaign:addThing - self = " .. self)
+	print ("campaign:addThing - adding campaign thing = " .. tostring(thing))
+	if (self.thingList) then
+		self.thingList[#self.thingList+1] = thing
+	else
+		self.thingList = {}
+		self.thingList[1] = thing
+	end
+end
+
+function campaign.addPlace(self, place)
+	print ("campaign:addPlace - adding campaign Place = " .. tostring(place))
+	if (self.placeList) then
+		self.placeList[#self.placeList+1] = place
+	else
+		self.placeList = {}
+		self.placeList[1] = place
+	end
+end
+
 
 function campaign:getDescription()
 --	self.cList.insert(campaign)

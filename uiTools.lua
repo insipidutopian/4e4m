@@ -107,12 +107,35 @@ function uiTools.toggleTBEditable( textBox, updateFunction, isEditable )
 		end
 end
 
-
-function uiTools.createAndInsertButton(group, options)
+function uiTools.createAndInsertButtonForSceneChange(group, options)
 	if debugFlag then print("create and Insert Button called."); end
-	if debugFlag then print("createAndInsertButton() group is " .. group); end
-	if debugFlag then print("createAndInsertButton() buttonName is " .. options.buttonName); end
-	if debugFlag then print("createAndInsertButton() x=" .. options.x .. " y=" .. options.y); end
+	if debugFlag then print("createAndInsertButtonForSceneChange() group is " .. tostring(group)); end
+	if debugFlag then print("createAndInsertButtonForSceneChange() buttonName is " .. options.buttonName); end
+	if debugFlag then print("createAndInsertButtonForSceneChange() x=" .. options.x .. " y=" .. options.y); end
+
+	newButton = widget.newButton(
+	{   label = options.buttonName,
+        onPress = function() composer.gotoScene(options.onPressScene); end,
+        emboss = false,
+        shape = "roundedRect", width = options.width, height = 15, cornerRadius = 2,
+        hasBackground = false,
+        font=btnFont, fontSize=btnFontSize*0.7,
+        left = options.x , top = options.y,
+        width = options.width, height=15,
+        labelAlign=options.align,
+        labelColor = { default={.6,0,0,1}, over={0.4,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0,1,1} }
+	})
+	group:insert(newButton)
+	return newButton
+
+end
+
+function uiTools.createAndInsertButtonForOverlay(group, options)
+	if debugFlag then print("create and Insert Button called."); end
+	if debugFlag then print("createAndInsertButtonForOverlay() group is " .. tostring(group)); end
+	if debugFlag then print("createAndInsertButtonForOverlay() buttonName is " .. options.buttonName); end
+	if debugFlag then print("createAndInsertButtonForOverlay() x=" .. options.x .. " y=" .. options.y); end
 
 	newButton = widget.newButton(
 	{   label = options.buttonName,
@@ -129,7 +152,7 @@ function uiTools.createAndInsertButton(group, options)
         labelColor = { default={.6,0,0,1}, over={0.4,0.0,0,1} },
         fillColor = { default={0,0,0,1}, over={0.1,0,1,1} }
 	})
-	group:insert(newButton)
+	if group then print(tostring(group)); group:insert(newButton); end
 	return newButton
 
 end

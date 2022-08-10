@@ -29,7 +29,7 @@ function scene:create( event )
 	
 	local background = display.newImage("images/dice01.jpg") 
 	background.x = display.contentWidth / 2
- 	background.y = display.contentHeight / 2
+ 	background.y = background.height / 2 + 20
  	background:scale(0.8, 0.8)
  	background.alpha = 0.5
  	group:insert(background)
@@ -49,7 +49,7 @@ function scene:create( event )
 	resultLabel:setFillColor( 1, 0, 0)
 	group:insert( resultLabel )
 
-	resultString:setFillColor( grey )
+	resultString:setFillColor( 0.6,0.0,0.0 )
 	group:insert( resultString )
 
 

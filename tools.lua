@@ -101,19 +101,19 @@ function scene:create( event )
 	group:insert(placeGenButton)
 
 	
-	local objectGenButton = widget.newButton(
+	local rewardGenButton = widget.newButton(
     {
-        label = "Things", font=btnFont, fontSize=btnFontSize, emboss = false,
+        label = "Rewards", font=btnFont, fontSize=btnFontSize, emboss = false,
         shape = "circle", radius = 70*0.9, cornerRadius = 2, strokeWidth = 4,
         labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
         fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
         strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
-        onPress = function() composer.gotoScene( "thinggen_tool" ); end,
+        onPress = function() composer.gotoScene( "rewardgen_tool" ); end,
         x = 90,
       	y =display.contentHeight-90
     })
 	
-	group:insert(objectGenButton)
+	group:insert(rewardGenButton)
 
 
 	local homeBtn = widget.newButton(

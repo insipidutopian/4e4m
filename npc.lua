@@ -18,15 +18,15 @@ local npc_mt = { __index = npc }	-- metatable
 -- PUBLIC FUNCTIONS
 -------------------------------------------------
  
-function npc.new( name, race, notes )	-- constructor
+function npc.new(self, name, race, notes )	-- constructor
 	print ("npc.new() called")
 	local newNpc = {
 		name = name or "Unnamed",
 		id = 0,
 		race = race or "human",
-		notes = notes
+		notes = notes or ""
 	}
-	print ("npc.new - creating name=" .. newNpc.name .. ", notes=" .. newNpc.notes)
+	print ("npc.new - creating name=" .. newNpc.name .. ", race=" .. newNpc.race .. ", notes=" .. newNpc.notes)
 	
 	return setmetatable( newNpc, npc_mt )
 end
@@ -40,16 +40,16 @@ end
 		notes = n.notes or "notes",
 		race = n.race or "human"
 	}
-	print ("npc.newNpc - creating name=" .. newNpc.name .. ", desc=" .. newNpc.notes)
+	print ("npc.newNpc - creating name=" .. newNpc.name .. ", notes=" .. newNpc.notes)
 	
 	return setmetatable( newNpc, npc_mt )
 end
 
 -------------------------------------------------
  
-function npc:setNotes(desc)
-	print ("npc:setNotes - setting npc notes = " .. desc)
-	self.notes = desc
+function npc:setNotes(notes)
+	print ("npc:setNotes - setting npc notes = " .. notes)
+	self.notes = notes
 end
 
 function npc:setName(name)
@@ -57,9 +57,9 @@ function npc:setName(name)
 	self.name = name
 end
 
-function npc:setRace(details)
-	print ("npc:setRace - setting npc race = " .. details)
-	self.race = details
+function npc:setRace(race)
+	print ("npc:setRace - setting npc race = " .. race)
+	self.race = race
 end
 
 

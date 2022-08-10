@@ -28,6 +28,10 @@ local nameTF
 local initNumToMod = -1
 local init
 
+-- Common SSK Helper Modules
+local easyIFC = ssk.easyIFC;local persist = ssk.persist
+
+
 local function findInitByRow( rowNum )
 	local offsetIni = -1
 
@@ -95,7 +99,7 @@ function addInitiativeEntity( entityName, entityType, entityInit, entityBonus )
 	print("addInitiativeEntity: name=" .. entityName .. ", entityType=" .. entityType .. ", entityInit=" .. entityInit .. ", entityBonus=" .. entityBonus)
 	if entityName == "" then
 		if entityType == "player" then
-			entityName = RandGenUtil.generateName()
+			entityName = RandGenUtil.generateNpcName()
 		else
 			entityName = RandGenUtil.generateAdversary()
 		end
@@ -138,7 +142,7 @@ function modifyInitiativeEntity( newInit, entityName, entityType, entityInit, en
 
 	if entityName == "text" then
 		if entityType == "player" then
-			entityName = RandGenUtil.generateName()
+			entityName = RandGenUtil.generateNpcName()
 		else
 			entityName = RandGenUtil.generateAdversary()
 		end
@@ -147,7 +151,7 @@ function modifyInitiativeEntity( newInit, entityName, entityType, entityInit, en
 	print("modifyInitiativeEntity - modifying '".. entityName .. "' with init=" ..  0)
 	print("modifyInitiativeEntity - modifying type=".. entityType)
 	
-	--local newInit = initiative.new(entityName)
+	local newInit = initiative.new(entityName)
 	newInit.name = entityName
 	newInit.iType = entityType
 	newInit.initVal = entityInit
@@ -206,66 +210,86 @@ function scene:show( event )
 		nameTF.placeholder = "(Name)"
 	end
 
-
 	group:insert(nameTF)
+	
+
 	if init then -- We loaded an init, so we're modifying
 		selectedEntityType = init.iType
-		local modifyButton = widget.newButton
-		{
-			defaultFile = "buttonGreySmall.png",
-			overFile = "buttonGreySmallOver.png",
-			labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-			label = "Update",
-			emboss = true,
-			-- todo: modifyInitiativeEntity...
-			onPress =  function() modifyInitiativeEntity(init, nameTF.text, selectedEntityType, initTF.text, initBonusTF.text); end,
-			x = display.contentCenterX - (buttonWidth + rightPadding),
-			y = myHeight+buttonHeight/2,
-		}
-		group:insert(modifyButton)
+		xLoc = display.contentCenterX - (buttonWidth + rightPadding)
+		yLoc = myHeight+buttonHeight/2
+		ssk.easyIFC:presetPush( npcsGroup, "linkButton", xLoc, yLoc, 100, 30, "Modify", 
+			function() modifyInitiativeEntity(init, nameTF.text, selectedEntityType, initTF.text, initBonusTF.text); end, {labelHorizAlign="left", labelSize=12} )
+		-- local modifyButton = widget.newButton
+		-- {
+		-- 	defaultFile = "buttonGreySmall.png",
+		-- 	overFile = "buttonGreySmallOver.png",
+		-- 	labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
+		-- 	label = "Update",
+		-- 	emboss = true,
+		-- 	-- todo: modifyInitiativeEntity...
+		-- 	onPress =  function() modifyInitiativeEntity(init, nameTF.text, selectedEntityType, initTF.text, initBonusTF.text); end,
+		-- 	x = display.contentCenterX - (buttonWidth + rightPadding),
+		-- 	y = myHeight+buttonHeight/2,
+		-- }
+		-- group:insert(modifyButton)
 	else
-		local addButton = widget.newButton
-		{
-			defaultFile = "buttonGreySmall.png",
-			overFile = "buttonGreySmallOver.png",
-			labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-			label = "Add",
-			emboss = true,
-			onPress =  function() addInitiativeEntity(nameTF.text, selectedEntityType, initTF.text, initBonusTF.text); end,
-			x = display.contentCenterX - (buttonWidth + rightPadding),
-			y = myHeight+buttonHeight/2,
-		}
-		group:insert(addButton)
+		xLoc = display.contentCenterX - (buttonWidth + rightPadding)
+		yLoc = myHeight+buttonHeight/2
+		ssk.easyIFC:presetPush( npcsGroup, "linkButton", xLoc, yLoc, 100, 30, "Add", 
+			function() modifyInitiativeEntity(init, nameTF.text, selectedEntityType, initTF.text, initBonusTF.text); end, {labelHorizAlign="left", labelSize=12} )
+		-- local addButton = widget.newButton
+		-- {
+		-- 	defaultFile = "buttonGreySmall.png",
+		-- 	overFile = "buttonGreySmallOver.png",
+		-- 	labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
+		-- 	label = "Add",
+		-- 	emboss = true,
+		-- 	onPress =  function() addInitiativeEntity(nameTF.text, selectedEntityType, initTF.text, initBonusTF.text); end,
+		-- 	x = display.contentCenterX - (buttonWidth + rightPadding),
+		-- 	y = myHeight+buttonHeight/2,
+		-- }
+		-- group:insert(addButton)
 	end
 
-	local cancelButton = widget.newButton
-	{
-		defaultFile = "buttonGreySmall.png",
-		overFile = "buttonGreySmallOver.png",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		label = "Cancel",
-		emboss = true,
-		onPress =  function() composer.hideOverlay( "addInit", popOptions ); end,
-		--onPress =  function() storyboard.hideOverlay( "addInit", popOptions ); end,
-		x = display.contentCenterX + (buttonWidth + rightPadding),
-		y = myHeight+buttonHeight/2,
-	}
-	group:insert(cancelButton)
+	xLoc = display.contentCenterX + (buttonWidth + rightPadding)
+	yLoc = myHeight+buttonHeight/2
+	ssk.easyIFC:presetPush( npcsGroup, "linkButton", xLoc, yLoc, 100, 30, "Cancel", 
+			function() composer.hideOverlay( "addInit", popOptions ); end, {labelHorizAlign="left", labelSize=12} )
+
+
+	-- local cancelButton = widget.newButton
+	-- {
+	-- 	defaultFile = "buttonGreySmall.png",
+	-- 	overFile = "buttonGreySmallOver.png",
+	-- 	labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
+	-- 	label = "Cancel",
+	-- 	emboss = true,
+	-- 	onPress =  function() composer.hideOverlay( "addInit", popOptions ); end,
+	-- 	--onPress =  function() storyboard.hideOverlay( "addInit", popOptions ); end,
+	-- 	x = display.contentCenterX + (buttonWidth + rightPadding),
+	-- 	y = myHeight+buttonHeight/2,
+	-- }
+	-- group:insert(cancelButton)
 	
-	if init then
-		local deleteButton = widget.newButton
-		{
-			defaultFile = "buttonGreySmall.png",
-			overFile = "buttonGreySmallOver.png",
-			labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-			label = "Delete",
-			emboss = true,
-			onPress =   function() deleteInitiativeEntity(init); end,
-			x = display.contentCenterX + (buttonWidth + rightPadding)+ (buttonWidth*2 + rightPadding),
-			y = myHeight+buttonHeight/2,
-		}
-		group:insert(deleteButton)
-	end
+	xLoc = display.contentCenterX + (buttonWidth + rightPadding)+ (buttonWidth*2 + rightPadding)
+	yLoc = myHeight+buttonHeight/2
+	ssk.easyIFC:presetPush( npcsGroup, "linkButton", xLoc, yLoc, 100, 30, "Delete", 
+			function() deleteInitiativeEntity(init); end, {labelHorizAlign="left", labelSize=12} )
+
+	-- if init then
+	-- 	local deleteButton = widget.newButton
+	-- 	{
+	-- 		defaultFile = "buttonGreySmall.png",
+	-- 		overFile = "buttonGreySmallOver.png",
+	-- 		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
+	-- 		label = "Delete",
+	-- 		emboss = true,
+	-- 		onPress =   function() deleteInitiativeEntity(init); end,
+	-- 		x = display.contentCenterX + (buttonWidth + rightPadding)+ (buttonWidth*2 + rightPadding),
+	-- 		y = myHeight+buttonHeight/2,
+	-- 	}
+	-- 	group:insert(deleteButton)
+	-- end
 
 
 

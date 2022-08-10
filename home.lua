@@ -10,6 +10,12 @@ local widget = require ( "widget" )
 FileUtil = require ("FileUtil")
 CampaignList = require ("CampaignList")
 local CampaignClass = require ( "campaign" )
+uiTools = require("uiTools")
+
+manageNpc = require("manageNpc")
+manageThing = require("manageThing")
+managePlace = require("managePlace")
+manageQuest = require("manageQuest")
 
 --Create a storyboard scene for this module
 local scene = composer.newScene()
@@ -22,6 +28,8 @@ local shown=nil
 local cBtns = {}
 local gBtns = {}
 local cBtnNameList
+
+local buttonsDisabled
 
 cBtnsFlag = false
 gBtnsFlag = false
@@ -128,6 +136,8 @@ end
 
 local function tapListener( event )
  
+ 	if buttonsDisabled == true then return true end
+
     -- Code executed when the button is tapped
     if event then
    		print( "Campaign Object tapped: " .. tostring(event.target) )  
@@ -143,6 +153,7 @@ end
 
 
 local function tapListenerG( event )
+	if buttonsDisabled == true then return true end
  
     -- Code executed when the button is tapped
     if event then
@@ -197,7 +208,7 @@ end
 
 local function newCampaign( )
 	print("Transitioning to campaign view")
-	local name = Randomizer:generateName()
+	local name = Randomizer:generateNpcName()
 	newCampaign = CampaignClass.new(name)
 	newCampaign.description = 'notes'
 	print("NEW "..newCampaign.name.." called, id:" .. newCampaign.id);
@@ -247,10 +258,11 @@ function scene:create( event )
 	currentScene = "home"
 	print(currentScene .. ":createScene")
 	
+	buttonsDisabled = false
 
 	appSettings = { fileVersion = 1, 
 					appName = "GameMastery", 
-					appVersion = "1.0.1", 
+					appVersion = GAMEMASTERY_VERSION, 
 					campaignCounter=0,
 					questCounter=0,
 					encounterCounter=0,
@@ -272,17 +284,21 @@ function scene:create( event )
 
 	local campaignsBtn = widget.newButton(
     {
-        label = "Campaigns", font=btnFont, fontSize=btnFontSize, emboss = false,
-        shape = "circle", radius = 70, cornerRadius = 2, strokeWidth = 2,
+        label = "Campaigns", font=btnFont, fontSize=btnFontSize-4, emboss = false,
+        defaultFile= "images/gamemastery/button_celticspears_square.png",
+        overFile= "images/gamemastery/button_celticspears_square.png",
         labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
-        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
-        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
-        x = campBtnX, y = campBtnY
+        x = campBtnX, y = campBtnY, width=180, height=180
     })
 
 	campaignsBtn:addEventListener( "tap", tapListener )  -- Add a "tap" listener to the object
 
 	group:insert(campaignsBtn)
+
+	if overGroup then overGroup:removeSelf() end
+	overGroup = display.newGroup()
+	overGroup.x=display.contentCenterX
+	overGroup.y=display.contentCenterY
 
 
 	toolBtnX = 90
@@ -290,21 +306,13 @@ function scene:create( event )
 
 	local toolsBtn = widget.newButton(
     {
-        label = "Tools",
+        label = "Tools", emboss = false, font=btnFont, fontSize=btnFontSize-4,
+        defaultFile= "images/gamemastery/button_celticspears_square.png",
+        overFile= "images/gamemastery/button_celticspears_square.png",
         onEvent = handleTButtonEvent,
-        emboss = false,
-        -- Properties for a rounded rectangle button
-        shape = "circle",
-        radius = 70,
-        cornerRadius = 2,
         labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
-        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
-        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
-        strokeWidth = 2,
-        font=btnFont,
-        fontSize=btnFontSize,
-        x = display.contentWidth-90,
-      	y = display.contentHeight-90
+        x = display.contentWidth-90, y = display.contentHeight-90,
+      	height=180, width=180
     })
 
 	group:insert(toolsBtn)
@@ -314,43 +322,34 @@ function scene:create( event )
    
     generateBtn = widget.newButton(
     {
-        label = "  Quick\nGenerate",
-        emboss = false,
-        -- Properties for a rounded rectangle button
-        shape = "circle",
-        radius = 70,
-        cornerRadius = 2,
+        label = "  Quick\nGenerate", emboss = false, font=btnFont, fontSize=btnFontSize-4,
+        defaultFile= "images/gamemastery/button_celticspears_square.png",
+        overFile= "images/gamemastery/button_celticspears_square.png",
         labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
-        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
-        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
-        strokeWidth = 2,
-        font=btnFont,
-        fontSize=btnFontSize,
-        x = genBtnX,
-      	y = genBtnY
+
+        x = genBtnX, y = genBtnY, height=180, width=180
     })
 
 	generateBtn:addEventListener( "tap", tapListenerG)  -- Add a "tap" listener to the object
 	group:insert(generateBtn)
 
 	loadSavedCampaigns(group);
-
-
-	--btns = addBtns({'new','Salemish','Darkness Ascends', 'Ripharial\'s Legacy'})
 	
 
 	gBtns = addBtns({ 
-			{'NPC', function() print ("home:npcGen"); composer.showOverlay( "npcGen", popOptions ); end}, 
-			{'Place',function() print ("home:placeGen"); composer.showOverlay( "placeGen", popOptions ); end},
-			{'Thing',function() print ("home:thingGen"); composer.showOverlay( "thingGen", popOptions ); end},
-			{'Quest',function() print ("home:questGen"); composer.showOverlay( "questGen", popOptions ); end}},
-					genBtnX-140, genBtnY, 'left')
+				{'NPC', function() buttonsDisabled=true; manageNpc.openNewNpcDialog(overGroup, function() buttonsDisabled=false; end); end}, 
+				{'Place',function() buttonsDisabled=true; managePlace.openNewPlaceDialog(overGroup, function() buttonsDisabled=false; end); end},
+				{'Thing',function() buttonsDisabled=true; manageThing.openNewThingDialog(overGroup, function() buttonsDisabled=false; end); end},
+				{'Quest',function() buttonsDisabled=true; manageQuest.openNewQuestDialog(overGroup, function() buttonsDisabled=false; end); end}},
+			genBtnX-140, genBtnY, 'left')
 
 	for i=1, #gBtns do
     	gBtns[i].alpha = 0
     	gBtns[i].isEnabled=false
 		group:insert(gBtns[i])
 	end
+
+	group:insert(overGroup)
 end
 
 
@@ -394,11 +393,6 @@ end
 
 function scene:hide( event )
 	print(currentScene .. ":hide")
-
-	--[[if titleText then
-		titleText:removeSelf()
-		titleText = nil
-	end--]]
 
 end	
 

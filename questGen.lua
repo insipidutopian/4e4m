@@ -29,8 +29,8 @@ function showQuest( g )
 	
 	print("showQuest() called")
 
-	local qType = Randomizer:generateQuestType()
-	newQuest = Randomizer:generateQuest("" .. qType)
+	-- local qType = Randomizer:generateQuestType()
+	newQuest = Randomizer:generateQuest()
 	
 	
 

@@ -18,13 +18,13 @@ local quest_mt = { __index = quest }	-- metatable
 -- PUBLIC FUNCTIONS
 -------------------------------------------------
  
-function quest.new( name, description )	-- constructor
+function quest.new( self, name, description, details )	-- constructor
 	print ("quest.new() called")
 	local newQuest = {
 		name = name or "Unnamed",
 		id = 0,
 		description = description or "description",
-		details = "",
+		details = details or "",
 		questGiver = "",
 		keywords = {},
 		questList = {},
@@ -39,7 +39,7 @@ function quest.new( name, description )	-- constructor
 	-- 		keywords[i] = "keyword" .. i
 	-- 	end
 	-- end
-	print ("quest.new - creating name=" .. newQuest.name .. ", desc=" .. newQuest.description)
+	print ("quest.new - creating name=" .. newQuest.name .. ", desc=" .. newQuest.description .. ", details=" .. newQuest.details)
 	
 	return setmetatable( newQuest, quest_mt )
 end

@@ -30,7 +30,7 @@ function showNpc( g )
 	
 	print("showNpc() called")
 
-	local name = Randomizer:generateName()
+	local name = Randomizer:generateNpcName()
 	local notes = Randomizer:generateNpcTraits()
 	local race = Randomizer:generateNpcRace()
 

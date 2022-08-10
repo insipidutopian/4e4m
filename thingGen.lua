@@ -22,8 +22,8 @@ end
 function showThing( g )
 	
 	print("showThing() called")
-
-	local name = Randomizer:generateThingName()
+	
+	local name = Randomizer:generateThingName(Randomizer:generateThingType())
 	--local notes = Randomizer:generateNpcTraits()
 	--local race = Randomizer:generateNpcRace()
 

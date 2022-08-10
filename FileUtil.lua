@@ -124,6 +124,22 @@ function FileUtil.writeSettingsFile(self, fName, settings)
 	file = nil
 end
 
+function FileUtil.upgradeSettingsFileIfNeeded(self, appSettings)
+	print("==== Checking Settings File Version ====")
+	if appSettings['appVersion'] ~= GAMEMASTERY_VERSION then
+		print("Need to upgrade settings... please wait...")
+		local oldVersion = appSettings['appVersion']
+		res = CampaignList:upgradeSettingsFileIfNeeded(oldVersion, GAMEMASTERY_VERSION)
+		if res then
+			appSettings['appVersion'] = GAMEMASTERY_VERSION
+			FileUtil:writeSettingsFile("settings.cfg", appSettings)
+		else
+			print("Error updating settings")
+		end
+
+	end
+end
+
 function FileUtil.initializeSettingsFileIfNotExists(self, fName, settings)
 	print("initializeSettingsFileIfNotExists called: ", fName)
     local filePath = system.pathForFile( fName, system.DocumentsDirectory )

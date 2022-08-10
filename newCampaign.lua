@@ -41,7 +41,7 @@ function showCampaign( g )
 
 
 
-	local name = Randomizer:generateName()
+	local name = Randomizer:generateNpcName()
 	local notes = "Click to add campaign notes" 
 	local system = "5e" 
 

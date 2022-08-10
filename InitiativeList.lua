@@ -443,7 +443,8 @@ function InitiativeList.removeEnemyInitiatives( self )
 end
 function InitiativeList.updateInitiative(self, initNumToMod, init)
 	print ("InitiativeList.updateInitiative() - updating Initiative == " .. init.name)
-	print ("InitiativeList.updateInitiative() - replacing " ..self.iList[initNumToMod].name .. " at #"..initNumToMod )
+	print ("InitiativeList.updateInitiative() - updating Initiative #" .. tostring(initNumToMod))
+	--print ("InitiativeList.updateInitiative() - replacing " ..self.iList[initNumToMod].name .. " at #"..initNumToMod )
 	print ("")
 	-- self.iList[initNumToMod] = init
 	
