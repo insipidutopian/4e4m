@@ -229,6 +229,10 @@ function scene:create( event )
 											  "Things", 
 											  function()  composer.gotoScene("manageThings", { effect = "fade", time = 400}) end, 
 											  {labelHorizAlign="left", labelSize=14} )
+	encountersButton = ssk.easyIFC:presetPush(group, "appButton", 150, display.contentHeight-130, 80, 30, 
+											  "Events Log", 
+											  function()  composer.gotoScene("manageEvents", { effect = "fade", time = 400}) end, 
+											  {labelHorizAlign="left", labelSize=14} )
 
 end
 

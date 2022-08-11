@@ -101,7 +101,7 @@ function scene:show( event )
 	local count=0
 	for i=1, #currentCampaign.npcList do		
 		if debugFlag then print("Creating NPC button for " .. currentCampaign.npcList[i].name); end
-		currentCampaign.npcList[i].id = i
+		--currentCampaign.npcList[i].id = i
 		local yLoc = top+20*i
 		local max = npcsY/2 - 20
 		local xLoc = - (display.contentWidth/2 - 60)
@@ -118,13 +118,6 @@ function scene:show( event )
 			function() manageNpc.openViewNpcDialog(currentCampaign.npcList[i], npcsGroup, false, doUpdate); end, 
 			{labelHorizAlign="left", labelSize=12} )
 	end
-
-	-- for i=1, #currentCampaign.npcList do		
-	-- 	if debugFlag then print("Creating NPC button for " .. currentCampaign.npcList[i].name); end
-	-- 	currentCampaign.npcList[i].id = i
-	-- 	ssk.easyIFC:presetPush( npcsGroup, "linkButton", 80, top+20*i, 100, 30, "* " .. currentCampaign.npcList[i].name, 
-	-- 		function() manageNpc.openViewNpcDialog(currentCampaign.npcList[i]); end, {labelHorizAlign="left"} )
-	-- end
 	
 
     if navGroup then navGroup:removeSelf() end

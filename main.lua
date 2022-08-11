@@ -19,7 +19,7 @@ Randomizer = require ("RandGenUtil")
 FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
 
-GAMEMASTERY_VERSION = "1.3.0"
+GAMEMASTERY_VERSION = "1.3.1"
 -- SSK2 Begin Load
 io.output():setvbuf("no")
 display.setStatusBar(display.HiddenStatusBar)

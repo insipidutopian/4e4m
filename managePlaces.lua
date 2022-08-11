@@ -101,7 +101,7 @@ function scene:show( event )
 	local count=0
 	for i=1, #currentCampaign.placeList do		
 		if debugFlag then print("Creating Place button for " .. currentCampaign.placeList[i].name); end
-		currentCampaign.placeList[i].id = i
+		--currentCampaign.placeList[i].id = i
 		local yLoc = top+20*i
 		local max = placesY/2 - 20
 		local xLoc = - (display.contentWidth/2 - 60)

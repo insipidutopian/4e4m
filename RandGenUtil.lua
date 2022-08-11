@@ -2522,7 +2522,13 @@ function RandGenUtil.generateHoardReward(self, level)
 end
 
 
+function RandGenUtil.generateEventTitle(self)
+	return RandGenUtil.generateMaleName() .. " Goes to " .. RandGenUtil.generatePlaceName()
+end
 
+function RandGenUtil.generateEventNotes(self)
+	return RandGenUtil.generateMaleName() .. " Goes to " .. RandGenUtil.generatePlaceName()
+end
  -- Initialize the RandGenUtil
 RandGenUtil:new()
 RandGenUtil:initialize()

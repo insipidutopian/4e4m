@@ -1,5 +1,5 @@
 -- 
--- Abstract: 4e DM Assistant app, Things Details Screen
+-- Abstract: 4e DM Assistant app, Event Logs Details Screen
 --  
 -- Version: 1.0
 -- 
@@ -9,25 +9,25 @@ local composer = require ( "composer" )
 local widget = require ( "widget" )
 CampaignList = require ("CampaignList")
 local campaign = require ( "campaign" )
---local CampaignClass = require ( "campaign" )
 
 local scene = composer.newScene()
 
-local currentScene = "manageThings"
+local currentScene = "manageEvents"
 
 local currentCampaign
-local thingsTitleText
-local thingsGroup
+local eventsTitleText
+local eventsGroup
 local navGroup
 
-local thingsX 
-local thingsY
-local thingsXStart 
-local thingsYStart 
+local eventsX 
+local eventsY
+local eventsXStart 
+local eventsYStart 
+
 -- Common SSK Helper Modules
 local easyIFC = ssk.easyIFC;local persist = ssk.persist
 
-manageThing = require("manageThing")
+manageEvent = require("manageEvent")
 
 buttonsArr = {}
 
@@ -46,19 +46,19 @@ function scene:create( event )
 
 	currentCampaign = CampaignList:getCurrentorNewCampaign()
 
-	ssk.easyIFC:presetLabel( group, "appLabel", "Things: ".. currentCampaign.name, 160 , yStart + 10)
+	ssk.easyIFC:presetLabel( group, "appLabel", "Events: ".. currentCampaign.name, 160 , yStart + 10)
 
-	thingsX = display.contentWidth
-	thingsY = display.contentHeight-150
-	thingsXStart = -thingsX/2 +170
-	thingsYStart = -thingsY/2 +40
+	eventsX = display.contentWidth
+	eventsY = display.contentHeight-150
+	eventsXStart = -eventsX/2 +170
+	eventsYStart = -eventsY/2 +40
 	--ssk.display.newRect( group, centerX, centerY, { w = fullw, h = fullh, fill = _W_ } )
  	
 end
 
 local function doUpdate()
-	print("*********************DO UPDATE CALLBACK manageThings ******************")
-	composer.gotoScene("manageThings")
+	print("******************** DO UPDATE CALLBACK manageEvents ******************")
+	composer.gotoScene("manageEvents")
 end
 
 function scene:show( event )
@@ -68,42 +68,42 @@ function scene:show( event )
 	
 	currentCampaign = CampaignList:getCurrentorNewCampaign()
 
-	if thingsGroup then thingsGroup:removeSelf() end
-	thingsGroup = display.newGroup(group)
-	thingsGroup.x=display.contentWidth/2
-	thingsGroup.y=display.contentHeight/2
+	if eventsGroup then eventsGroup:removeSelf() end
+	eventsGroup = display.newGroup(group)
+	eventsGroup.x=display.contentWidth/2
+	eventsGroup.y=display.contentHeight/2
 	
 
-	local thingsSquare = display.newRect(thingsGroup, 0, 20, thingsX, thingsY)
-	thingsSquare.stroke = {0.6,0,0}
-	thingsSquare.strokeWidth = 2
-	thingsSquare.fill = {0,0,0}
+	local eventsSquare = display.newRect(eventsGroup, 0, 20, eventsX, eventsY)
+	eventsSquare.stroke = {0.6,0,0}
+	eventsSquare.strokeWidth = 2
+	eventsSquare.fill = {0,0,0}
 
-	--ssk.easyIFC:presetLabel( thingsGroup, "appLabel", "Test Label", thingsXStart , thingsYStart +20, {align="left", width=320})
+	--ssk.easyIFC:presetLabel( eventsGroup, "appLabel", "Test Label", eventsXStart , eventsYStart +20, {align="left", width=320})
 
-	thingsTitleText = display.newText({ parent = thingsGroup,
-	    text = "Things: ".. #currentCampaign.thingList, 
-	    x = thingsXStart, 
-	    y = thingsYStart, 
+	eventsTitleText = display.newText({ parent = eventsGroup,
+	    text = "Events: ".. #currentCampaign.eventList, 
+	    x = eventsXStart, 
+	    y = eventsYStart, 
 	    width = 320,
 	    font = mainFont,   
 	    fontSize = mainFontSize,
 	    align = "left" 
 	})
-	thingsTitleText:setFillColor( 0.6, 0, 0 )
+	eventsTitleText:setFillColor( 0.6, 0, 0 )
 
-	ssk.easyIFC:presetPush( thingsGroup, "linkButton", display.contentWidth/2-120, thingsYStart, 100, 30, 
+	ssk.easyIFC:presetPush( eventsGroup, "linkButton", display.contentWidth/2-120, eventsYStart, 100, 30, 
 			"Create New", 
-			function() manageThing.openNewThingDialog(thingsGroup, doUpdate); end, 
+			function() manageEvent.openNewEventDialog(eventsGroup, doUpdate); end, 
 			{labelHorizAlign="left", labelSize=12} )
 
-	local top = - thingsY/2 + 45
+	local top = - eventsY/2 + 45
 	local count=0
-	for i=1, #currentCampaign.thingList do		
-		if debugFlag then print("Creating Thing button for " .. currentCampaign.thingList[i].name); end
-		--currentCampaign.thingList[i].id = i
+	for i=1, #currentCampaign.eventList do		
+		if debugFlag then print("Creating Event button for " .. currentCampaign.eventList[i].title); end
+		--currentCampaign.eventList[i].id = i
 		local yLoc = top+20*i
-		local max = thingsY/2 - 20
+		local max = eventsY/2 - 20
 		local xLoc = - (display.contentWidth/2 - 60)
 		if (yLoc > max) then
 			xLoc = display.contentWidth/2-120
@@ -114,17 +114,10 @@ function scene:show( event )
 			count = count+1
 			--print("c=".. tostring(count) .. ", i=".. tostring(i))
 		end
-		ssk.easyIFC:presetPush( thingsGroup, "linkButton", xLoc, yLoc, 100, 30, "* " .. currentCampaign.thingList[i].name, 
-			function() manageThing.openViewThingDialog(currentCampaign.thingList[i], thingsGroup, false, doUpdate); end, 
+		ssk.easyIFC:presetPush( eventsGroup, "linkButton", xLoc, yLoc, 100, 30, "* " .. currentCampaign.eventList[i].title, 
+			function() manageEvent.openViewEventDialog(currentCampaign.eventList[i], eventsGroup, false, doUpdate); end, 
 			{labelHorizAlign="left", labelSize=12} )
 	end
-
-	-- for i=1, #currentCampaign.thingList do		
-	-- 	if debugFlag then print("Creating Thing button for " .. currentCampaign.thingList[i].name); end
-	-- 	currentCampaign.thingList[i].id = i
-	-- 	ssk.easyIFC:presetPush( thingsGroup, "linkButton", 80, top+20*i, 100, 30, "* " .. currentCampaign.thingList[i].name, 
-	-- 		function() manageThing.openViewThingDialog(currentCampaign.thingList[i]); end, {labelHorizAlign="left"} )
-	-- end
 	
 
     if navGroup then navGroup:removeSelf() end
@@ -157,7 +150,6 @@ function scene:show( event )
 
 	if event.phase == "will" then
 		print(currentScene .. ":SHOW WILL PHASE")
-		--campaignNameText.text = "Things: " .. currentCampaign.name
 	else
 		print(currentScene .. ":SHOW DID PHASE")
 	end
@@ -178,7 +170,7 @@ function scene:hide( event )
 	
 
 	if event.phase == "will" then
-		thingsGroup:removeSelf()
+		eventsGroup:removeSelf()
 		navGroup:removeSelf()
 	--elseif event.phase == "did" then
 		

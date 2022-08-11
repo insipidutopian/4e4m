@@ -230,6 +230,32 @@ function CampaignList.reloadCampaigns(self)
 	self.currentCampaignIndex=appSettings.currentCampaign
 end
 
+
+
+
+--
+-- ADDS
+--
+function CampaignList.addEventToCampaign(self, newEvent)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		c:addEvent(newEvent)
+		-- table.sort(c.thingList)
+		print("CampaignList:addThingToCampaign: count after is: " .. #c.eventList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
 function CampaignList.addThingToCampaign(self, newThing)
 	local c = self.cList[tonumber(self.currentCampaignIndex)]
 	if not c then
@@ -241,7 +267,6 @@ function CampaignList.addThingToCampaign(self, newThing)
 		return "failed to find a current campaign"
 	else
 		print("Campaign found: " .. c.name)
-		--print("CampaignList:addQuest: count before is: " .. #c.questList)
 		c:addThing(newThing)
 		-- table.sort(c.thingList)
 		print("CampaignList:addThingToCampaign: count after is: " .. #c.thingList)
@@ -263,7 +288,6 @@ function CampaignList.addPlaceToCampaign(self, newPlace)
 		return "failed to find a current campaign"
 	else
 		print("Campaign found: " .. c.name)
-		--print("CampaignList:addQuest: count before is: " .. #c.questList)
 		c:addPlace(newPlace)
 		-- table.sort(c.thingList)
 		print("CampaignList:addPlaceToCampaign: count after is: " .. #c.placeList)
@@ -285,7 +309,7 @@ function CampaignList.addNpcToCampaign(self, newNpc)
 	else
 		print("Campaign found: " .. c.name)
 		print("CampaignList:addNpc: count before is: " .. #c.npcList)
-		c.npcList[#c.npcList+1] = newNpc
+		c:addNpc(newNpc)
 		-- table.sort(c.npcList)
 		print("CampaignList:addNpc: count after is: " .. #c.npcList)
 		CampaignList:writeCampaignFile(c)
@@ -294,7 +318,51 @@ function CampaignList.addNpcToCampaign(self, newNpc)
 	return "failed"
 end
 
+function CampaignList.addQuestToCampaign(self, newQuest)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		c:addQuest(newQuest)
+		-- table.sort(c.questList)
+		print("CampaignList:addQuest: count after is: " .. #c.questList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
 
+function CampaignList.addEncounterToCampaign(self, newEncounter)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		c:addEncounter(newEncounter)
+		-- table.sort(c.encounterList)
+		print("CampaignList:addEncounter: count after is: " .. #c.encounterList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
+
+
+--
+-- UPDATES
+--
 function CampaignList.updateNpcForCampaign(self, npc)
 	local c = self.cList[tonumber(self.currentCampaignIndex)]
 	if not c then
@@ -393,6 +461,38 @@ function CampaignList.updateThingForCampaign(self, thing)
 	return "failed"
 end
 
+function CampaignList.updateEventForCampaign(self, e)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		
+		if not e.id then
+			print("ERROR: Event with no ID cannot be updated.")
+			return "failed"
+		end
+
+		for i=1, #c.eventList do
+			if c.eventList[i].id == e.id then
+				-- update
+				print("Updating Thing id: " .. e.id)
+				c.eventList[i] = e
+			end 
+		end
+
+		-- table.sort(c.thingList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
 function CampaignList.updateQuestForCampaign(self, quest)
 	local c = self.cList[tonumber(self.currentCampaignIndex)]
 	if not c then
@@ -425,6 +525,44 @@ function CampaignList.updateQuestForCampaign(self, quest)
 	return "failed"
 end
 
+
+function CampaignList.updateEncounterForCampaign(self, encounter)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		
+		if not encounter.id then
+			print("ERROR: Encounter with no ID cannot be updated.")
+			return "failed"
+		end
+
+		for i=1, #c.encounterList do
+			if c.encounterList[i].id == encounter.id then
+				-- update
+				print("Updating Encounter id: " .. encounter.id)
+				c.encounterList[i] = encounter
+			end 
+		end
+
+		-- table.sort(c.encounterList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
+
+
+--
+-- REMOVES
+--
 function CampaignList.removeNpcFromCampaign(self, npc)
 	local c = self.cList[tonumber(self.currentCampaignIndex)]
 	if not c then
@@ -568,7 +706,7 @@ function CampaignList.removeQuestFromCampaign(self, quest)
 	return "failed"
 end
 
-function CampaignList.addQuestToCampaign(self, newQuest)
+function CampaignList.removeEncounterFromCampaign(self, encounter)
 	local c = self.cList[tonumber(self.currentCampaignIndex)]
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
@@ -579,15 +717,66 @@ function CampaignList.addQuestToCampaign(self, newQuest)
 		return "failed to find a current campaign"
 	else
 		print("Campaign found: " .. c.name)
-		--print("CampaignList:addQuest: count before is: " .. #c.questList)
-		c.questList[#c.questList+1] = newQuest
-		-- table.sort(c.questList)
-		print("CampaignList:addQuest: count after is: " .. #c.questList)
-		CampaignList:writeCampaignFile(c)
-		return "success"
+		print("CampaignList:removeEncounterFromCampaign: count before is: " .. #c.encounterList)
+		
+		if not encounter.id then
+			print("ERROR: Encounter with no ID cannot be deleted.")
+			return "failed"
+		end
+
+		for i=1, #c.encounterList do
+			print("Comparing encounter " .. i .. " with id of " .. tostring(c.encounterList[i].id) .. " with " .. tostring(encounter.id))
+			if c.encounterList[i].id == encounter.id then
+				-- delete
+				print("Deleting encounter id: " .. encounter.id)
+				table.remove( c.encounterList, i )
+				print("CampaignList:removeEncounterFromCampaign: count after is: " .. #c.encounterList)
+				CampaignList:writeCampaignFile(c)
+				return "success"
+			end 
+		end
+
+		print("CampaignList:removeEncounterFromCampaign() ERROR: No Encounter Found")
 	end
 	return "failed"
 end
+
+function CampaignList.removeEventFromCampaign(self, event)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		print("CampaignList:removeEventFromCampaign: count before is: " .. #c.eventList)
+		
+		if not event.id then
+			print("ERROR: Event with no ID cannot be deleted.")
+			return "failed"
+		end
+
+		for i=1, #c.eventList do
+			print("Comparing event " .. i .. " with id of " .. tostring(c.eventList[i].id) .. " with " .. tostring(event.id))
+			if c.eventList[i].id == event.id then
+				-- delete
+				print("Deleting event id: " .. event.id)
+				table.remove( c.eventList, i )
+				print("CampaignList:removeEventFromCampaign: count after is: " .. #c.eventList)
+				CampaignList:writeCampaignFile(c)
+				return "success"
+			end 
+		end
+
+		print("CampaignList:removeEventFromCampaign() ERROR: No Event Found")
+	end
+	return "failed"
+end
+
+
 
  -- Initialize the campaignList
 CampaignList:new()

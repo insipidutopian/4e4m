@@ -101,7 +101,7 @@ function scene:show( event )
 	local count=0
 	for i=1, #currentCampaign.questList do		
 		if debugFlag then print("Creating Quest button for " .. currentCampaign.questList[i].name); end
-		currentCampaign.questList[i].id = i
+		--currentCampaign.questList[i].id = i
 		local yLoc = top+20*i
 		local max = questsY/2 - 20
 		local xLoc = - (display.contentWidth/2 - 60)
@@ -118,13 +118,6 @@ function scene:show( event )
 			function() manageQuest.openViewQuestDialog(currentCampaign.questList[i], questsGroup, false, doUpdate); end, 
 			{labelHorizAlign="left", labelSize=12} )
 	end
-
-	-- for i=1, #currentCampaign.questList do		
-	-- 	if debugFlag then print("Creating Quest button for " .. currentCampaign.questList[i].name); end
-	-- 	currentCampaign.questList[i].id = i
-	-- 	ssk.easyIFC:presetPush( questsGroup, "linkButton", 80, top+20*i, 100, 30, "* " .. currentCampaign.questList[i].name, 
-	-- 		function() manageQuest.openViewQuestDialog(currentCampaign.questList[i]); end, {labelHorizAlign="left"} )
-	-- end
 	
 
     if navGroup then navGroup:removeSelf() end
