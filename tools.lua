@@ -7,134 +7,163 @@
 --
 -- This file is used to display the corresponding screen content when the user clicks the tab bar. 
 
--- local storyboard = require ( "storyboard" )
-local storyboard = require ( "composer" )
+-- local composer = require ( "composer" )
+local composer = require ( "composer" )
 local widget = require ( "widget" )
 
---Create a storyboard scene for this module
-local scene = storyboard.newScene()
+--Create a composer scene for this module
+local scene = composer.newScene()
+local shown=nil
+
+
+
+-- Function to handle button events
+local function handlePress( event )
+ 
+    if ( "ended" == event.phase ) then
+        print( "Home Button was pressed" )
+        composer.gotoScene("home", { effect = "fade", time = 400})
+    end
+end
 
 --Create the scene
 function scene:create( event )
 	local group = self.view
 	
+	currentScene = "tools"
+	print(currentScene .. ":createScene")
 
-	local background = display.newImage("images/treasure.jpg") 
-	background.x = display.contentWidth / 2
- 	background.y = display.contentHeight / 2
- 	background:scale(0.9,0.8)
- 	background.alpha = 0.5
- 	group:insert(background)
-
-
-	--Create a text object that displays the current scene name and insert it into the scene's view
-	-- local screenText = display.newText( "Tools", display.contentCenterX, 50, native.systemFontBold, 18 )
-	-- screenText:setFillColor( 0 )
-	-- group:insert( screenText )
-		-- Create title bar to go at the top of the screen
-	local titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, titleBarHeight )
-	titleBar:setFillColor( titleGradient ) 
-	-- titleBar.y = display.screenOriginY + titleBar.contentHeight * 0.5
-	group:insert ( titleBar )
-	-- create embossed text to go on toolbar
-	local titleText = display.newEmbossedText( "Tools", display.contentCenterX, titleBar.y, 
-												native.systemFontBold, 20 )
-	group:insert ( titleText )
+	initPage(group)
 
 	local yStart = titleBarHeight + yPadding 
 	local buttonCount = 0
 
 
- 	local diceButton = widget.newButton
-	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
-		label = "Dice",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		emboss = true,
-		onPress = function() storyboard.gotoScene( "dice_tool" ); end,
-		scaleX = 0.2,
-		fontSize = 12,
-		isVisible = true,
-		x = buttonWidth + rightPadding,
-		y = yStart + (buttonCount * (yPadding + buttonHeight)) + (buttonHeight / 2),
-	}
+	local diceButton = widget.newButton(
+    {
+        label = "Dice", font=btnFont, fontSize=btnFontSize, emboss = false,
+        shape = "circle", radius = 70*0.9, cornerRadius = 2, strokeWidth = 4,
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+        onPress = function() composer.gotoScene( "dice_tool" ); end,
+        x = 90,
+      	y = display.contentHeight/2 + yOffset + titleBarHeight/2
+    })
+ 	
 	group:insert(diceButton)
 
-	buttonCount = buttonCount + 1
+	
 
- 	local initiativeButton = widget.newButton
-	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
-		label = "Initiative",
-		emboss = true,
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		onPress = function() storyboard.gotoScene( "initiative_tool" ); end,
-		fontSize = 12,
-		scaleX = 0.2,
-		isVisible = true,
-		x = buttonWidth + rightPadding,
-		y = yStart + (buttonCount * (yPadding + buttonHeight)) + (buttonHeight / 2),
-	}
+
+	local initiativeButton = widget.newButton(
+    {
+        label = "Initiative", font=btnFont, fontSize=btnFontSize, emboss = false,
+        shape = "circle", radius = 70*0.9, cornerRadius = 2, strokeWidth = 4,
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+        onPress = function() composer.gotoScene( "initiative_tool" ); end,
+        x = display.contentWidth-90,
+      	y = display.contentHeight/2 + yOffset + titleBarHeight/2
+    })
+ 	
 	group:insert(initiativeButton)
 
-	buttonCount = buttonCount + 1
-
- 	local nameGenButton = widget.newButton
-	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
-		label = "Names",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		emboss = true,
-		onPress = function() storyboard.gotoScene( "namegen_tool" ); end,
-		scaleX = 0.2,
-		fontSize = 12,
-		isVisible = true,
-		x = buttonWidth + rightPadding,
-		y = yStart + (buttonCount * (yPadding + buttonHeight)) + (buttonHeight / 2),
-	}
+	
+	local nameGenButton = widget.newButton(
+    {
+        label = "Names", font=btnFont, fontSize=btnFontSize, emboss = false,
+        shape = "circle", radius = 70*0.9, cornerRadius = 2, strokeWidth = 4,
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+        onPress = function() composer.gotoScene( "namegen_tool" ); end,
+        x = display.contentWidth-90,
+      	y =90 + yOffset*2 + titleBarHeight
+    })
+ 	
 	group:insert(nameGenButton)
 
-	buttonCount = buttonCount + 1
+	local placeGenButton = widget.newButton(
+    {
+        label = "Places", font=btnFont, fontSize=btnFontSize, emboss = false,
+        shape = "circle", radius = 70*0.9, cornerRadius = 2, strokeWidth = 4,
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+        onPress = function() composer.gotoScene( "placegen_tool" ); end,
+        x = 90,
+      	y =90 + yOffset*2 + titleBarHeight
+    })
 
-	local placeGenButton = widget.newButton
-	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
-		label = "Places",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		emboss = true,
-		onPress = function() storyboard.gotoScene( "placegen_tool" ); end,
-		scaleX = 0.2,
-		fontSize = 12,
-		isVisible = true,
-		x = buttonWidth + rightPadding,
-		y = yStart + (buttonCount * (yPadding + buttonHeight)) + (buttonHeight / 2),
-	}
+
 	group:insert(placeGenButton)
 
-	buttonCount = buttonCount + 1
+	
+	local rewardGenButton = widget.newButton(
+    {
+        label = "Rewards", font=btnFont, fontSize=btnFontSize, emboss = false,
+        shape = "circle", radius = 70*0.9, cornerRadius = 2, strokeWidth = 4,
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+        onPress = function() composer.gotoScene( "rewardgen_tool" ); end,
+        x = 90,
+      	y =display.contentHeight-90
+    })
+	
+	group:insert(rewardGenButton)
 
-	local objectGenButton = widget.newButton
-	{
-		defaultFile = "buttonRedSmall.png",
-		overFile = "buttonRedSmallOver.png",
-		label = "Things",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		emboss = true,
-		onPress = function() storyboard.gotoScene( "thinggen_tool" ); end,
-		scaleX = 0.2,
-		fontSize = 12,
-		isVisible = true,
-		x = buttonWidth + rightPadding,
-		y = yStart + (buttonCount * (yPadding + buttonHeight)) + (buttonHeight / 2),
-	}
-	group:insert(objectGenButton)
+
+	local homeBtn = widget.newButton(
+    {
+        label = "Home", font=btnFont, fontSize=btnFontSize, emboss = false,
+        shape = "circle", radius = 70*0.9, cornerRadius = 2, strokeWidth = 4,
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+        onPress = function()  composer.gotoScene("home", { effect = "fade", time = 400}) end,
+    	x = display.contentWidth-90,
+      	y = display.contentHeight-90
+    })
+
+	group:insert(homeBtn)
+
+end
+
+function scene:show( event )
+	local group = self.view
+
+	currentScene = "tools"
+
+	if not shown then
+		print(currentScene .. ":SHOW")		
+
+		--titleText.x = display.contentCenterX
+	
+		--timer.performWithDelay( 200*delayMultiplier, listener1 )
+		shown=1
+	else
+		print(currentScene .. ":show skipped")
+	end
+end
+
+--Destroy the scene
+function scene:destroy( event )
+	local group = self.view
+
+	print(currentScene .. ":destroy")
+end
+
+--Hide the scene
+function scene:hide( event )
+	local group = self.view
+	print(currentScene .. ":hide")
 end
 
 --Add the createScene, enterScene, and exitScene listeners
+
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )

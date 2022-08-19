@@ -28,4 +28,24 @@ settings =
 			},
 		},
 	},
+	window =
+    {
+        defaultMode = "normal",
+        defaultViewWidth = 640,
+        defaultViewHeight = 920,
+        resizable = true,
+        minViewWidth = 320,
+        minViewHeight = 460,
+    },
+
+    
+    macos =
+    {
+        plist =
+        {
+            NSHumanReadableCopyright = "Copyright © 2022 AppSlingers Guild"
+        },
+    },
 }
+
+
