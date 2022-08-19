@@ -11,7 +11,7 @@ print( "uiTools.lua has been loaded" )
 -- local debug = true
 
 
-function uiTools.createInputTextBox( x, y, height, width, listener) 
+function uiTools.createInputTextBox( x, y, height, width, listener, updateFunction) 
 	print("createInputTextBox() called")
 	tb = native.newTextBox( x, y, height, width )
 	-- tb.hasBackground = false
@@ -19,6 +19,8 @@ function uiTools.createInputTextBox( x, y, height, width, listener)
 	tb.font = native.newFont(mainFont, mainFontSize-2)
 	tb:setTextColor(.6,0,0,1)
 	tb:addEventListener( "userInput", listener )
+	tb["updateFunction"] = updateFunction
+	tb:setReturnKey('next')
 	return tb
 end
 
@@ -42,18 +44,20 @@ function uiTools.textFieldListener( event )
         if debugFlag then print( "TF begin editing...."); end
  
     elseif ( event.phase == "ended" or event.phase == "submitted" ) then
-        -- Output resulting text from "defaultField"
         if debugFlag then print( "TF ended editing: " ..  event.target.text ); end
         if (event.target["updateFunction"] ~= nil) then
         	if debugFlag then print("TF Calling update function!!!!"); end
         	event.target["updateFunction"]()
 		end
-        native.setKeyboardFocus( nil )
+        --native.setKeyboardFocus( nil )
  
     elseif ( event.phase == "editing" ) then
     	if debugFlag then
-	        print( "TF new: " .. event.newCharacters )
-	        -- print( "old: " .. event.oldText )
+    		if event.newCharacters == '\t' then
+    			print("new: TAB")
+    		else
+	        	print( "TF new: " .. event.newCharacters )
+	        end
 	        print( "TF sp: " .. event.startPosition )
 	        print( "TF et:" .. event.text )
 	    end
@@ -64,17 +68,30 @@ function uiTools.textBoxListener( event )
 
     if ( event.phase == "began" ) then
         -- User begins editing "defaultField"
-        if debugFlag then print( "begin editing...."); end
+        if debugFlag then print( "TBox begin editing...."); end
  
     elseif ( event.phase == "ended" or event.phase == "submitted" ) then
-        -- Output resulting text from "defaultField"
-        if debugFlag then print( "ended editing: " ..  event.target.text ); end
-        native.setKeyboardFocus( nil )
+        if debugFlag then print( "TBox ended editing: " ..  event.target.text ); end
+        if (event.target["updateFunction"] ~= nil) then
+        	if debugFlag then print("TF Calling update function!!!!"); end
+        	event.target["updateFunction"]()
+		end
+        --native.setKeyboardFocus( nil )
  
     elseif ( event.phase == "editing" ) then
     	if debugFlag then
-	        print( "new: " .. event.newCharacters )
-	        -- print( "old: " .. event.oldText )
+    		--print("NEW CHAR BYTE=" .. tostring(string.byte(event.newCharacters)))
+    		--if event.newCharacters == '\t' then
+    		--	return
+    		-- 	print("new: TAB")
+    			
+    		-- 	--throw an ended event
+    		-- 	event.target:dispatchEvent( { phase="editing", newCharacters='\b',
+    		-- 		startPosition = event.startPosition-1, text = string.sub(event.text, 1, string.len(event.text) - 1) })
+    		-- 	event.target:dispatchEvent( { phase="ended", target=event.target } )
+    		--else
+	        	print( "new: " .. event.newCharacters )
+	        --end
 	        print( "sp: " .. event.startPosition )
 	        print( "et:" .. event.text )
 	    end

@@ -61,7 +61,7 @@ function event:setTitle(title)
 	self.title = title
 end
 
-function event:setRace(keywords)
+function event:setKeywords(keywords)
 	print ("event:setRace - setting event keywords = " .. #keywords .. " keywords")
 	self.keywords = keywords
 end

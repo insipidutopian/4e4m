@@ -14,6 +14,8 @@ uiTools = require("uiTools")
 local manageNpc = require("manageNpc")
 local managePlace = require("managePlace")
 local manageQuest = require("manageQuest")
+local manageEvent = require("manageEvent")
+require("manageCampaignSettings")
 
 local scene = composer.newScene()
 
@@ -175,15 +177,26 @@ function scene:create( event )
 	if questGroup then questGroup:removeSelf() end
 	questGroup = display.newGroup()
 	questGroup.x=0
-	questGroup.y=350
+	questGroup.y=345
 
-	local questSquare = display.newRect( display.contentWidth/2, 150, display.contentWidth-10, 300 )
+	local questSquare = display.newRect( display.contentWidth/2, 90, display.contentWidth-10, 180 )
 	questSquare.stroke = {1,0,0}
 	questSquare.strokeWidth = 2
 	questSquare.fill = {0,0,0}
 	questGroup:insert(questSquare)
 	group:insert(questGroup)
 
+	if eventGroup then eventGroup:removeSelf() end
+	eventGroup = display.newGroup()
+	eventGroup.x=0
+	eventGroup.y=520
+
+	local eventSquare = display.newRect( display.contentWidth/2, 90, display.contentWidth-10, 180 )
+	eventSquare.stroke = {1,0,0}
+	eventSquare.strokeWidth = 2
+	eventSquare.fill = {0,0,0}
+	eventGroup:insert(eventSquare)
+	group:insert(eventGroup)
 
 	
 	currentCampaign = CampaignList:getCurrentorNewCampaign() 
@@ -224,16 +237,20 @@ function scene:create( event )
 
 	group:insert(homeBtn)
 
-	--ssk.easyIFC:presetPush( group, "appButton", 50, display.contentHeight-160, 80, 30, "Encounters", rerollQuest )
-	encountersButton = ssk.easyIFC:presetPush(group, "appButton", 50, display.contentHeight-130, 80, 30, 
+	thingsButton = ssk.easyIFC:presetPush(group, "appButton", 50, display.contentHeight-80, 80, 30, 
 											  "Things", 
 											  function()  composer.gotoScene("manageThings", { effect = "fade", time = 400}) end, 
 											  {labelHorizAlign="left", labelSize=14} )
-	encountersButton = ssk.easyIFC:presetPush(group, "appButton", 150, display.contentHeight-130, 80, 30, 
-											  "Events Log", 
-											  function()  composer.gotoScene("manageEvents", { effect = "fade", time = 400}) end, 
+	settingsButton = ssk.easyIFC:presetPush(group, "appButton", 140, display.contentHeight-80, 80, 30, 
+											  "Settings", 
+											  function()  composer.gotoScene("manageCampaignSettings", { effect = "fade", time = 400}) end, 
+											  --function() manageCampaign.openViewCampaignDialog(currentCampaign, overlayGroup, doUpdate); end, 
 											  {labelHorizAlign="left", labelSize=14} )
-
+	--encountersButton = ssk.easyIFC:presetPush(group, "appButton", 230, display.contentHeight-80, 80, 30, 
+	--										  "Events Log", 
+	--										  function()  composer.gotoScene("manageEvents", { effect = "fade", time = 400}) end, 
+	--										  {labelHorizAlign="left", labelSize=14} )
+	
 end
 
 
@@ -352,6 +369,20 @@ function scene:show( event )
 			end
 		end
 
+		eventButton = ssk.easyIFC:presetPush(eventGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+											  "Events: " .. #currentCampaign.eventList, 
+											  function()  composer.gotoScene("manageEvents", { effect = "fade", time = 400}) end, 
+											  {labelHorizAlign="left", labelSize=14} )
+		saveButton(eventButton)
+		for i=1, #currentCampaign.eventList do
+			print("Quest found: " .. currentCampaign.eventList[i].title)
+			if (i < 9) then
+				b = ssk.easyIFC:presetPush( eventGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.eventList[i].title, 
+					function() manageEvent.openViewEventDialog(currentCampaign.eventList[i], overlayGroup, false, doUpdate); end, 
+					{labelHorizAlign="left", labelSize=11} )
+				saveButton(b)
+			end
+		end
 
 	else
 		print(currentScene .. ":SHOW DID PHASE")
@@ -360,7 +391,7 @@ function scene:show( event )
 
 		if campaignNameTextField then campaignNameTextField:removeSelf() end
 		campaignNameTextField = ssk.easyIFC:presetTextInput(group, "title", currentCampaign.name, 100, 70, 
-			{listener=titleListener, updateFunction=updateCampaignName})
+			{listener=titleListener, updateFunction=updateCampaignName, keyboardFocus=true, selectedChars={0,99}})
 		
 	end
 

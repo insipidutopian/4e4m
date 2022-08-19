@@ -11,6 +11,8 @@ local newEvent
 local eventTitle
 local eventRace
 local eventNotes
+local eventDate
+local eventLocation
 local currentEventId
 
 local updateFunction
@@ -39,14 +41,16 @@ function manageEvent.openViewEventDialog(event, group, showRerollButton, onSave)
 		--keywords = Randomizer:generateEventKeywords()
 		newEvent = Event:new(Randomizer:generateEventTitle(), {"random"}, Randomizer:generateEventNotes())
 		eventTitleTextField:setText(newEvent.title)
-		--eventRaceTextField:setText()
+		
 		eventNotes:setText(newEvent.notes)
+		eventDate:setText(newEvent.date)
+		eventLocation:setText(newEvent.location)
 	end
 
 	local function saveEventToCampaign( )
 		print("saveEventToCampaign() called, event ID is " .. currentEventId)
-		newEvent = Event:new(eventTitleTextField.text, {"random"}, eventNotes:getText())
-		--currentCampaign = CampaignList:getCurrentCampaign()
+		newEvent = Event:new(eventTitleTextField.text, {"random"}, eventNotes:getText(), eventDate:getText(), eventLocation:getText())
+		
 		if (currentEventId == 0) then
 			CampaignList:addEventToCampaign(newEvent)
 		else
@@ -56,6 +60,7 @@ function manageEvent.openViewEventDialog(event, group, showRerollButton, onSave)
 		updateFunction()
 
 		closeTray()
+		
 	end
 
 	local function deleteEvent(event)
@@ -102,13 +107,33 @@ function manageEvent.openViewEventDialog(event, group, showRerollButton, onSave)
 
 	y = textYOffset + textHeight / -2
 	currentEventId = event.id
-	eventTitleTextField = ssk.easyIFC:presetTextInput(dialog, "title", event.title, 0, y-10, 
-			{listener=uiTools.textFieldListener, updateFunction=saveEventToCampaign})
+	local titleSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 24, 4 )
+	titleSquare.fill = {0.1,0.1,0.1}
+	eventTitleTextField = ssk.easyIFC:presetTextInput(dialog, "title", event.title, 0, y, 
+			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
 	
-    y=y+20; ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=180})
-	y=y+60; 
+    y=y+30; 
+    ssk.easyIFC:presetLabel( dialog, "appLabel", "Date:", 50+textWidth/-2, y, {align="left", width=100})
+    local dateSquare = display.newRoundedRect(dialog, 45, y, textWidth-86, 20, 4 )
+	dateSquare.fill = {0.1,0.1,0.1}
+    eventDate = ssk.easyIFC:presetTextInput(dialog, "default", event.date, 50, y, 
+			{listener=uiTools.textFieldListener, width=textWidth-90})
+
+    y=y+30;
+    ssk.easyIFC:presetLabel( dialog, "appLabel", "Location:", 50+textWidth/-2, y, {align="left", width=100})
+    local locSquare = display.newRoundedRect(dialog, 45, y, textWidth-86, 20, 4 )
+	locSquare.fill = {0.1,0.1,0.1}
+    eventLocation = ssk.easyIFC:presetTextInput(dialog, "default", event.location, 50, y, 
+			{listener=uiTools.textFieldListener, width=textWidth-90})
+	
+	y=y+30;
+    ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=textWidth})
+
+	y=y+10+textBoxHeight; 
+	local notesSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 2*textBoxHeight+4, 4 )
+	notesSquare.fill = {0.1,0.1,0.1} 
 	eventNotes = ssk.easyIFC:presetTextBox(dialog, "default", event.notes, 10, y, 
-			{listener=uiTools.textFieldListener, updateFunction=saveEventToCampaign, width=240, height=80})
+			{listener=uiTools.textBoxListener, width=textWidth, height=2*textBoxHeight})
 
 
 	y = textYOffset + textHeight / 2 - textYOffset
@@ -132,7 +157,8 @@ function manageEvent.openNewEventDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewEventDialog() called, onsave=" .. tostring(onSave))
 	--local race = Randomizer:generateEventRace()
-	newEvent = Event:new(Randomizer:generateEventTitle(), race, Randomizer:generateEventNotes())
+	newEvent = Event:new("Event", "", "")
+	newEvent:setDate(CampaignList:getCampaignById(appSettings.currentCampaign).date) -- default to current date of campaign
 	manageEvent.openViewEventDialog(newEvent, group, true, onSave)
 end
 

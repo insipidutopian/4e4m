@@ -8,6 +8,7 @@ local easyIFC = ssk.easyIFC;local persist = ssk.persist
 local newQuest
 local questName
 local questDescription
+local questGiver
 local questNotes
 local currentQuestId
 
@@ -38,12 +39,13 @@ function manageQuest.openViewQuestDialog(quest, group, showRerollButton, onSave)
 		newQuest = Randomizer:generateQuest(tType)
 		questNameTextField:setText(newQuest.name)
 		questDescription:setText(newQuest.description)
+		questGiver:setText(newQuest.questGiver)
 		questNotes:setText(newQuest.details)
 	end
 
 	local function saveQuestToCampaign( )
 		print("saveQuestToCampaign() called, quest ID is " .. currentQuestId)
-		newQuest = Quest:new(questNameTextField.text, questDescription:getText(), questNotes:getText())
+		newQuest = Quest:new(questNameTextField.text, questDescription:getText(), questNotes:getText(), questGiver:getText())
 		
 		if (currentQuestId == 0) then
 			print("saveQuestToCampaign() saving new quest, quest (name= " .. newQuest.name .. ", notes= " .. newQuest.details .. ")")
@@ -98,34 +100,50 @@ function manageQuest.openViewQuestDialog(quest, group, showRerollButton, onSave)
 
 	if largeFormat then
 		textYOffset = 50
-		textBoxHeight = 130
+		textBoxHeight = 100
 	end
 
 	y = textYOffset + textHeight / -2
 	currentQuestId = quest.id
+	local titleSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 24, 4 )
+	titleSquare.fill = {0.1,0.1,0.1}
 	questNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", quest.name, 0, y, 
-			{listener=uiTools.textFieldListener, updateFunction=saveQuestToCampaign, width=textWidth})
+			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
+	questNameTextField:setReturnKey('next')
 	
-    y=y+10+textBoxHeight/2; 
-    questDescription = ssk.easyIFC:presetTextBox(dialog, "default", quest.description, 10, y, 
-			{listener=uiTools.textFieldListener, updateFunction=saveQuestToCampaign, width=textWidth, height=textBoxHeight})
+	y=y+30; 
+	local qgSquare = display.newRoundedRect(dialog, 50, y, textWidth-101, 20, 4 )
+	qgSquare.fill = {0.1,0.1,0.1}
+	ssk.easyIFC:presetLabel( dialog, "appLabel", "Quest Giver:", 50+textWidth/-2, y, {align="left", width=120})
+    questGiver = ssk.easyIFC:presetTextInput(dialog, "default", quest.questGiver, 50, y, 
+			{listener=uiTools.textFieldListener, width=textWidth-105})
+    questGiver:setReturnKey('next')
+
+    y=y+20+textBoxHeight/2; 
+    local descSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, textBoxHeight+4, 4 )
+	descSquare.fill = {0.1,0.1,0.1}
+    questDescription = ssk.easyIFC:presetTextBox(dialog, "default", quest.description, 0, y, 
+			{listener=uiTools.textBoxListener, width=textWidth, height=textBoxHeight})
+    questDescription:setReturnKey('next')
 
     y=y+10+textBoxHeight/2; 
     ssk.easyIFC:presetLabel( dialog, "appLabel", "Additional Notes:", 0, y, {align="left", width=180})
 	
-	y=y+10+textBoxHeight/2; 
-	questNotes = ssk.easyIFC:presetTextBox(dialog, "default", quest.details, 10, y, 
-			{listener=uiTools.textFieldListener, updateFunction=saveQuestToCampaign, width=textWidth, height=textBoxHeight})
-
+	y=y+10+textBoxHeight; 
+	local notesSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, textBoxHeight*2+4, 4 )
+	notesSquare.fill = {0.1,0.1,0.1}
+	questNotes = ssk.easyIFC:presetTextBox(dialog, "default", quest.details, 0, y, 
+			{listener=uiTools.textBoxListener, width=textWidth, height=textBoxHeight*2, placeholder="Notes", hasBackground=false})
+	questNotes:setReturnKey('next')
 	
 
 	y = textYOffset + textHeight / 2 - textYOffset
 	--y = y+40
 	if showRerollButton then
+		rerollQuest(nil)
 		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Reroll", rerollQuest )
 		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", saveQuestToCampaign )
 	else
-		--ssk.easyIFC:presetPush( dialog, "appButton", 0, 80, 120, 30, "Save", saveQuestToCampaign )
 		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Delete", function() deleteQuest(quest); end )
 		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", saveQuestToCampaign )
 	end
@@ -133,17 +151,15 @@ function manageQuest.openViewQuestDialog(quest, group, showRerollButton, onSave)
 	y=y+40; 
 	ssk.easyIFC:presetPush( dialog, "appButton", 0, y, 80, 30, "Close", closeTray )
 
-	--tf = ssk.easyIFC:quickTextInput(dialog, "Example Input", 0, 40, 150, 40, {placeholder="phold"})
-	--tf.text = "Example"
-
 	ssk.easyIFC.easyFlyIn( dialog, { delay = 250, time = 500, sox = 0, soy = fullh } )
 end
 
 function manageQuest.openNewQuestDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewQuestDialog() called, onsave=" .. tostring(onSave))
-	local type = Randomizer:generateQuestType()
-	newQuest = Randomizer:generateQuest(type)
+	--local type = Randomizer:generateQuestType()
+	--newQuest = Randomizer:generateQuest(type)
+	newQuest = Quest:new("Title","Description","Details", "")
 	manageQuest.openViewQuestDialog(newQuest, group, true, onSave)
 end
 

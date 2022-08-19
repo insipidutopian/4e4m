@@ -3,7 +3,7 @@
 --  
 --
 ------------------------------------------------------------
-debugFlag = true
+debugFlag = false
 
 local widget = require ( "widget" )
 --widget.setTheme("widget_theme_ios7")
@@ -19,7 +19,7 @@ Randomizer = require ("RandGenUtil")
 FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
 
-GAMEMASTERY_VERSION = "1.3.1"
+GAMEMASTERY_VERSION = "1.3.3"
 -- SSK2 Begin Load
 io.output():setvbuf("no")
 display.setStatusBar(display.HiddenStatusBar)
@@ -43,6 +43,8 @@ _G.ssk.init( { launchArgs 				= ...,
 
 -- SSK2 Finished Load
 require("skin")
+
+--ssk.android.easyAndroidUIVisibility("immersiveSticky")
 
 
 display.setStatusBar( display.HiddenStatusBar ) 

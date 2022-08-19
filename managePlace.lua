@@ -63,7 +63,14 @@ function managePlace.openViewPlaceDialog(place, group, showRerollButton, onSave)
 
 	centerX=0
 	centerY=0
-	local width, height = ssk.misc.getImageSize( "images/gamemastery/dialog_celticspears_square.png" )
+
+	local image = "images/gamemastery/dialog_celticspears_tall3.png"
+	if largeFormat then
+		image = "images/gamemastery/dialog_celticspears_tall2.png"
+	end
+
+
+	local width, height = ssk.misc.getImageSize( image )
 	print("IMAGE W=" .. tostring(width) .. ", H=" .. tostring(height))
 	if not group then group = display.newGroup(); end
 	dialog = ssk.dialogs.custom.create( group, 0, 0, 
@@ -79,35 +86,47 @@ function managePlace.openViewPlaceDialog(place, group, showRerollButton, onSave)
 	           softShadowAlpha = 0.3,
 	           blockerAlphaTime = 100,
 	           onClose = onClose,
-	           trayImage = "images/gamemastery/dialog_celticspears_square.png",
-           	   shadowImage = "images/gamemastery/dialog_celticspears_square.png" } )
+	           trayImage = image,
+           	   shadowImage = image } )
 
-	y=-100; --placeName = ssk.easyIFC:presetLabel( dialog, "appLabel", place.name, 0, y, {fontSize = 18})
-	currentPlaceId = place.id
-	placeNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", place.name, 0, y-10, 
-			{listener=uiTools.textFieldListener, updateFunction=savePlaceToCampaign})
-	--y=y+20; ssk.easyIFC:presetLabel( dialog, "appLabel", "id: " .. place.id, 0, y, {align="left", width=180})
-    --y=y+20; placeRace = ssk.easyIFC:presetLabel( dialog, "appLabel", "Race: ", 0, y, {align="left", width=180})
-    --placeRaceTextField = ssk.easyIFC:presetTextInput(dialog, "default", place.race, 30, y, 
-	--		{listener=uiTools.textFieldListener, updateFunction=savePlaceToCampaign, width=120})
-    y=y+20; ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=180})
-	y=y+60; --placeNotes = ssk.easyIFC:presetLabel( dialog, "appLabel",  place.description, 10, y, {align="left", width=180, height=100})
-	placeNotes = ssk.easyIFC:presetTextBox(dialog, "default", place.description, 10, y, 
-			{listener=uiTools.textFieldListener, updateFunction=savePlaceToCampaign, width=240, height=80})
+	local textWidth = width - 80
+	local textHeight = height - 200
+	local textYOffset = 0
+	local textBoxHeight = 80
 
-	ssk.easyIFC:presetPush( dialog, "appButton", 0, 120, 120, 30, "Close", closeTray )
-
-	if showRerollButton then
-		ssk.easyIFC:presetPush( dialog, "appButton", -50, 80, 80, 30, "Reroll", rerollPlace )
-		ssk.easyIFC:presetPush( dialog, "appButton", 50, 80, 80, 30, "Save", savePlaceToCampaign )
-	else
-		--ssk.easyIFC:presetPush( dialog, "appButton", 0, 80, 120, 30, "Save", savePlaceToCampaign )
-		ssk.easyIFC:presetPush( dialog, "appButton", -50, 80, 80, 30, "Delete", function() deletePlace(place); end )
-		ssk.easyIFC:presetPush( dialog, "appButton", 50, 80, 80, 30, "Save", savePlaceToCampaign )
+	if largeFormat then
+		textYOffset = 50
+		textBoxHeight = 130
 	end
 
-	--tf = ssk.easyIFC:quickTextInput(dialog, "Example Input", 0, 40, 150, 40, {placeholder="phold"})
-	--tf.text = "Example"
+	y = textYOffset + textHeight / -2
+	currentPlaceId = place.id
+	local titleSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 24, 4 )
+	titleSquare.fill = {0.1,0.1,0.1}
+	placeNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", place.name, 0, y, 
+			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
+	
+    y=y+25; ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=textWidth})
+	y=y+10+textBoxHeight; 
+	local notesSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 2*textBoxHeight+4, 4 )
+	notesSquare.fill = {0.1,0.1,0.1}
+	placeNotes = ssk.easyIFC:presetTextBox(dialog, "default", place.description, 10, y, 
+			{listener=uiTools.textFieldListener, width=textWidth, height=2*textBoxHeight})
+
+	
+
+	y = textYOffset + textHeight / 2 - textYOffset
+	if showRerollButton then
+		rerollPlace(nil)
+		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Reroll", rerollPlace )
+		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", savePlaceToCampaign )
+	else
+		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Delete", function() deletePlace(place); end )
+		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", savePlaceToCampaign )
+	end
+
+	y = y+40; 
+	ssk.easyIFC:presetPush( dialog, "appButton", 0, y, 120, 30, "Close", closeTray )
 
 	ssk.easyIFC.easyFlyIn( dialog, { delay = 250, time = 500, sox = 0, soy = fullh } )
 end
@@ -115,8 +134,8 @@ end
 function managePlace.openNewPlaceDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewPlaceDialog() called, onsave=" .. tostring(onSave))
-	local type = Randomizer:generatePlaceType()
-	newPlace = Randomizer:generatePlace(type)
+	--local type = Randomizer:generatePlaceType()
+	newPlace = Place.new("Name", "", "") --Randomizer:generatePlace(type)
 	managePlace.openViewPlaceDialog(newPlace, group, true, onSave)
 end
 

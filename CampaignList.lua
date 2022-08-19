@@ -61,7 +61,30 @@ function CampaignList.getCampaign(self, i)
 	end
 
 	print ("CampaignList.getCampaign() - found campaign, name=" .. self.cList[i].name)
+	print ("CampaignList.getCampaign() - date=" .. tostring(self.cList[i].date)	.. ", system=" .. tostring(self.cList[i].system))
 	return self.cList[i]
+end
+
+function CampaignList.getCampaignById(self, id)
+	print ("CampaignList.getCampaign() - looking for campaign " .. id .. " in " .. #self.cList .. " campaigns")
+	
+	if (id < 0) then
+		print ("Bad Index: " .. id)
+		return nil
+	end
+
+	for i=1, #self.cList do
+		if self.cList[i].id == id then
+			print ("CampaignList.getCampaign() - found campaign, name=" .. self.cList[i].name)
+			print ("CampaignList.getCampaign() - date=" .. tostring(self.cList[i].date)	.. ", system=" .. tostring(self.cList[i].system))
+			return self.cList[i]
+		end
+	end
+
+	print ("Bad Campaign ID, not found: " .. id)
+	return nil
+
+	
 end
 
 
@@ -134,6 +157,52 @@ function CampaignList.upgradeSettingsFileIfNeeded(self, oldVersion, newVersion)
 	return true
 end
 
+function CampaignList.removeCampaign(self, c)
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		
+		for i=1, #self.cList do
+			if self.cList[i].id == c.id then
+				print("Campaign found: " .. self.cList[i].name)
+				-- delete it
+				table.remove( self.cList, i )
+				print("Campaign removed: " .. c.name)
+
+				local file = ssk.files.documents.getPath("campaign_" .. c.id .. ".4ec")  
+				-- delete the campaign file
+				if ssk.files.util.exists(file) then
+					print("Campaign file exists: " .. file)
+					if  ssk.files.util.isFile(file) then
+						print("Campaign file is file: " .. file)
+						print("Removing Campaign file: " .. file)
+						ssk.files.util.rmFile(file)
+						print("Campaign files removed: " .. file)
+						appSettings['campaignCounter'] = appSettings['campaignCounter'] - 1
+						self.currentCampaignIndex = -1;
+					end
+				end
+				
+				return nil
+			end
+		end
+
+		if not c.id then
+			print("ERROR: Campaign with no ID cannot be updated.")
+			return "failed"
+		end
+
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
 
 function CampaignList.getNewCampaignId(self)
 	print ("4e4m Settings File Version : " .. appSettings['fileVersion'])
@@ -143,7 +212,7 @@ function CampaignList.getNewCampaignId(self)
 	cId = appSettings['campaignCounter'] + 1
 	appSettings['campaignCounter'] = appSettings['campaignCounter'] + 1
     
-    print ("4e4m Campaign Count        : " .. appSettings['campaignCounter'])	
+  print ("4e4m Campaign Count        : " .. appSettings['campaignCounter'])	
 
 
 	FileUtil:writeSettingsFile("settings.cfg", appSettings)
@@ -358,11 +427,55 @@ function CampaignList.addEncounterToCampaign(self, newEncounter)
 	return "failed"
 end
 
+function CampaignList.addPartyMemberToCampaign(self, newPartyMember)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		c:addPartyMember(newPartyMember)
+		-- table.sort(c.partyMemberList)
+		print("CampaignList:addPartyMember: count after is: " .. #c.partyMemberList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
+
 
 
 --
 -- UPDATES
 --
+function CampaignList.updateCampaign(self, c)
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		
+		
+		if not c.id then
+			print("ERROR: Campaign with no ID cannot be updated.")
+			return "failed"
+		end
+
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
 function CampaignList.updateNpcForCampaign(self, npc)
 	local c = self.cList[tonumber(self.currentCampaignIndex)]
 	if not c then
@@ -557,6 +670,41 @@ function CampaignList.updateEncounterForCampaign(self, encounter)
 	end
 	return "failed"
 end
+
+
+function CampaignList.updatePartyMemberForCampaign(self, partyMember)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		
+		if not partyMember.id then
+			print("ERROR: PartyMember with no ID cannot be updated.")
+			return "failed"
+		end
+
+		for i=1, #c.partyMemberList do
+			if c.partyMemberList[i].id == partyMember.id then
+				-- update
+				print("Updating PartyMember id: " .. partyMember.id)
+				c.partyMemberList[i] = partyMember
+			end 
+		end
+
+		-- table.sort(c.partyMemberList)
+		CampaignList:writeCampaignFile(c)
+		return "success"
+	end
+	return "failed"
+end
+
+
 
 
 
@@ -772,6 +920,42 @@ function CampaignList.removeEventFromCampaign(self, event)
 		end
 
 		print("CampaignList:removeEventFromCampaign() ERROR: No Event Found")
+	end
+	return "failed"
+end
+
+
+function CampaignList.removePartyMemberFromCampaign(self, partyMember)
+	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	if not c then
+		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
+		print("  number of campaigns is " .. #self.cList)
+		for i=1, #self.cList do
+			print("  cList[" .. tostring(i) .. "] name is " .. self.cList[i].name)
+		end
+		return "failed to find a current campaign"
+	else
+		print("Campaign found: " .. c.name)
+		print("CampaignList:removePartyMemberFromCampaign: count before is: " .. #c.partyMemberList)
+		
+		if not partyMember.id then
+			print("ERROR: PartyMember with no ID cannot be deleted.")
+			return "failed"
+		end
+
+		for i=1, #c.partyMemberList do
+			print("Comparing partyMember " .. i .. " with id of " .. tostring(c.partyMemberList[i].id) .. " with " .. tostring(partyMember.id))
+			if c.partyMemberList[i].id == partyMember.id then
+				-- delete
+				print("Deleting partyMember id: " .. partyMember.id)
+				table.remove( c.partyMemberList, i )
+				print("CampaignList:removePartyMemberFromCampaign: count after is: " .. #c.partyMemberList)
+				CampaignList:writeCampaignFile(c)
+				return "success"
+			end 
+		end
+
+		print("CampaignList:removePartyMemberFromCampaign() ERROR: No PartyMember Found")
 	end
 	return "failed"
 end

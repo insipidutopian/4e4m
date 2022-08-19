@@ -61,9 +61,14 @@ function manageThing.openViewThingDialog(thing, group, showRerollButton, onSave)
 		closeTray()
 	end
 
-centerX=0
-centerY=0
-	local width, height = ssk.misc.getImageSize( "images/gamemastery/dialog_celticspears_square.png" )
+	centerX=0
+	centerY=0
+	local image = "images/gamemastery/dialog_celticspears_tall3.png"
+	if largeFormat then
+		image = "images/gamemastery/dialog_celticspears_tall2.png"
+	end
+
+	local width, height = ssk.misc.getImageSize( image )
 	print("IMAGE W=" .. tostring(width) .. ", H=" .. tostring(height))
 	if not group then group = display.newGroup(); end
 	dialog = ssk.dialogs.custom.create( group, 0, 0, 
@@ -79,35 +84,49 @@ centerY=0
 	           softShadowAlpha = 0.3,
 	           blockerAlphaTime = 100,
 	           onClose = onClose,
-	           trayImage = "images/gamemastery/dialog_celticspears_square.png",
-           	   shadowImage = "images/gamemastery/dialog_celticspears_square.png" } )
+	           trayImage = image,
+           	   shadowImage = image } )
 
-	y=-100; --thingName = ssk.easyIFC:presetLabel( dialog, "appLabel", thing.name, 0, y, {fontSize = 18})
-	currentThingId = thing.id
-	thingNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", thing.name, 0, y-10, 
-			{listener=uiTools.textFieldListener, updateFunction=saveThingToCampaign})
-	--y=y+20; ssk.easyIFC:presetLabel( dialog, "appLabel", "id: " .. thing.id, 0, y, {align="left", width=180})
-    --y=y+20; thingRace = ssk.easyIFC:presetLabel( dialog, "appLabel", "Race: ", 0, y, {align="left", width=180})
-    --thingRaceTextField = ssk.easyIFC:presetTextInput(dialog, "default", thing.race, 30, y, 
-	--		{listener=uiTools.textFieldListener, updateFunction=saveThingToCampaign, width=120})
-    y=y+20; ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=180})
-	y=y+60; --thingNotes = ssk.easyIFC:presetLabel( dialog, "appLabel",  thing.description, 10, y, {align="left", width=180, height=100})
-	thingNotes = ssk.easyIFC:presetTextBox(dialog, "default", thing.description, 10, y, 
-			{listener=uiTools.textFieldListener, updateFunction=saveThingToCampaign, width=240, height=80})
+	local textWidth = width - 80
+	local textHeight = height - 200
+	local textYOffset = 0
+	local textBoxHeight = 80
 
-	ssk.easyIFC:presetPush( dialog, "appButton", 0, 120, 120, 30, "Close", closeTray )
-
-	if showRerollButton then
-		ssk.easyIFC:presetPush( dialog, "appButton", -50, 80, 80, 30, "Reroll", rerollThing )
-		ssk.easyIFC:presetPush( dialog, "appButton", 50, 80, 80, 30, "Save", saveThingToCampaign )
-	else
-		--ssk.easyIFC:presetPush( dialog, "appButton", 0, 80, 120, 30, "Save", saveThingToCampaign )
-		ssk.easyIFC:presetPush( dialog, "appButton", -50, 80, 80, 30, "Delete", function() deleteThing(thing); end )
-		ssk.easyIFC:presetPush( dialog, "appButton", 50, 80, 80, 30, "Save", saveThingToCampaign )
+	if largeFormat then
+		textYOffset = 50
+		textBoxHeight = 130
 	end
 
-	--tf = ssk.easyIFC:quickTextInput(dialog, "Example Input", 0, 40, 150, 40, {placeholder="phold"})
-	--tf.text = "Example"
+	y = textYOffset + textHeight / -2
+	currentThingId = thing.id
+	local titleSquare = display.newRoundedRect(dialog, 0, y-10, textWidth+4, 24, 4 )
+	titleSquare.fill = {0.1,0.1,0.1}
+	thingNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", thing.name, 0, y-10, 
+			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
+	
+    y=y+20; 
+    ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=textWidth})
+	
+	y=y+10+textBoxHeight/2; 
+	local notesSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, textBoxHeight+4, 4 )
+	notesSquare.fill = {0.1,0.1,0.1}
+	thingNotes = ssk.easyIFC:presetTextBox(dialog, "default", thing.description, 10, y, 
+			{listener=uiTools.textFieldListener, width=textWidth, height=textBoxHeight})
+
+	
+	y = textYOffset + textHeight / 2 - textYOffset
+	if showRerollButton then
+		rerollThing(nil)
+		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Reroll", rerollThing )
+		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", saveThingToCampaign )
+	else
+		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Delete", function() deleteThing(thing); end )
+		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", saveThingToCampaign )
+	end
+
+	y = y + 40;
+	ssk.easyIFC:presetPush( dialog, "appButton", 0, y, 120, 30, "Close", closeTray )
+
 
 	ssk.easyIFC.easyFlyIn( dialog, { delay = 250, time = 500, sox = 0, soy = fullh } )
 end
@@ -115,8 +134,8 @@ end
 function manageThing.openNewThingDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewThingDialog() called, onsave=" .. tostring(onSave))
-	local type = Randomizer:generateThingType()
-	newThing = Randomizer:generateThing(type)
+	--local type = Randomizer:generateThingType()
+	newThing = Thing.new("Thing", "") --Randomizer:generateThing(type)
 	manageThing.openViewThingDialog(newThing, group, true, onSave)
 end
 

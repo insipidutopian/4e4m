@@ -1,3 +1,5 @@
 *.bak
 .DS_STORE
+.CoronaLiveBuild
+ssk2
 mobdebug.lua
