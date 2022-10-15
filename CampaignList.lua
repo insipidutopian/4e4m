@@ -104,8 +104,9 @@ function CampaignList.loadCampaignFile(self, fName)
 		local i =  #self.cList+1
 		print("::::" .. i .. "::::")
 		self.cList[#self.cList+1] = newCampaign
+		return true
 	end
-	
+	return false
 end
 
 
@@ -257,7 +258,14 @@ function CampaignList.getCurrentCampaign(self)
 	print ("CampaignList.getCurrentCampaign() - current campaign=" .. self.currentCampaignIndex)
 	print ("Size of CLIST: " .. #self.cList)
 	if (self.currentCampaignIndex > -1) then
-		return self.cList[self.currentCampaignIndex]
+		for i=1, #self.cList do
+			if self.cList[i].id == self.currentCampaignIndex then
+				return self.cList[i]
+			end
+		end
+
+		print("Campaign at currentCampaignIndex is not found")
+		return nil
 	end
 
 	print ("CampaignList.getCurrentCampaign() - no current campaign")
@@ -268,19 +276,36 @@ function CampaignList.getCurrentorNewCampaign(self)
 	print ("CampaignList.getCurrentorNewCampaign() - current campaign=" .. self.currentCampaignIndex)
 	print ("Size of CLIST: " .. #self.cList)
 	if (self.currentCampaignIndex > -1) then
-		return self.cList[self.currentCampaignIndex]
+		
+		for i=1, #self.cList do
+			if self.cList[i].id == self.currentCampaignIndex then
+				return self.cList[i]
+			end
+		end
+
+		print("Campaign at currentCampaignIndex is not found")
+		return nil
 	end
 
 	print ("CampaignList.getCurrentorNewCampaign() - no current campaign")
-	return CampaignClass.new("...")
+	newCampaign = CampaignClass.new("...")
+	newCampaign.id = self.cList[#self.cList].id + 1
+	return newCampaign
 end
 
 function CampaignList.loadCampaigns(self)
 	print("CampaignList.loadCampaigns() called")
+	local offset = 0
 	if (self.loaded == 0) then
 		for i=1, appSettings['campaignCounter'] do
 			print(".................................")
-			CampaignList:loadCampaignFile("campaign_" .. i ..".4ec")
+			while not CampaignList:loadCampaignFile("campaign_" .. i+offset ..".4ec") do
+				offset = offset +1
+				if offset > 100 then
+					print("Oops, too many missing campaigns, I don't want to do this forever")
+					break
+				end
+			end
 			
 		end
 	end
@@ -291,10 +316,16 @@ end
 function CampaignList.reloadCampaigns(self)
 	print("reloadCampaigns(): count is :  ".. appSettings['campaignCounter'] )
 	self.cList = {}
+	local offset = 0
 	for i=1, appSettings['campaignCounter'] do
 		print(".................................")
-		CampaignList:loadCampaignFile("campaign_" .. i ..".4ec")
-		
+		while not CampaignList:loadCampaignFile("campaign_" .. i+offset ..".4ec") do
+			offset = offset +1
+			if offset > 100 then
+				print("Oops, too many missing campaigns, I don't want to do this forever")
+				break
+			end
+		end
 	end
 	self.currentCampaignIndex=appSettings.currentCampaign
 end
@@ -306,7 +337,7 @@ end
 -- ADDS
 --
 function CampaignList.addEventToCampaign(self, newEvent)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -326,7 +357,7 @@ function CampaignList.addEventToCampaign(self, newEvent)
 end
 
 function CampaignList.addThingToCampaign(self, newThing)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -347,7 +378,7 @@ end
 
 
 function CampaignList.addPlaceToCampaign(self, newPlace)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -367,7 +398,7 @@ function CampaignList.addPlaceToCampaign(self, newPlace)
 end
 
 function CampaignList.addNpcToCampaign(self, newNpc)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -388,7 +419,7 @@ function CampaignList.addNpcToCampaign(self, newNpc)
 end
 
 function CampaignList.addQuestToCampaign(self, newQuest)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -408,7 +439,7 @@ function CampaignList.addQuestToCampaign(self, newQuest)
 end
 
 function CampaignList.addEncounterToCampaign(self, newEncounter)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -428,7 +459,7 @@ function CampaignList.addEncounterToCampaign(self, newEncounter)
 end
 
 function CampaignList.addPartyMemberToCampaign(self, newPartyMember)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -477,7 +508,7 @@ function CampaignList.updateCampaign(self, c)
 end
 
 function CampaignList.updateNpcForCampaign(self, npc)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -510,7 +541,7 @@ function CampaignList.updateNpcForCampaign(self, npc)
 end
 
 function CampaignList.updatePlaceForCampaign(self, place)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -543,7 +574,7 @@ function CampaignList.updatePlaceForCampaign(self, place)
 end
 
 function CampaignList.updateThingForCampaign(self, thing)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -575,7 +606,7 @@ function CampaignList.updateThingForCampaign(self, thing)
 end
 
 function CampaignList.updateEventForCampaign(self, e)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -607,7 +638,7 @@ function CampaignList.updateEventForCampaign(self, e)
 end
 
 function CampaignList.updateQuestForCampaign(self, quest)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -640,7 +671,7 @@ end
 
 
 function CampaignList.updateEncounterForCampaign(self, encounter)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -673,7 +704,7 @@ end
 
 
 function CampaignList.updatePartyMemberForCampaign(self, partyMember)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -712,7 +743,7 @@ end
 -- REMOVES
 --
 function CampaignList.removeNpcFromCampaign(self, npc)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -748,7 +779,7 @@ function CampaignList.removeNpcFromCampaign(self, npc)
 end
 
 function CampaignList.removeThingFromCampaign(self, thing)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -783,7 +814,7 @@ function CampaignList.removeThingFromCampaign(self, thing)
 end
 
 function CampaignList.removePlaceFromCampaign(self, place)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -820,7 +851,7 @@ end
 
 
 function CampaignList.removeQuestFromCampaign(self, quest)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -855,7 +886,7 @@ function CampaignList.removeQuestFromCampaign(self, quest)
 end
 
 function CampaignList.removeEncounterFromCampaign(self, encounter)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -890,7 +921,7 @@ function CampaignList.removeEncounterFromCampaign(self, encounter)
 end
 
 function CampaignList.removeEventFromCampaign(self, event)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)
@@ -926,7 +957,7 @@ end
 
 
 function CampaignList.removePartyMemberFromCampaign(self, partyMember)
-	local c = self.cList[tonumber(self.currentCampaignIndex)]
+	local c = CampaignList:getCurrentCampaign()
 	if not c then
 		print("No campaign found for campaign index of " .. self.currentCampaignIndex)
 		print("  number of campaigns is " .. #self.cList)

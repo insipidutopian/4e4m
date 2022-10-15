@@ -1,26 +1,36 @@
 -- 
--- Abstract: 4e DM Assistant app, Initiative Screen
+-- GameMastery, Initiative Screen
 --  
--- Version: 1.0
--- 
 --
--- This file is used to  
 
 local composer = require ( "composer" )
---local composer = require ( "composer" )
 local widget = require ( "widget" )
 local initiative = require ( "initiative" )
 local initList = require ( "InitiativeList")
 local RandGenUtil = require ("RandGenUtil")
 
+local addInit = require ("addInit")
+local delayInit = require ("delayInit")
+
 --Create a composer scene for this module
 local scene = composer.newScene()
 
-local titleBar, initBar, titleText, background, InitiativeListDisplay
+-- local background
+local titleText, InitiativeListDisplay
 local RoundTimeText, TurnTimeText
 
+local navGroup
+local overlayGroup
+
+-- Common SSK Helper Modules
+local easyIFC = ssk.easyIFC;local persist = ssk.persist
+
+local initListRowHeight = 40
+local initListHeight = initListRowHeight*14
+local initListRect
+
 local initiatives = {}
-initBarHeight = 40
+initialYOffset = 40
 initGradient = {
 	type = 'gradient',
 	color1 = { 51/255, 51/255, 51/255, 255/255 }, 
@@ -47,14 +57,6 @@ local CENTER = display.contentCenterX
 local RIGHT = display.contentWidth - 50
 local swipeDirection = ""
 
-
-
-
--- Keep track of time in seconds
-
-
---local clockText = display.newText("20:00", display.contentCenterX, 80, native.systemFontBold, 80)
---clockText:setFillColor( 0.7, 0.7, 1 )
 
 local function updateTime()
 	-- decrement the number of seconds
@@ -101,20 +103,7 @@ local countDownTimer = timer.performWithDelay( 1000, updateTime, roundTimeElapse
 
 
 local function handleSwipe( event )
-	--print ("handleSwipe event fired")
 	local phase = event.phase
-	--= event.target
-	--print ("handleSwipe:phase=" .. phase)
-	-- if ( phase == "swipeRight" ) then
-	-- 	print ( "Swiped!!!!")
-	-- 	InitiativeList:nextInitiative(); 
-	-- 	composer.gotoScene( "initiative_tool" );
-	-- 	return
-	-- elseif ( phase == "swipeLeft") then
-	-- 	InitiativeList:previousInitiative(); 
-	-- 	composer.gotoScene( "initiative_tool" );
-	-- 	return
-	-- end
     if ( event.phase == "moved" ) then
         local dX = event.x - event.xStart
         --print( event.x, event.xStart, dX )
@@ -124,17 +113,13 @@ local function handleSwipe( event )
             if ( event.target.x == LEFT ) then
                 spot = CENTER
             end
-            --transition.to( event.target, { time=500, x=spot } )
-            --print ("titlebar swiped right")
-            swipeDirection = "swipeRight"
+             swipeDirection = "swipeRight"
         elseif ( dX < -10 ) then
             --swipe left
             local spot = LEFT
             if ( event.target.x == RIGHT ) then
                 spot = CENTER
             end
-            --transition.to( event.target, { time=500, x=spot } )
-            --print ("titlebar swiped right")
             swipeDirection = "swipeLeft"
         end
     elseif ( event.phase == "ended" ) then
@@ -154,131 +139,15 @@ local function handleSwipe( event )
     return true
 end
 
-
-
---Create the scene
-function scene:create( event )
-	print ("initiative_tool:scene:create")
-	local group = self.view
-
-	currentScene = "initiative_tool"
-
-	roundTime = "0:00"
-
-	
-	background = display.newImage("images/dice01.jpg") 
-	background.x = display.contentWidth / 2
- 	background.y = display.contentHeight / 2
- 	background:scale(1.0, 1.0)
- 	background.alpha = 0.5
- 	group:insert(background)
-
---	roundTimeElapsed = 3590
-	
-	-- Create title bar to go at the top of the screen
-	titleBar = display.newRect( display.contentCenterX, titleBarHeight/2, display.contentWidth, titleBarHeight )
-	titleBar:setFillColor( titleGradient ) 
-	group:insert ( titleBar )
-	titleBar:addEventListener("touch", handleSwipe)
-
-	-- create embossed text to go on toolbar
-	titleText = display.newEmbossedText( "Roll Initiative!", display.contentCenterX, titleBar.y, 
-												native.systemFontBold, 20 )
-	group:insert ( titleText )
-
-	-- Create Initiative Toolbar to go at the top of the Init screen
-	initBar = display.newRect( display.contentCenterX, titleBarHeight + titleBarHeight/2, display.contentWidth, initBarHeight )
-	initBar:setFillColor( initGradient ) 
-	group:insert ( initBar )
-
-	-- if (standalone == "false") then 
-	-- local backButton = widget.newButton
-	-- {
-	-- 	defaultFile = "assets/buttonRedSmall.png",
-	-- 	overFile = "assets/buttonRedSmallOver.png",
-	-- 	labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-	-- 	label = "Back",
-	-- 	emboss = true,
-	-- 	onPress =  function() composer.gotoScene( "tools" ); end,
-	-- 	x = buttonWidth + rightPadding,
-	-- 	y = titleBarHeight/2,
-	-- }
-	-- group:insert(backButton)
-	-- end
-
-	local backButton = widget.newButton
-	{
-		defaultFile = "assets/buttonRedSmall.png",
-		overFile = "assets/buttonRedSmallOver.png",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		label = "Back",
-		emboss = true,
-		onPress =  function() composer.gotoScene( "tools" ); end,
-		x = buttonWidth + rightPadding,
-		y = titleBarHeight/2,
-	}
-	group:insert(backButton)
-
-
-	local addButton = widget.newButton
-	{
-		defaultFile = "assets/buttonGreySquare.png",
-		overFile = "assets/buttonGreySquareOver.png",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		label = "+",
-		emboss = true,
-		onPress =  function() print ("initiative_tool:add"); composer.showOverlay( "addInit", popOptions ); print ("finished calling initiative_tool:add"); end,
-		x = squareButtonWidth + rightPadding,
-		y = titleBarHeight + initBarHeight/2,
-	}
-	group:insert(addButton)
-
-
-	local nextButton = widget.newButton
-	{
-		defaultFile = "assets/buttonGreySquare.png",
-		overFile = "assets/buttonGreySquareOver.png",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		label = "->",
-		emboss = true,
-		onPress = function() print ("initiative_tool:next"); InitiativeList:nextInitiative(); composer.gotoScene( "initiative_tool" ); end,
-		x = squareButtonWidth + rightPadding + squareButtonWidth*2 + rightPadding*2,
-		y = titleBarHeight + initBarHeight/2,
-	}
-	group:insert(nextButton)
-
-	local delayButton = widget.newButton
-	{
-		defaultFile = "assets/buttonGreySmall.png",
-		overFile = "assets/buttonGreySmallOver.png",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		label = "Delay",
-		emboss = true,
-		onPress =  function() print ("initiative_tool:delay"); composer.showOverlay( "delayInit", popOptions ); end,
-		x = squareButtonWidth + rightPadding + squareButtonWidth + rightPadding + buttonWidth*2 + rightPadding,
-		y = titleBarHeight + initBarHeight/2,
-	}
-	group:insert(delayButton)
-
-	local resetButton = widget.newButton
-	{
-		defaultFile = "assets/buttonGreySmall.png",
-		overFile = "assets/buttonGreySmallOver.png",
-		labelColor = { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
-		label = "Reset",
-		emboss = true,
-		onPress =  function() print ("initiative_tool:reset"); composer.showOverlay( "resetInit", popOptions ); end,
-		x = squareButtonWidth + rightPadding + squareButtonWidth*2 + rightPadding*2 + 
-			buttonWidth + rightPadding*2 + buttonWidth*2 + rightPadding*2,
-		y = titleBarHeight + initBarHeight/2,
-	}
-	group:insert(resetButton)
-
+local function addInitiativeReturned()
+	print("addInitiativeReturned called")
+	composer.gotoScene("initiative_tool")
 end
 
-
-
- 
+local function delayInitiativeReturned()
+	print("delayInitiativeReturned called")
+	composer.gotoScene("initiative_tool")
+end
 
 
 -- Hande row touch events
@@ -309,8 +178,10 @@ local function onRowTouch( event )
 		print( "Pressed row: " .. ri )
 		--print ( "x0 = " .. event.xStart )
 	elseif "release" == phase then
-		if ri -1 <= 1+InitiativeList:getInitiativeCount() then
-			composer.showOverlay( "addInit", { params = { initNumber = ri-1, } })
+		print( "Released row: " .. ri )
+		if ri -1 <= 1+initList:getInitiativeCount() then
+			--composer.showOverlay( "addInit", { params = { initNumber = ri-1, } })
+			addInit.openAddInitDialog( overlayGroup, { initNumber = ri-1, iOffset = row.params.iOffset }, addInitiativeReturned); 
 		else
 			print ("storyboard.showOverlay( { params = { initNumber = " .. ri-1 .. ", } })")
 		end
@@ -335,44 +206,28 @@ local function onRowRender( event )
 
 	if params.roundMarker  then
 		print ("Rendering Row Marker!")
-		row.nameText = display.newEmbossedText( " --== Round " .. params.roundMarker .. " End ==--" , 12, 0, native.systemFontBold, 10 )
-		row.nameText.anchorY = 0.5
-		row.nameText:setFillColor( 0,0,0 )
-		row.nameText.y = 19
-		row.nameText.x = row.contentWidth/2
+		row.nameText = ssk.easyIFC:presetLabel( group, "appLabel", " --== Round " .. params.roundMarker .. " End ==--", 
+			row.contentWidth/2, 19, {align="left", width=260})
 		row:insert( row.nameText )
 		return true
 	end
 
-	row.nameText = display.newEmbossedText( params.name, 12, 0, native.systemFontBold, 16 )
-	row.nameText.anchorX = 0
-	row.nameText.anchorY = 0.5
-	row.nameText:setFillColor( 0 )
-	row.nameText.y = 19
+	row.nameText = ssk.easyIFC:presetLabel( group, "appLabel", params.name, 30, 19, {align="left", width=160, anchorX=0})
 
-	--if params.initSlot then
-		print ("initSlot= " .. params.initSlot)
-		row.orderText = display.newEmbossedText( params.initSlot, 12, 0, native.systemFontBold, 16 )
-		row.orderText.anchorX = 0
-		row.orderText.anchorY = 0.5
-		row.orderText:setFillColor( 0 )
-		row.orderText.y = 19
-	--end
+	print ("initSlot= " .. params.initSlot)
+	row.orderText = ssk.easyIFC:presetLabel( group, "appLabel", params.initSlot, 30, 19, {align="left", width=60, anchorX=0})
 
 	if params.isHeader == true then
 		print ("Header row")
-		row.initText = display.newEmbossedText( params.initVal, 12, 0, native.systemFont, 16 )
+		row.initText = display.newEmbossedText( params.initVal, 12, 0, mainFont, mainFontSize )
 		row.nameText:setFillColor( 0 )
 		row.initText:setFillColor( 0 )
 
 	else
 		local initStr = ((params.initVal or 0) + (params.initBon or 0)).. " (" .. (params.initVal or 0) .. "+" .. (params.initBon or 0) .. ")"
-		row.initText = display.newEmbossedText( initStr, 12, 0, native.systemFont, 14 )
+		row.initText = ssk.easyIFC:presetLabel( group, "appLabel", initStr, 240, 19, {align="left", width=100, anchorX=0})
+		-- row.initText = display.newEmbossedText( initStr, 12, 0,  mainFont, mainFontSize )
 
-		row.rightArrow = display.newImageRect( "rowArrow.png", 15 , 10, 10 )
-		row.rightArrow.x = display.contentWidth - 20
-		row.rightArrow.y = 19
-		row:insert( row.rightArrow )
 		if (params.iType == "enemy") then
 			row.nameText:setFillColor( .75,.13,.13 )
 			row.initText:setFillColor( .75,.13,.13 )
@@ -407,140 +262,199 @@ local function onRowRender( event )
 	row:insert( row.orderText )
 	row:insert( row.nameText )
 	row:insert( row.initText )
-	return true
-
 	
+	return true
 	
 end
+
+
+--Create the scene
+function scene:create( event )
+	print ("initiative_tool:scene:create")
+	local group = self.view
+
+	currentScene = "initiative_tool"
+
+	roundTime = "0:00"
+
+	initListRect = ssk.display.newRect( group, display.contentWidth / 2, 30+titleBarHeight + initialYOffset + initListHeight/2, 
+			{ w = fullw, h = initListHeight, alpha=.2, fill = _GREY_ } )
+	
+
+	
+end
+
 
 
 
 function scene:show( event )
 	local group = self.view
 
+
 	print("initiative_tool: scene:show")
+	if event.phase == "will" then
+		print(currentScene .. ":SHOW WILL PHASE")
 
 
-
-	background:scale(1.0, 1.0)
-
-	if (InitiativeListDisplay) then
-		InitiativeListDisplay:removeSelf()
-		InitiativeListDisplay = nil
-	end
-
-	
-
-	--InitiativeListDisplay:addEventListener("touch", handleSwipe)
-	InitiativeListDisplay = widget.newTableView
-	{
-		top = titleBarHeight + initBarHeight,
---		width = 320, 
---		height = 410,
-		hideBackground = true,
-		maskFile = "mask-320x448.png",
-		onRowRender = onRowRender,
-		onRowTouch = onRowTouch,
-	}
-	
-
-	InitiativeList:loadInitiative()
-	InitiativeList:sortInitiativesBySlot( )
-	InitiativeList:orderInitiatives( )
- 	local cc = InitiativeList:getInitiativeCount()
-
-
-	InitiativeListDisplay:insertRow
-	{
-		height = 24,
-		rowColor = { default={ 0.8, 0.8, 0.8, 0.8 } },
-		lineColor = { 0.5, 0.5, 0.5 },
-		params = { isHeader = true, name = "Name", initVal = "Init", initSlot = "Order", initBon = "", iType="", initBonusSaved="" },
-		isCategory = true
-	}
-
- 	for i = 1, cc do
-		showInitiative(i)
- 	end
-
-
- 	roundNum = InitiativeList:getRoundNumber()
-
-
-	--todo
-	
-	if RoundTimeText then
-		RoundTimeText.text = ""
-		--RoundTimeText = nil
-	end
-	if TurnTimeText then
-		TurnTimeText.text = ""
-	end
-
- 	if (initiativeFoundText) then
- 		initiativeFoundText.text = ""
- 		--initiativeFoundText = nil
- 	end
-	if RoundNumberText then
-		RoundNumberText.text = ""
-		--RoundNumberText = nil
-	end
-
-	
-	
-	print( "Current Orientation: " .. system.orientation )
-	if ( system.orientation == "portrait") or (system.orientation == "portraitUpsideDown") then
-		print "portrait"
-		rntx = display.contentCenterX
-		rnty = display.contentHeight - 10
-		titleBar.x = display.contentCenterX
-		titleBar.width = display.contentWidth
-
-		initBar.x = display.contentCenterX
-		initBar.width =  display.contentWidth
-		titleText.x = display.contentCenterX
-	else
-		print "landscape"
-		rntx = 100
-		rnty = 100
 		
-		titleBar.x = display.contentCenterX - 50
-		titleBar.width = display.contentWidth - 100
 
-		initBar.x = display.contentCenterX -100
-		initBar.width =  display.contentWidth -50
-		titleText.x = display.contentCenterX -50
+		InitiativeList:loadInitiative()
+		if InitiativeList:getInitiativeCount() > 11 then 
+			print("Initiative Limit Reached")
+			ssk.easyIFC:presetPush( group, "disabledAppButton", 30 + rightPadding,  titleBarHeight + titleBarHeight/2, 60, 30, "Add New", 
+				--function() print ("initiative_tool:add"); composer.showOverlay( "addInit", popOptions ); print ("ƒ calling initiative_tool:add"); end,
+				 -- function() print("Inititive_tool:add"); addInit.openDialog( overlayGroup, addInitiativeReturned); end,
+				 nil, {labelHorizAlign="center", labelSize=12} )
+		else
+			print("Initiative Count is " .. tostring(InitiativeList:getInitiativeCount()) )
+		
 
-		InitiativeListDisplay.width=320
-		InitiativeListDisplay.height=display.contentHeight
-		InitiativeListDisplay.y = display.contentCenterY
-		InitiativeListDisplay.x = display.contentWidth - 160
-		initBar.width = display.contentWidth - 320
-		initBar.x = (display.contentWidth - 320)/2
+			ssk.easyIFC:presetPush( group, "appButton", 30 + rightPadding,  titleBarHeight + titleBarHeight/2, 60, 30, "Add New", 
+				--function() print ("initiative_tool:add"); composer.showOverlay( "addInit", popOptions ); print ("ƒ calling initiative_tool:add"); end,
+				 function() print("Inititive_tool:add"); addInit.openDialog( overlayGroup, addInitiativeReturned); end,
+				 {labelHorizAlign="center", labelSize=12} )
+		end
 
-		titleBar.width = display.contentWidth - 320
-		titleBar.x = (display.contentWidth - 320)/2
-		titleText.x = (display.contentWidth - 320)/2
+		ssk.easyIFC:presetPush( group, "appButton", (display.contentWidth / 2) - 35, titleBarHeight + titleBarHeight/2, 60, 30, "Next", 
+				function() print ("initiative_tool:next"); InitiativeList:nextInitiative(); composer.gotoScene( "initiative_tool" ); end,
+				{labelHorizAlign="center", labelSize=12} )
+
+
+		ssk.easyIFC:presetPush( group, "appButton", (display.contentWidth / 2) + 35,  titleBarHeight + titleBarHeight/2, 60, 30, "Delay", 
+				--function() print ("initiative_tool:delay"); composer.showOverlay( "delayInit", popOptions ); end,
+				function() print ("initiative_tool:delay"); delayInit.openDialog( overlayGroup, delayInitiativeReturned); end,
+				{labelHorizAlign="center", labelSize=12} )
+
+
+		ssk.easyIFC:presetPush( group, "appButton", fullw - (30 + rightPadding),  titleBarHeight + titleBarHeight/2, 60, 30, "Reset", 
+				function() print ("initiative_tool:reset"); composer.showOverlay( "resetInit", popOptions ); end,
+				{labelHorizAlign="center", labelSize=12} )
+
+
+
+		if (InitiativeListDisplay) then
+			InitiativeListDisplay:removeSelf()
+			InitiativeListDisplay = nil
+		end
+
+
+		InitiativeListDisplay = widget.newTableView
+		{
+			--top = 12+titleBarHeight + initialYOffset,
+			--isLocked=true,
+			hideBackground = true,
+			maskFile = "mask-320x448.png",
+			onRowRender = onRowRender,
+			onRowTouch = onRowTouch,
+		}
+
+
+		InitiativeList:loadInitiative()
+		InitiativeList:sortInitiativesBySlot( )
+		InitiativeList:orderInitiatives( )
+	 	local cc = InitiativeList:getInitiativeCount()
+
+
+		InitiativeListDisplay:insertRow
+		{
+			height = 24,
+			rowColor = { default={ 0.8, 0.8, 0.8, 0.8 } },
+			lineColor = { 0.5, 0.5, 0.5 },
+			params = { isHeader = true, name = "Name", initVal = "Init", initSlot = "Order", initBon = "", iType="", initBonusSaved="" },
+			isCategory = false
+		}
+
+	 	for i = 1, cc do
+			showInitiative(i)
+	 	end
+
+
+	 	roundNum = InitiativeList:getRoundNumber()
+
+
+		--todo
+		
+		if RoundTimeText then
+			RoundTimeText.text = ""
+			--RoundTimeText = nil
+		end
+		if TurnTimeText then
+			TurnTimeText.text = ""
+		end
+
+	 	if (initiativeFoundText) then
+	 		initiativeFoundText.text = ""
+	 		--initiativeFoundText = nil
+	 	end
+		if RoundNumberText then
+			RoundNumberText.text = ""
+			--RoundNumberText = nil
+		end
+
+		
+		
+		print( "Current Orientation: " .. system.orientation )
+		if ( system.orientation == "portrait") or (system.orientation == "portraitUpsideDown") then
+			print "portrait"
+			rntx = display.contentCenterX
+			rnty = display.contentHeight - 10
+			InitiativeListDisplay.x = display.contentCenterX
+			InitiativeListDisplay.y = 150+titleBarHeight + initialYOffset + initListHeight/2
+			InitiativeListDisplay.height=initListHeight+220
+		else
+			print "landscape"
+			rntx = 100
+			rnty = 100
+			
+			InitiativeListDisplay.width=320
+			InitiativeListDisplay.height=initListHeight
+			InitiativeListDisplay.y = display.contentCenterY
+			InitiativeListDisplay.x = display.contentWidth - 160
+		end
+		
+		RoundTimeText = display.newText("Round Time: ".. roundTime, rntx, rnty+30, native.systemFontBold, 16 )
+		RoundTimeText:setFillColor( 1, 0, 0)
+		TurnTimeText = display.newText("Turn Time: ".. roundTime, rntx, rnty+60, native.systemFontBold, 16 )
+		TurnTimeText:setFillColor( 1, 0, 0)
+
+		RoundNumberText = display.newText("Round: "..roundNum, rntx, rnty, native.systemFontBold, 16 )
+		RoundNumberText:setFillColor( 1, 0, 0)
+		group:insert( RoundNumberText )
+		group:insert( RoundTimeText)
+		group:insert( TurnTimeText)
+		group:insert( InitiativeListDisplay )
+
+		-- local t = InitiativeListDisplay:getRowAtIndex(2) -- top row showing
+		-- print("top row index is: " .. t.index)
+		--InitiativeListDisplay:scrollToIndex( 1, 0 )
+
+		
+		
+		overlayGroup = display.newGroup(); 
+		overlayGroup.x=display.viewableContentWidth/2
+		overlayGroup.y=display.viewableContentHeight/2
+		group:insert(overlayGroup)
+		
+
+		if navGroup then navGroup:removeSelf() end
+		navGroup = display.newGroup(group)
+
+		local backBtn = widget.newButton(
+	    {   
+	        label = "Back", font=btnFont, fontSize=btnFontSize, emboss = false,
+	        shape = "circle", radius = 50*0.9, cornerRadius = 2, strokeWidth = 4,
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+	        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+	        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+	        onPress = function()  composer.gotoScene("tools", { effect = "fade", time = 400, params = {campaign = currentCampaign}}) end,
+	    	x = 60,
+	      	y = display.contentHeight-60
+	    })
+	    navGroup:insert(backBtn)
+
+	else
+		print( currentScene .. ":SHOW DID PHASE")
 	end
-	
-	RoundTimeText = display.newText("Round Time: ".. roundTime, rntx, rnty+30, native.systemFontBold, 16 )
-	RoundTimeText:setFillColor( 1, 0, 0)
-	TurnTimeText = display.newText("Turn Time: ".. roundTime, rntx, rnty+60, native.systemFontBold, 16 )
-	TurnTimeText:setFillColor( 1, 0, 0)
-
-	RoundNumberText = display.newText("Round: "..roundNum, rntx, rnty, native.systemFontBold, 16 )
-	RoundNumberText:setFillColor( 1, 0, 0)
-	group:insert( RoundNumberText )
-	group:insert( RoundTimeText)
-	group:insert( TurnTimeText)
-	group:insert( InitiativeListDisplay )
-
-
-
-	-- for i = 1, 50 do
-	-- 	entityName = RandGenUtil.generateAdversary()
-	-- 	--print("Random: " .. entityName)
-	-- end
 end
 
 
@@ -573,6 +487,13 @@ function scene:hide( event )
  		--initiativeFoundText = nil
  	end
 
+ 	-- if initListRect then
+ 	-- 	initListRect:removeSelf()
+ 	-- 	initListRect = nil
+ 	-- end
+ 	if navGroup then
+ 		navGroup:removeSelf()
+ 	end
 
 	print("initiative_tool: scene:hide finished")
 end	
@@ -593,7 +514,7 @@ function showInitiative( i )
 				default = { 1, 1, 1, 0 },
 			},
 			lineColor = { 0.5, 0.5, 0.5 },
-			params = { name = init.name, initVal = init.initVal, initBon = init.initBon, iType = init.iType, initSlot = init.initSlot or 0, initBonusSaved=""}
+			params = { iOffset = i, name = init.name, initVal = init.initVal, initBon = init.initBon, iType = init.iType, initSlot = init.initSlot or 0, initBonusSaved=""}
 		}
 	else 
 		print ("error finding initiative " .. i)
@@ -605,9 +526,10 @@ function showInitiative( i )
 			height = 6,
 			rowColor = 
 			{ 
-				default = { 1, 1, 1, 0},
+				default = { 1, 1, 1, 1},
 			},
 			lineColor = { 0.5, 0.5, 0.5 },
+
 			params = { isHeader = true, roundMarker = InitiativeList:getRoundNumber() },
 			isCategory = true
 		}

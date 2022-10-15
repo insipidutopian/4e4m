@@ -254,15 +254,26 @@ end
 
 function InitiativeList.getOffsetInitiative(self, i)
 	print ("InitiativeList.getOffsetInitiative() - getting Initiative #" .. i .. " of " .. #self.iList)
+	print("InitiativeList.getOffsetInitiative() - current Init Index = " .. self.currentInitiativeIndex)
 	local offset = 0
 
 	if self.currentInitiativeIndex == -1 then
 		offset = 1
 		self.currentInitiativeIndex = 1
 	else
-		offset = i + self.currentInitiativeIndex - 1
-		if offset > #self.iList then
-			offset = offset - #self.iList
+		-- If round marker is in the way, take that into consideration
+		if self.currentInitiativeIndex < i then
+			offset = i + self.currentInitiativeIndex - 1
+			if offset > #self.iList then
+				offset = offset - #self.iList
+			elseif offset < 1 then
+				offset = 1
+			end
+		else
+			offset = i + self.currentInitiativeIndex - 1
+			if offset > #self.iList then
+				offset = offset - #self.iList
+			end
 		end
 	end
 
@@ -393,7 +404,24 @@ function InitiativeList.getNewInitiativeId(self)
 end
 
 
-function InitiativeList.deleteInitiative( self, initSlotToDel )
+function InitiativeList.deleteInitiative( self, ini )
+	print ("InitiativeList.deleteInitiative: Deleting initiative #" .. ini.initSlot .. "...")
+	
+
+	print("Deleting Initiative of " .. ini.name .. " at slot " .. ini.initSlot)
+
+	for i=#self.iList,1,-1 do
+		if self.iList[i].name == ini.name and self.iList[i].initSlot == ini.initSlot then
+			if self.iList[i].initSlot < self.currentInitiativeIndex then
+				self.currentInitiativeIndex = self.currentInitiativeIndex - 1
+			end
+			table.remove(self.iList, i)
+		end
+	end
+
+end
+
+function InitiativeList.deleteInitiativeBySlot( self, initSlotToDel )
 	print ("InitiativeList.deleteInitiative: Deleting initiative " .. initSlotToDel .. "...")
 	ini = InitiativeList:getOffsetInitiative(initSlotToDel)
 

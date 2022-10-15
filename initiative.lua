@@ -34,14 +34,6 @@ function initiative.new( name, iType, initVal, initBon, initSlot )	-- constructo
 		hasDelayed = false,
 		turnTime = turnTime or 0
 	}
-	-- if (debugFlag == 1) then
-	-- 	print ("initiative.new - DEBUG=TRUE - generating initiative keywords")
-	-- 	rand = math.random( 3 ) + 1
-	-- 	for i = 1, rand do
-	-- 		print ("generating random keyword for initiative.")
-	-- 		keywords[i] = "keyword" .. i
-	-- 	end
-	-- end
 	print ("initiative.new - creating name=" .. newInitiative.name .. ", type=" .. newInitiative.iType)
 	
 	return setmetatable( newInitiative, initiative_mt )

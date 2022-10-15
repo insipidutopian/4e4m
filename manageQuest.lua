@@ -19,7 +19,7 @@ local function updateQuest()
 	print("         Quest Name:  " .. newQuest.name)
 end
 
-function manageQuest.openViewQuestDialog(quest, group, showRerollButton, onSave)
+function manageQuest.openViewQuestDialog(quest, group, showRerollButton, onSave, rollOnInit)
 	updateFunction = onSave
 	print("openViewQuestDialog() called, Quest is " .. quest.name)
 	local function onClose( self, onComplete )
@@ -107,8 +107,12 @@ function manageQuest.openViewQuestDialog(quest, group, showRerollButton, onSave)
 	currentQuestId = quest.id
 	local titleSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 24, 4 )
 	titleSquare.fill = {0.1,0.1,0.1}
+	local focus = false
+	if quest.name == "" then
+		focus = true
+	end
 	questNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", quest.name, 0, y, 
-			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
+			{listener=uiTools.textFieldListener, width=textWidth, placeholder='Quest Name', keyboardFocus=focus})
 	questNameTextField:setReturnKey('next')
 	
 	y=y+30; 
@@ -140,7 +144,10 @@ function manageQuest.openViewQuestDialog(quest, group, showRerollButton, onSave)
 	y = textYOffset + textHeight / 2 - textYOffset
 	--y = y+40
 	if showRerollButton then
-		rerollQuest(nil)
+		if rollOnInit then
+			rerollQuest(nil)
+			native.setKeyboardFocus(nil)
+		end
 		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Reroll", rerollQuest )
 		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", saveQuestToCampaign )
 	else
@@ -157,10 +164,15 @@ end
 function manageQuest.openNewQuestDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewQuestDialog() called, onsave=" .. tostring(onSave))
-	--local type = Randomizer:generateQuestType()
-	--newQuest = Randomizer:generateQuest(type)
-	newQuest = Quest:new("Title","Description","Details", "")
+	newQuest = Quest:new("","","","")
 	manageQuest.openViewQuestDialog(newQuest, group, true, onSave)
+end
+
+function manageQuest.openNewRandomQuestDialog(group, onSave)
+	updateFunction = onSave
+	print("openNewRandomQuestDialog() called, onsave=" .. tostring(onSave))
+	newQuest = Quest:new("","","","")
+	manageQuest.openViewQuestDialog(newQuest, group, true, onSave, true)
 end
 
 return manageQuest

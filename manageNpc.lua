@@ -13,6 +13,8 @@ local npcRace
 local npcNotes
 local currentNpcId
 
+local newNpcFlag = false
+
 local updateFunction
 
 local function updateNpc()
@@ -20,7 +22,7 @@ local function updateNpc()
 	print("         NPC Name:  " .. newNpc.name)
 end
 
-function manageNpc.openViewNpcDialog(npc, group, showRerollButton, onSave)
+function manageNpc.openViewNpcDialog(npc, group, showRerollButton, onSave, rollOnInit)
 	updateFunction = onSave
 	print("openViewNpcDialog() called, NPC is " .. npc.name)
 	local function onClose( self, onComplete )
@@ -104,8 +106,13 @@ function manageNpc.openViewNpcDialog(npc, group, showRerollButton, onSave)
 	currentNpcId = npc.id
 	local nameSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 24, 4 )
 	nameSquare.fill = {0.1,0.1,0.1}
+
+	local focus = false
+	if npc.name == "" then
+		focus = true
+	end
 	npcNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", npc.name, 0, y, 
-			{listener=uiTools.textFieldListener, width = textWidth, keyboardFocus=true, selectedChars={0,99}})
+			{listener=uiTools.textFieldListener, width = textWidth, placeholder='NPC Name', keyboardFocus=focus})
 	
     y=y+25; 
     npcRace = ssk.easyIFC:presetLabel( dialog, "appLabel", "Race: ", 0, y, {align="left", width=textWidth})
@@ -127,7 +134,10 @@ function manageNpc.openViewNpcDialog(npc, group, showRerollButton, onSave)
 
 	y = textYOffset + textHeight / 2 - textYOffset
 	if showRerollButton then
-		rerollNpc(nil)
+		if rollOnInit then
+			rerollNpc(nil)
+			native.setKeyboardFocus(nil)
+		end
 		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Reroll", rerollNpc )
 		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", saveNpcToCampaign )
 	else
@@ -144,9 +154,15 @@ end
 function manageNpc.openNewNpcDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewNpcDialog() called, onsave=" .. tostring(onSave))
-	--local race = Randomizer:generateNpcRace()
-	newNpc = Npc:new("Name", "", "")
+	newNpc = Npc:new("", "", "")
 	manageNpc.openViewNpcDialog(newNpc, group, true, onSave)
+end
+
+function manageNpc.openNewRandomNpcDialog(group, onSave)
+	updateFunction = onSave
+	print("openNewNpcDialog() called, onsave=" .. tostring(onSave))
+	newNpc = Npc:new("", "", "")
+	manageNpc.openViewNpcDialog(newNpc, group, true, onSave, true)
 end
 
 return manageNpc

@@ -109,8 +109,12 @@ function manageEvent.openViewEventDialog(event, group, showRerollButton, onSave)
 	currentEventId = event.id
 	local titleSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 24, 4 )
 	titleSquare.fill = {0.1,0.1,0.1}
+	local focus = false
+	if event.title == "" then
+		focus = true
+	end
 	eventTitleTextField = ssk.easyIFC:presetTextInput(dialog, "title", event.title, 0, y, 
-			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
+			{listener=uiTools.textFieldListener, width=textWidth, placeholder='Event Name', keyboardFocus=focus})
 	
     y=y+30; 
     ssk.easyIFC:presetLabel( dialog, "appLabel", "Date:", 50+textWidth/-2, y, {align="left", width=100})
@@ -157,7 +161,7 @@ function manageEvent.openNewEventDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewEventDialog() called, onsave=" .. tostring(onSave))
 	--local race = Randomizer:generateEventRace()
-	newEvent = Event:new("Event", "", "")
+	newEvent = Event:new("", "", "")
 	newEvent:setDate(CampaignList:getCampaignById(appSettings.currentCampaign).date) -- default to current date of campaign
 	manageEvent.openViewEventDialog(newEvent, group, true, onSave)
 end

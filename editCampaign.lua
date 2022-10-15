@@ -25,14 +25,14 @@ local shown=nil
 local campaignNameTextField
 local currentCampaign
 local campaignSystemText
-local campaignNotesText
+local campaignNotesTextField
 local campaignQuestsText
 
 local npcsGroup
 local questGroup
 local placesGroup
-local campaignNotesLock = false
-local placesButton
+
+local newCampaignFlag = false
 
 buttonsArr = {}
 
@@ -55,15 +55,9 @@ local function clearButtons( )
 end
 
 
-local function updateCampaignNotes( updatedVar)
-	print("updateCampaignNotes: " .. updatedVar)
-	if currentCampaign then
-		currentCampaign.description = updatedVar
-		CampaignList:writeCampaignFile(currentCampaign)
-	end
-end
 
-local function updateCampaignName( )
+
+local function updateCampaignName()
 	print("updateCampaignName: " .. campaignNameTextField.text)
 	if currentCampaign then
 		currentCampaign.name = campaignNameTextField.text
@@ -71,28 +65,6 @@ local function updateCampaignName( )
 	end
 end
 
-local function toggleCampaignNotesLock( group, val )
-	campaignNotesLock = not val
-	if debugFlag then print("toggle was: " .. tostring(val) .. ", now: " .. tostring(campaignNotesLock)); end
-	local imageName = "images/padlock.png"
-	local overImageName = "images/padlock-open.png"
-	if campaignNotesLock then
-		imageName = "images/padlock-open.png"
-		overImageName = "images/padlock.png"
-	end
-	
-	group:remove(cntEditBtn)
-	
-	cntEditBtn = widget.newButton(
-	{   defaultFile = imageName,  overFile = overImageName,
-        onPress = function() uiTools.toggleTBEditable(campaignNotesText, updateCampaignNotes, toggleCampaignNotesLock(group, campaignNotesLock)); end,
-        emboss = false,
-        left = 0 , top = 110,
-        width = 20, height=20
-	})
-	group:insert(cntEditBtn)
-	return campaignNotesLock
-end
 
 local function truncate(name, len)
 	if string.len(name) > len-1 then
@@ -107,34 +79,6 @@ local function doUpdate()
 	composer.gotoScene("editCampaign", {  params = { campaign = currentCampaign }})
 end
 
-
-local function titleListener ( event )
-	--print("TitleListener: got an event")
-	local debugFlag = true
-    if ( event.phase == "began" ) then
-        -- User begins editing "defaultField"
-        if debugFlag then print( "TF begin editing...."); end
-        --print( "TF begin editing....");
- 
-    elseif ( event.phase == "ended" or event.phase == "submitted" ) then
-        if debugFlag then print( "TF ended editing: " ..  event.target.text ); end
-        if (event.target["updateFunction"] ~= nil) then
-        	if debugFlag then print("TF Calling update function!!!!"); end
-        	event.target["updateFunction"]()
-        else
-        	print("No update function to call")
-		end
-        native.setKeyboardFocus( nil )
- 
-    elseif ( event.phase == "editing" ) then
-    	--if debugFlag then
-	        print( "TF new: " .. event.newCharacters )
-	        -- print( "old: " .. event.oldText )
-	        print( "TF sp: " .. event.startPosition )
-	        print( "TF et:" .. event.text )
-	    --end
-    end
-end
 
 
 --Create the scene
@@ -202,26 +146,7 @@ function scene:create( event )
 	currentCampaign = CampaignList:getCurrentorNewCampaign() 
 	
 	
-	-- Create text box for the campaign description
-	campaignNotesText = uiTools.createInputTextBox( 172, 120, 300, 75, uiTools.textBoxListener )
-	campaignNotesText.text = currentCampaign.description
-	campaignNotesText.hasBackground = false
-	campaignNotesText.isEditable = true
-	group:insert(campaignNotesText)
 
-	-- uiTools.toggleTFEditable(campaignNameTextField, updateCampaignNotes, false)
-	
-	uiTools.toggleTBEditable(campaignNotesText, updateCampaignNotes, false)
-	
-	cntEditBtn = widget.newButton(
-	{   defaultFile = "images/padlock.png", overFile="images/padlock-open.png",
-        onPress = function() uiTools.toggleTBEditable(campaignNotesText, updateCampaignNotes, toggleCampaignNotesLock(group,campaignNotesLock)); end,
-        emboss = false,
-        left = 0 , top = 110,
-        width = 20, height=20
-	})
-	group:insert(cntEditBtn)
-	
 
 	local homeBtn = widget.newButton(
     {
@@ -244,12 +169,11 @@ function scene:create( event )
 	settingsButton = ssk.easyIFC:presetPush(group, "appButton", 140, display.contentHeight-80, 80, 30, 
 											  "Settings", 
 											  function()  composer.gotoScene("manageCampaignSettings", { effect = "fade", time = 400}) end, 
-											  --function() manageCampaign.openViewCampaignDialog(currentCampaign, overlayGroup, doUpdate); end, 
 											  {labelHorizAlign="left", labelSize=14} )
-	--encountersButton = ssk.easyIFC:presetPush(group, "appButton", 230, display.contentHeight-80, 80, 30, 
-	--										  "Events Log", 
-	--										  function()  composer.gotoScene("manageEvents", { effect = "fade", time = 400}) end, 
-	--										  {labelHorizAlign="left", labelSize=14} )
+	encountersButton = ssk.easyIFC:presetPush(group, "appButton", 60, display.contentHeight-40, 100, 30, 
+											  "Encounters", 
+											  function()  composer.gotoScene("manageEncounters", { effect = "fade", time = 400}) end, 
+											  {labelHorizAlign="left", labelSize=14} )
 	
 end
 
@@ -261,10 +185,9 @@ function scene:show( event )
 	print(currentScene .. ":show")
 
 	print("event.params.campaign: " .. event.params.campaign.id)
-	local i = event.params.campaign.id --CampaignList:getCurrentCampaignIndex()
+	local i = event.params.campaign.id
 	if (i==0) then
 		if event.phase == "will" then
-			--i=CampaignList.getNewCampaignId()
 			local newCampaign = CampaignClass.new(event.params.campaign.name)
 			newCampaign.description = event.params.campaign.description
 
@@ -273,37 +196,42 @@ function scene:show( event )
 		
 			i = newCampaign.id
 			print ("NEW CAMPAIGN CALLED, ID IS " .. i)
+			newCampaignFlag = true
 		else
 			i = CampaignList:getCurrentCampaignIndex()
+			newCampaignFlag = false
 		end
 
 	end
 	CampaignList:setCurrentCampaignIndex(i)
 	print ("Current campaign number=" .. i)
 	currentCampaign = CampaignList:getCurrentorNewCampaign()
-
-	--campaignNameText.text = currentCampaign.name
-	
-	if not npcsGroup then 
-		npcsGroup = display.newGroup(); 
-		npcsGroup.x=display.viewableContentWidth/2
-		npcsGroup.y=160
-	end
-
-	
-	if not placesGroup then 
-		placesGroup = display.newGroup(); 
-		placesGroup.x=0
-		placesGroup.y=160
-	end
 	
 	
-	
-	
-
 
 	if event.phase == "will" then
 		print(currentScene .. ":SHOW WILL PHASE")
+
+		local function updateCampaignNotes()
+			print("updateCampaignNotes: " .. campaignNotesTextField.text)
+			if currentCampaign then
+				currentCampaign.description = campaignNotesTextField.text
+				CampaignList:writeCampaignFile(currentCampaign)
+			end
+		end
+
+		if not npcsGroup then 
+			npcsGroup = display.newGroup(); 
+			npcsGroup.x=display.viewableContentWidth/2
+			npcsGroup.y=160
+		end
+
+		
+		if not placesGroup then 
+			placesGroup = display.newGroup(); 
+			placesGroup.x=0
+			placesGroup.y=160
+		end
 
 		if not overlayGroup then 
 			overlayGroup = display.newGroup(); 
@@ -311,11 +239,11 @@ function scene:show( event )
 			overlayGroup.y=display.viewableContentHeight/2
 		end
 
-		b = ssk.easyIFC:presetPush(npcsGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
-											  "NPCs: " .. #currentCampaign.npcList, 
-											  function()  composer.gotoScene("manageNpcs", { effect = "fade", time = 400}) end, 
-											  {labelHorizAlign="left", labelSize=14} )
-		saveButton(b)
+		npcsButton = ssk.easyIFC:presetPush(npcsGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+											"NPCs: " .. #currentCampaign.npcList, 
+											function()  composer.gotoScene("manageNpcs", { effect = "fade", time = 400}) end, 
+											{labelHorizAlign="left", labelSize=14} )
+		saveButton(npcsButton)
 
 		for i=1, #currentCampaign.npcList do
 			print("NPC found: " .. currentCampaign.npcList[i].name)
@@ -343,17 +271,6 @@ function scene:show( event )
 			end
 		end
 		
-		
-		if not campaignNotesText then
-			campaignNotesText = uiTools.createInputTextBox(172, 120, 300, 75, uiTools.textBoxListener)
-			campaignNotesText.isEditable = true
-			campaignNotesText.hasBackground = false
-			group:insert(campaignNotesText)
-		end
-		
-
-		campaignNotesText.text = currentCampaign.description
-
 		questsButton = ssk.easyIFC:presetPush(questGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
 											  "Quests: " .. #currentCampaign.questList, 
 											  function()  composer.gotoScene("manageQuests", { effect = "fade", time = 400}) end, 
@@ -384,15 +301,15 @@ function scene:show( event )
 			end
 		end
 
+		campaignNameTextField = ssk.easyIFC:presetTextInput(group, "title", currentCampaign.name, 100, 70, 
+			{listener=uiTools.textFieldListener, updateFunction=updateCampaignName, keyboardFocus=newCampaignFlag, selectedChars={0,99}})
+
+		campaignNotesTextField = ssk.easyIFC:presetTextBox(group, "default", currentCampaign.description, display.contentCenterX, 120, 
+			{listener=uiTools.textFieldListener, updateFunction=updateCampaignNotes, selectedChars={0,99}, height=75, width=display.contentWidth-20})
+		
+
 	else
 		print(currentScene .. ":SHOW DID PHASE")
-		print("--> event.params.campaign.id : " .. event.params.campaign.id)
-		local i = event.params.campaign.id
-
-		if campaignNameTextField then campaignNameTextField:removeSelf() end
-		campaignNameTextField = ssk.easyIFC:presetTextInput(group, "title", currentCampaign.name, 100, 70, 
-			{listener=titleListener, updateFunction=updateCampaignName, keyboardFocus=true, selectedChars={0,99}})
-		
 	end
 
 end
@@ -410,14 +327,7 @@ function scene:hide( event )
 	local group = self.view
 
 	if event.phase == "will" then
-		if campaignNotesText then
-			if debugFlag then print("**** hide.removing campaignNotesText"); end
-			campaignNotesText:removeSelf()
-			campaignNotesText = nil
-			--
-		end
-	
-		--tf3:removeSelf()
+
 
 		if campaignNameTextField then
 			if debugFlag then print("**** hide.removing campaignNameTextField"); end
@@ -425,7 +335,12 @@ function scene:hide( event )
 			campaignNameTextField = nil
 			--
 		end
-		--thingsButton:removeSelf()
+
+		if campaignNotesTextField then
+			campaignNotesTextField:removeSelf()
+			campaignNotesTextField = nil
+			--
+		end
 		clearButtons()
 	elseif event.phase == "did" then
 		--composer.removeScene( currentScene )

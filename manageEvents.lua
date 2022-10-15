@@ -101,7 +101,6 @@ function scene:show( event )
 	local count=0
 	for i=1, #currentCampaign.eventList do		
 		if debugFlag then print("Creating Event button for " .. currentCampaign.eventList[i].title); end
-		--currentCampaign.eventList[i].id = i
 		local yLoc = top+20*i
 		local max = eventsY/2 - 20
 		local xLoc = - (display.contentWidth/2 - 60)

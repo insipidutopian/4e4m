@@ -17,7 +17,7 @@ local function updatePlace()
 	print("         Place Name:  " .. newPlace.name)
 end
 
-function managePlace.openViewPlaceDialog(place, group, showRerollButton, onSave)
+function managePlace.openViewPlaceDialog(place, group, showRerollButton, onSave, rollOnInit)
 	updateFunction = onSave
 	print("openViewPlaceDialog() called, Place is " .. place.name)
 	local function onClose( self, onComplete )
@@ -103,8 +103,12 @@ function managePlace.openViewPlaceDialog(place, group, showRerollButton, onSave)
 	currentPlaceId = place.id
 	local titleSquare = display.newRoundedRect(dialog, 0, y, textWidth+4, 24, 4 )
 	titleSquare.fill = {0.1,0.1,0.1}
+	local focus = false
+	if place.name == "" then
+		focus = true
+	end
 	placeNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", place.name, 0, y, 
-			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
+			{listener=uiTools.textFieldListener, width=textWidth, placeholder='Place Name', keyboardFocus=focus})
 	
     y=y+25; ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=textWidth})
 	y=y+10+textBoxHeight; 
@@ -117,7 +121,10 @@ function managePlace.openViewPlaceDialog(place, group, showRerollButton, onSave)
 
 	y = textYOffset + textHeight / 2 - textYOffset
 	if showRerollButton then
-		rerollPlace(nil)
+		if rollOnInit then
+			rerollPlace(nil)
+			native.setKeyboardFocus(nil)
+		end
 		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Reroll", rerollPlace )
 		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", savePlaceToCampaign )
 	else
@@ -134,9 +141,14 @@ end
 function managePlace.openNewPlaceDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewPlaceDialog() called, onsave=" .. tostring(onSave))
-	--local type = Randomizer:generatePlaceType()
-	newPlace = Place.new("Name", "", "") --Randomizer:generatePlace(type)
+	newPlace = Place.new("", "", "") 
 	managePlace.openViewPlaceDialog(newPlace, group, true, onSave)
 end
 
+function managePlace.openNewRandomPlaceDialog(group, onSave)
+	updateFunction = onSave
+	print("openNewRandomPlaceDialog() called, onsave=" .. tostring(onSave))
+	newPlace = Place.new("", "", "") 
+	managePlace.openViewPlaceDialog(newPlace, group, true, onSave, true)
+end
 return managePlace

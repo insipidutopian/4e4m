@@ -206,14 +206,14 @@ local function gotoCampaign( campaign )
 
 end
 
-local function newCampaign( )
+local function createNewCampaign( )
 	print("Transitioning to campaign view")
 	local name = Randomizer:generateNpcName()
 	newCampaign = CampaignClass.new(name)
 	newCampaign.description = 'notes'
 	print("NEW "..newCampaign.name.." called, id:" .. newCampaign.id);
 
-	composer.gotoScene("editCampaign", { effect = "fade", time = 400, params = { campaign = newCampaign }})
+	composer.gotoScene("editCampaign", { effect = "fade", time = 400, params = { campaign = newCampaign, newCampaign = true }})
 
 end
 
@@ -223,14 +223,14 @@ local function loadSavedCampaigns( group )
 	CampaignList:reloadCampaigns()
 	local cc = CampaignList:getCampaignCount()
 	-- cBtnNameList = {{'new', function() print("New Campaign fxn() called..."); composer.showOverlay( "newCampaign", popOptions ); end}}
-	cBtnNameList = {{'new', function() print("About to add new campaign..."); newCampaign(); end}}
+	cBtnNameList = {{'new', function() print("About to add new campaign..."); createNewCampaign(); end}}
 
 
 	print ("loadSavedCampaigns(): currentCampaign = " .. appSettings.currentCampaign)
  	for i = 1, cc do
  		if i < 5 then
  			local c = CampaignList:getCampaign( i )
- 			if tonumber(appSettings.currentCampaign) == i then 
+ 			if tonumber(appSettings.currentCampaign) == c.id then 
  				cName = "[ " .. c.name .. " ]"
  			else
  				cName = c.name
@@ -337,10 +337,10 @@ function scene:create( event )
 	
 
 	gBtns = addBtns({ 
-				{'NPC', function() buttonsDisabled=true; manageNpc.openNewNpcDialog(overGroup, function() buttonsDisabled=false; end); end}, 
-				{'Place',function() buttonsDisabled=true; managePlace.openNewPlaceDialog(overGroup, function() buttonsDisabled=false; end); end},
-				{'Thing',function() buttonsDisabled=true; manageThing.openNewThingDialog(overGroup, function() buttonsDisabled=false; end); end},
-				{'Quest',function() buttonsDisabled=true; manageQuest.openNewQuestDialog(overGroup, function() buttonsDisabled=false; end); end}},
+				{'NPC', function() buttonsDisabled=true; manageNpc.openNewRandomNpcDialog(overGroup, function() buttonsDisabled=false; end); end}, 
+				{'Place',function() buttonsDisabled=true; managePlace.openNewRandomPlaceDialog(overGroup, function() buttonsDisabled=false; end); end},
+				{'Thing',function() buttonsDisabled=true; manageThing.openNewRandomThingDialog(overGroup, function() buttonsDisabled=false; end); end},
+				{'Quest',function() buttonsDisabled=true; manageQuest.openNewRandomQuestDialog(overGroup, function() buttonsDisabled=false; end); end}},
 			genBtnX-140, genBtnY, 'left')
 
 	for i=1, #gBtns do

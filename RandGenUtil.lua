@@ -8,6 +8,7 @@ local Quest = require ("quest")
 local Thing = require ("thing")
 local Place = require ("place")
 local Npc = require("npc")
+local Encounter = require("encounter")
 
 local syllables = { "a","al","ald","ale","an","and","ap","ar","bal","ban","bar","bert","bin","bon","cha","cid","con",
 					"crys","dar","de","dor","e","ed","el","em","er","fer","foul","fred","ga","gar","gib","gir","god",
@@ -801,6 +802,31 @@ function RandGenUtil.generateThingType(self)
 	return thingTypes[math.random(#thingTypes)]
 end
 
+function RandGenUtil.generateEncounterType(self)
+	local encounterTypes = {"surprise", "combatants", "puzzle"}
+	return encounterTypes[math.random(#encounterTypes)]
+end
+
+function RandGenUtil.generateEncounter(self, type)
+	encounterType = type or RandGenUtil:generateEncounterType()
+	encounter = Encounter.new(RandGenUtil:generateEncounterName(encounterType), encounterType, RandGenUtil:generateEncounterNotes(encounterType))
+	return encounter
+end
+
+function RandGenUtil.generateEncounterNotes(self, encounterType)
+	local encounterNotesArr = {""}
+	if encounterType == "surprise" then
+		encounterNotesArr = {"ambush", "trap", "out of place", "unexpected"}
+	elseif encounterType == "combatants" then
+		encounterNotesArr = {"armored", "strong leader", "fast", "well equipped"}
+	elseif encounterType == "puzzle" then
+		encounterNotesArr = {"dusty", "ancient", "large-scale", "mysterious"}
+	end
+
+	return encounterNotesArr[math.random(#encounterNotesArr)]
+end
+
+
 function RandGenUtil.generateThingNotes(self, thingType) 
 	local thingNotesArr = {""}
 	if thingType == "weapon" then
@@ -822,6 +848,16 @@ function RandGenUtil.generateThingNotes(self, thingType)
 	end
 
 	return thingNotesArr[math.random(#thingNotesArr)]
+end
+
+function RandGenUtil.generateEncounterName(self, encounterType) 
+	local tmpName = encounterType;	
+
+		
+	--tmpName = tmpName:gsub("^%l", string.upper)
+	print("  encounter generated: " .. tmpName)
+	
+	return tmpName
 end
 
 

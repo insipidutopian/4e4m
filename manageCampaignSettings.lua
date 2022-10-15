@@ -54,7 +54,7 @@ local function saveCampaign( )
 		if not currentCampaign then
 			print("ERROR: Campaign must exist!")
 		else
-			currentCampaign:setName(campaignNameTextField.text)
+			currentCampaign:setName(campaignName.text)
 			currentCampaign:setSystem(campaignSystem.text)
 			currentCampaign:setCalendar(campaignCalendar.text)
 			currentCampaign:setDate(campaignDate.text)
@@ -73,11 +73,10 @@ end
 
 local function hideTextFields( )
 	print("--==[ HIDING TEXT FIELDS ]==--")
-	campaignNameTextField:removeSelf()
-	campaignNameTextField = nil
-	campaignSystem:removeSelf()
-	campaignDate:removeSelf()
-	campaignCalendar:removeSelf()
+	campaignName.isVisible = false
+	campaignSystem.isVisible = false
+	campaignDate.isVisible = false
+	campaignCalendar.isVisible = false
 end
 
 
@@ -89,17 +88,21 @@ local function showTextFields( x, y )
 	if not y then
 		y = (campaignsY / -2) + 100
 	end
-	campaignNameTextField = ssk.easyIFC:presetTextInput(campaignsGroup, "title", currentCampaign.name, x-40, y, 
-				{listener=uiTools.textFieldListener, width=70+textWidth/2, keyboardFocus=true, selectedChars={0,99}})
-	y=y+25;
-	campaignSystem = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.system, x, y, 
-				{listener=uiTools.textFieldListener, width=-10+textWidth/2})
-	y=y+25;
-	campaignCalendar = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.calendar, x, y, 
-				{listener=uiTools.textFieldListener, width=-10+textWidth/2})
-	y=y+25;
-	campaignDate = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.date, x, y, 
-				{listener=uiTools.textFieldListener, width=-10+textWidth/2})
+	campaignName.isVisible = true
+	campaignSystem.isVisible = true
+	campaignCalendar.isVisible = true
+	campaignDate.isVisible = true
+	-- campaignName = ssk.easyIFC:presetTextInput(campaignsGroup, "title", currentCampaign.name, x-40, y, 
+	-- 			{listener=uiTools.textFieldListener, width=70+textWidth/2})
+	-- y=y+25;
+	-- campaignSystem = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.system, x, y, 
+	-- 			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
+	-- y=y+25;
+	-- campaignCalendar = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.calendar, x, y, 
+	-- 			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
+	-- y=y+25;
+	-- campaignDate = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.date, x, y, 
+	-- 			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
 end
 
 
@@ -137,7 +140,7 @@ local function reloadPartyTable()
 end
 
 local function refreshCampaignSettingsPage()
-	if not campaignNameTextField then
+	if not campaignName then
 		showTextFields()
 	end
 	reloadPartyTable()
@@ -200,30 +203,30 @@ function scene:show( event )
 		ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Name:", -textWidth/4, y, {align="left", width=textWidth/2})
 		local titleSquare = display.newRoundedRect(campaignsGroup, x-40, y, -6+textWidth/2+80, 24, 4 )
 		titleSquare.fill = {0.1,0.1,0.1}
-		-- campaignNameTextField = ssk.easyIFC:presetTextInput(campaignsGroup, "title", currentCampaign.name, x-40, y, 
-		-- 		{listener=uiTools.textFieldListener, width=70+textWidth/2})
+		campaignName = ssk.easyIFC:presetTextInput(campaignsGroup, "title", currentCampaign.name, x-40, y, 
+		 		{listener=uiTools.textFieldListener, width=70+textWidth/2})
 		
-		showTextFields(x, y)
+		--showTextFields(x, y)
 	    y=y+25; 
 	    
 	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "System:", -textWidth/4, y, {align="left", width=textWidth/2})
 	    local systemSquare = display.newRoundedRect(campaignsGroup, x, y, -6+textWidth/2, 24, 4 )
 		systemSquare.fill = {0.1,0.1,0.1}
-		-- campaignSystem = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.system, x, y, 
-				-- {listener=uiTools.textFieldListener, width=-10+textWidth/2})
+		campaignSystem = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.system, x, y, 
+				{listener=uiTools.textFieldListener, width=-10+textWidth/2})
 		y=y+25; 
 	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Calendar:", -textWidth/4, y, {align="left", width=textWidth/2})
 	    local calSquare = display.newRoundedRect(campaignsGroup, x, y, -6+textWidth/2, 24, 4 )
 		calSquare.fill = {0.1,0.1,0.1}
-		-- campaignCalendar = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.calendar, x, y, 
-		-- 		{listener=uiTools.textFieldListener, width=-10+textWidth/2})
+		campaignCalendar = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.calendar, x, y, 
+				{listener=uiTools.textFieldListener, width=-10+textWidth/2})
 
 		y=y+25; 
 	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Current Date:", -textWidth/4, y, {align="left", width=textWidth/2})
 	    local dateSquare = display.newRoundedRect(campaignsGroup, x, y, -6+textWidth/2, 24, 4 )
 		dateSquare.fill = {0.1,0.1,0.1}
-		-- campaignDate = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.date, x, y, 
-		-- 		{listener=uiTools.textFieldListener, width=-10+textWidth/2})
+		campaignDate = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.date, x, y, 
+			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
 
 
 
@@ -301,7 +304,7 @@ function scene:show( event )
 
 		local function onRowTouch( event )
 	 		--print("A Row was touched! target = " .. tostring(event.target))
-	 		print("A Row was touched! index = " .. tostring(event.target.index))
+	 		print("A Row was touched! index = " .. tostring(event.target.index) .. ", phase is " .. event.phase)
 	 		print("You touched " .. currentCampaign.partyMemberList[event.target.index-1].name)
 	 		hideTextFields()
 	 		manageParty.openExistingPartyMemberDialog( 

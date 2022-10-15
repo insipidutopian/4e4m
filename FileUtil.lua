@@ -156,7 +156,8 @@ end
 
 function FileUtil.loadAppFile(self, fName)
 	--local fName = "myFile.txt"
-	local path = system.pathForFile( fName, system.ResourceDirectory )
+	--print("Loading App File from: " .. system.ResourceDirectory .. ", fName is: " .. fName)
+	local path = system.pathForFile( 'data/5e/' .. fName, system.ResourceDirectory )
 
 	local readCount = 0
 	local fContents = ""
@@ -166,7 +167,7 @@ function FileUtil.loadAppFile(self, fName)
 		print ("FileUtil.loadFile: " .. fName .. " opened successfully")
 		-- local savedData = file:read( "*a" )
 		for line in file:lines() do
-		    print( "FileUtil.loadFile read: " .. line )
+		    --print( "FileUtil.loadFile read: " .. line )
 		    readCount = readCount + 1
 		    fContents = fContents .. line .. "\n"
 		end

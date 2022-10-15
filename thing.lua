@@ -24,7 +24,7 @@ function thing.new( name, type, description )	-- constructor
 		name = name or "Unnamed",
 		id = 0,
 		type = type or "unknown",
-		description = description or "description",
+		description = description or "",
 		details = "",
 		keywords = {}
 	}
@@ -41,7 +41,7 @@ end
 		id = newThing.id,
 		name = newThing.name or "Unnamed",
 		type = newThing.type or "unknown",
-		description = newThing.description or "description",
+		description = newThing.description or "",
 		details = newThing.details,
 		keywords = newThing.keywords,
 	}

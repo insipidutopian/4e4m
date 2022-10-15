@@ -17,7 +17,7 @@ local function updateThing()
 	print("         Thing Name:  " .. newThing.name)
 end
 
-function manageThing.openViewThingDialog(thing, group, showRerollButton, onSave)
+function manageThing.openViewThingDialog(thing, group, showRerollButton, onSave, rollOnInit)
 	updateFunction = onSave
 	print("openViewThingDialog() called, Thing is " .. thing.name)
 	local function onClose( self, onComplete )
@@ -101,8 +101,12 @@ function manageThing.openViewThingDialog(thing, group, showRerollButton, onSave)
 	currentThingId = thing.id
 	local titleSquare = display.newRoundedRect(dialog, 0, y-10, textWidth+4, 24, 4 )
 	titleSquare.fill = {0.1,0.1,0.1}
+	local focus = false
+	if thing.name == "" then
+		focus = true
+	end
 	thingNameTextField = ssk.easyIFC:presetTextInput(dialog, "title", thing.name, 0, y-10, 
-			{listener=uiTools.textFieldListener, width=textWidth, keyboardFocus=true, selectedChars={0,99}})
+			{listener=uiTools.textFieldListener, width=textWidth, placeholder='Thing Name', keyboardFocus=focus})
 	
     y=y+20; 
     ssk.easyIFC:presetLabel( dialog, "appLabel", "Notes:", 0, y, {align="left", width=textWidth})
@@ -116,7 +120,10 @@ function manageThing.openViewThingDialog(thing, group, showRerollButton, onSave)
 	
 	y = textYOffset + textHeight / 2 - textYOffset
 	if showRerollButton then
-		rerollThing(nil)
+		if rollOnInit then
+			rerollThing(nil)
+			native.setKeyboardFocus(nil)
+		end
 		ssk.easyIFC:presetPush( dialog, "appButton", -50, y, 80, 30, "Reroll", rerollThing )
 		ssk.easyIFC:presetPush( dialog, "appButton", 50, y, 80, 30, "Save", saveThingToCampaign )
 	else
@@ -134,9 +141,15 @@ end
 function manageThing.openNewThingDialog(group, onSave)
 	updateFunction = onSave
 	print("openNewThingDialog() called, onsave=" .. tostring(onSave))
-	--local type = Randomizer:generateThingType()
-	newThing = Thing.new("Thing", "") --Randomizer:generateThing(type)
+	newThing = Thing.new("", "")
 	manageThing.openViewThingDialog(newThing, group, true, onSave)
+end
+
+function manageThing.openNewRandomThingDialog(group, onSave)
+	updateFunction = onSave
+	print("openNewRandomThingDialog() called, onsave=" .. tostring(onSave))
+	newThing = Thing.new("", "")
+	manageThing.openViewThingDialog(newThing, group, true, onSave, true)
 end
 
 return manageThing

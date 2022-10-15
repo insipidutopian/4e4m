@@ -19,7 +19,7 @@ Randomizer = require ("RandGenUtil")
 FileUtil = require ("FileUtil")
 local CampaignClass = require ( "campaign" )
 
-GAMEMASTERY_VERSION = "1.3.3"
+GAMEMASTERY_VERSION = "1.4.0"
 -- SSK2 Begin Load
 io.output():setvbuf("no")
 display.setStatusBar(display.HiddenStatusBar)
@@ -35,7 +35,7 @@ _G.ssk.init( { launchArgs 				= ...,
 	            gameFont 				= "fonts/Aclonica.ttf",
 	            measure 					= true,
 	            math2DPlugin 			= false,
-	            enableAutoListeners 	= true,
+	            enableAutoListeners 	= false,
 	            exportColors 			= true,
 	            exportCore 				= true,
 	            exportSystem 			= true,
@@ -204,4 +204,4 @@ print ("************************")
 --]]
 
 
-Runtime:addEventListener( "orientation", onOrientationChange )
+--Runtime:addEventListener( "orientation", onOrientationChange )
