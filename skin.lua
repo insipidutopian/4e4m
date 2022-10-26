@@ -56,8 +56,8 @@ local squareButtonLinkParams =
     labelColor         = {0.6,0.0,0.0,1},
     labelSize          = 10,
     labelFont          = "fonts/kellunc.ttf",
-    unselImgSrc        = "button_celticspears_square.png",
-    selImgSrc          = "button_celticspears_square.png",
+    unselImgSrc        = "images/gamemastery/button_celticspears_square.png",
+    selImgSrc          = "images/gamemastery/button_celticspears_square.png",
     emboss             = false, 
 }
 ssk.easyIFC:addButtonPreset("squareButton", squareButtonLinkParams)
@@ -67,8 +67,8 @@ local wideButtonLinkParams =
     labelColor         = {0.6,0.0,0.0,1},
     labelSize          = 10,
     labelFont          = "fonts/kellunc.ttf",
-    unselImgSrc        = "button_celticspears_wide.png",
-    selImgSrc          = "button_celticspears_wide.png",
+    unselImgSrc        = "images/gamemastery/button_celticspears_wide.png",
+    selImgSrc          = "images/gamemastery/button_celticspears_wide.png",
     emboss             = false, 
 }
 ssk.easyIFC:addButtonPreset("wideButton", wideButtonLinkParams)
