@@ -33,7 +33,8 @@ local campaignsY = display.contentHeight-150
 
 local campaignsYStart 
 
-local textWidth = campaignsX - 40
+local textXOffset = 60
+local textWidth = campaignsX - 40 - textXOffset
 local textHeight = campaignsY - 40
 local textYOffset = 0
 local textBoxHeight = 80
@@ -80,29 +81,13 @@ local function hideTextFields( )
 end
 
 
-local function showTextFields( x, y )
-	print("--==[ SHOWING TEXT FIELDS ]==--")
-	if not x then
-		x = textWidth/4
-	end
-	if not y then
-		y = (campaignsY / -2) + 100
-	end
+local function showTextFields()
+
 	campaignName.isVisible = true
 	campaignSystem.isVisible = true
 	campaignCalendar.isVisible = true
 	campaignDate.isVisible = true
-	-- campaignName = ssk.easyIFC:presetTextInput(campaignsGroup, "title", currentCampaign.name, x-40, y, 
-	-- 			{listener=uiTools.textFieldListener, width=70+textWidth/2})
-	-- y=y+25;
-	-- campaignSystem = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.system, x, y, 
-	-- 			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
-	-- y=y+25;
-	-- campaignCalendar = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.calendar, x, y, 
-	-- 			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
-	-- y=y+25;
-	-- campaignDate = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.date, x, y, 
-	-- 			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
+
 end
 
 
@@ -198,40 +183,40 @@ function scene:show( event )
 		currentCampaignId = currentCampaign.id
 		y = (campaignsY / -2) + 100
 		x = textWidth/4
+		
 
 
-		ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Name:", -textWidth/4, y, {align="left", width=textWidth/2})
-		local titleSquare = display.newRoundedRect(campaignsGroup, x-40, y, -6+textWidth/2+80, 24, 4 )
+		ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Name:", -x - textXOffset/2, y, {align="left", width=textWidth/2})
+		local titleSquare = display.newRoundedRect(campaignsGroup, x-40 - textXOffset/2, y, -6+textWidth/2+80, 24, 4 )
 		titleSquare.fill = {0.1,0.1,0.1}
-		campaignName = ssk.easyIFC:presetTextInput(campaignsGroup, "title", currentCampaign.name, x-40, y, 
+		campaignName = ssk.easyIFC:presetTextInput(campaignsGroup, "title", currentCampaign.name, x-40 - textXOffset/2, y, 
 		 		{listener=uiTools.textFieldListener, width=70+textWidth/2})
 		
-		--showTextFields(x, y)
 	    y=y+25; 
 	    
-	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "System:", -textWidth/4, y, {align="left", width=textWidth/2})
-	    local systemSquare = display.newRoundedRect(campaignsGroup, x, y, -6+textWidth/2, 24, 4 )
+	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "System:", -x - textXOffset/2, y, {align="left", width=textWidth/2})
+	    local systemSquare = display.newRoundedRect(campaignsGroup, x - textXOffset/2, y, -6+textWidth/2, 24, 4 )
 		systemSquare.fill = {0.1,0.1,0.1}
-		campaignSystem = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.system, x, y, 
+		campaignSystem = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.system, x - textXOffset/2, y, 
 				{listener=uiTools.textFieldListener, width=-10+textWidth/2})
 		y=y+25; 
-	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Calendar:", -textWidth/4, y, {align="left", width=textWidth/2})
-	    local calSquare = display.newRoundedRect(campaignsGroup, x, y, -6+textWidth/2, 24, 4 )
+	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Calendar:", -x - textXOffset/2, y, {align="left", width=textWidth/2})
+	    local calSquare = display.newRoundedRect(campaignsGroup, x - textXOffset/2, y, -6+textWidth/2, 24, 4 )
 		calSquare.fill = {0.1,0.1,0.1}
-		campaignCalendar = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.calendar, x, y, 
+		campaignCalendar = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.calendar, x - textXOffset/2, y, 
 				{listener=uiTools.textFieldListener, width=-10+textWidth/2})
 
 		y=y+25; 
-	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Current Date:", -textWidth/4, y, {align="left", width=textWidth/2})
-	    local dateSquare = display.newRoundedRect(campaignsGroup, x, y, -6+textWidth/2, 24, 4 )
+	    ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Current Date:", -x - textXOffset/2, y, {align="left", width=textWidth/2})
+	    local dateSquare = display.newRoundedRect(campaignsGroup, x - textXOffset/2, y, -6+textWidth/2, 24, 4 )
 		dateSquare.fill = {0.1,0.1,0.1}
-		campaignDate = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.date, x, y, 
+		campaignDate = ssk.easyIFC:presetTextInput(campaignsGroup, "default", currentCampaign.date, x- textXOffset/2, y, 
 			{listener=uiTools.textFieldListener, width=-10+textWidth/2})
 
 
 
 		y=y+25;
-		ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Current Party:", -textWidth/4, y, {align="left", width=textWidth/2})
+		ssk.easyIFC:presetLabel( campaignsGroup, "appLabel", "Current Party:", -x - textXOffset/2, y, {align="left", width=textWidth/2})
 		--
 		-- Party Info
 		--
@@ -321,7 +306,7 @@ function scene:show( event )
 	 	y = y + 15
 		currentPartyTable = widget.newTableView(
 		{
-			left = textWidth/-2,
+			left = textWidth/-2 - textXOffset/2,
 			--left = 0,
 			top = y,
 			height = 140,
@@ -338,13 +323,13 @@ function scene:show( event )
 		reloadPartyTable()
 
 		y = y + 140 + 25
-		ssk.easyIFC:presetPush( campaignsGroup, "appButton", 0, y, 200, 30, "Add Party Member", 
+		ssk.easyIFC:presetPush( campaignsGroup, "appButton", 0 - textXOffset/2, y, 200, 30, "Add Party Member", 
 			function() hideTextFields(); manageParty.openNewPartyMemberDialog( overlayGroup, refreshCampaignSettingsPage); end )
 
 
 		y = (campaignsY / 2) - 50
-		ssk.easyIFC:presetPush( campaignsGroup, "appButton", -50, y, 80, 30, "Delete", function() deleteCampaign(campaign); end )
-		ssk.easyIFC:presetPush( campaignsGroup, "appButton", 50, y, 80, 30, "Save", saveCampaign )
+		ssk.easyIFC:presetPush( campaignsGroup, "appButton", -50 - textXOffset/2, y, 80, 30, "Delete", function() deleteCampaign(campaign); end )
+		ssk.easyIFC:presetPush( campaignsGroup, "appButton", 50 - textXOffset/2, y, 80, 30, "Save", saveCampaign )
 
 	    if navGroup then navGroup:removeSelf() end
 		navGroup = display.newGroup(group)
@@ -384,6 +369,114 @@ function scene:show( event )
 
 	else	
 		print(currentScene .. ":SHOW DID PHASE")
+		local function tapListener( event )
+		    if event then
+		    	print( "tapped: " .. tostring(event.target) )  
+		    	if event.target.name then
+		    		print("Pressed " .. event.target.name .. " Navigation Button")
+		    		composer.gotoScene("manage" .. event.target.name, { effect = "fade", time = 400, params = {campaign = currentCampaign}})
+		    	end
+		    	--do stuff
+		    end
+	   	 	return true
+		end
+
+		settingsButton = widget.newButton(
+	    {
+	        label = "Settings", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+	        defaultFile= "images/gamemastery/icons/settings-selected.png",
+	        overFile= "images/gamemastery/icons/settings.png",
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+	        x = display.contentWidth - 40, y = 170, height=60, width=60
+	    })
+	    --settingsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	    settingsButton.name = "CampaignSettings"
+		navGroup:insert(settingsButton)
+
+		encountersButton = widget.newButton(
+	    {
+	        label = "Encounters", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+	        defaultFile= "images/gamemastery/icons/encounters.png",
+	        overFile= "images/gamemastery/icons/encounters-selected.png",
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+	        x = display.contentWidth - 40, y = 250, height=60, width=60
+	    })
+
+		encountersButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+		encountersButton.name = "Encounters"
+		navGroup:insert(encountersButton)
+
+		eventsButton = widget.newButton(
+	    {
+	        label = "Events", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+	        defaultFile= "images/gamemastery/icons/events.png",
+	        overFile= "images/gamemastery/icons/events-selected.png",
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+	        x = display.contentWidth - 40, y = 330, height=60, width=60
+	    })
+
+		eventsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+		eventsButton.name = "Events"
+		navGroup:insert(eventsButton)
+
+		npcsButton = widget.newButton(
+	    {
+	        label = "NPCs", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+	        defaultFile= "images/gamemastery/icons/npcs.png",
+	        overFile= "images/gamemastery/icons/npcs-selected.png",
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+	        x = display.contentWidth - 40, y = 410, height=60, width=60
+	    })
+
+		npcsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+		npcsButton.name = "Npcs"
+		navGroup:insert(npcsButton)
+
+		questsButton = widget.newButton(
+	    {
+	        label = "Quests", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+	        defaultFile= "images/gamemastery/icons/quests.png",
+	        overFile= "images/gamemastery/icons/quests-selected.png",
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+	        x = display.contentWidth - 40, y = 490, height=60, width=60
+	    })
+
+		questsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+		questsButton.name = "Quests"
+		navGroup:insert(questsButton)
+
+		placesButton = widget.newButton(
+	    {
+	        label = "Places", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+	        defaultFile= "images/gamemastery/icons/places.png",
+	        overFile= "images/gamemastery/icons/places-selected.png",
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+	        x = display.contentWidth - 40, y = 570, height=60, width=60
+	    })
+
+		placesButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+		placesButton.name = "Places"
+		navGroup:insert(placesButton)
+
+		thingsButton = widget.newButton(
+	    {
+	        label = "Things", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+	        defaultFile= "images/gamemastery/icons/things.png",
+	        overFile= "images/gamemastery/icons/things-selected.png",
+	        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+	        x = display.contentWidth - 40, y = 650, height=60, width=60
+	    })
+
+		thingsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+		thingsButton.name = "Things"
+		navGroup:insert(thingsButton)
 	end
 end
 

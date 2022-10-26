@@ -46,7 +46,7 @@ function scene:create( event )
 
 	currentCampaign = CampaignList:getCurrentorNewCampaign()
 
-	ssk.easyIFC:presetLabel( group, "appLabel", "Events: ".. currentCampaign.name, 160 , yStart + 10)
+	ssk.easyIFC:presetLabel( group, "title",  currentCampaign.name, display.contentCenterX , yStart + 10)
 
 	eventsX = display.contentWidth
 	eventsY = display.contentHeight-150
@@ -134,18 +134,127 @@ function scene:show( event )
     })
 	navGroup:insert(homeBtn)
 
-	local backBtn = widget.newButton(
-    {   
-        label = "Back", font=btnFont, fontSize=btnFontSize, emboss = false,
-        shape = "circle", radius = 50*0.9, cornerRadius = 2, strokeWidth = 4,
+	-- local backBtn = widget.newButton(
+ --    {   
+ --        label = "Back", font=btnFont, fontSize=btnFontSize, emboss = false,
+ --        shape = "circle", radius = 50*0.9, cornerRadius = 2, strokeWidth = 4,
+ --        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+ --        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
+ --        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
+ --        onPress = function()  composer.gotoScene("editCampaign", { effect = "fade", time = 400, params = {campaign = currentCampaign}}) end,
+ --    	x = 60,
+ --      	y = display.contentHeight-60
+ --    })
+ --    navGroup:insert(backBtn)
+
+	local function tapListener( event )
+	    if event then
+	    	print( "tapped: " .. tostring(event.target) )  
+	    	if event.target.name then
+	    		print("Pressed " .. event.target.name .. " Navigation Button")
+	    		composer.gotoScene("manage" .. event.target.name, { effect = "fade", time = 400, params = {campaign = currentCampaign}})
+	    	end
+	    	--do stuff
+	    end
+   	 	return true
+	end
+
+	settingsButton = widget.newButton(
+    {
+        label = "Settings", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+        defaultFile= "images/gamemastery/icons/settings.png",
+        overFile= "images/gamemastery/icons/settings-selected.png",
         labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
-        fillColor = { default={0,0,0,1}, over={0.1,0.1,0.1,0.4} },
-        strokeColor = { default={0.7,0,0,1}, over={0.7,0.0,0,1} },
-        onPress = function()  composer.gotoScene("editCampaign", { effect = "fade", time = 400, params = {campaign = currentCampaign}}) end,
-    	x = 60,
-      	y = display.contentHeight-60
+
+        x = display.contentWidth - 40, y = 170, height=60, width=60
     })
-    navGroup:insert(backBtn)
+    settingsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+    settingsButton.name = "CampaignSettings"
+	navGroup:insert(settingsButton)
+
+	encountersButton = widget.newButton(
+    {
+        label = "Encounters", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+        defaultFile= "images/gamemastery/icons/encounters.png",
+        overFile= "images/gamemastery/icons/encounters-selected.png",
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+        x = display.contentWidth - 40, y = 250, height=60, width=60
+    })
+
+	encountersButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	encountersButton.name = "Encounters"
+	navGroup:insert(encountersButton)
+
+	eventsButton = widget.newButton(
+    {
+        label = "Events", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+        defaultFile= "images/gamemastery/icons/events-selected.png",
+        overFile= "images/gamemastery/icons/events.png",
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+        x = display.contentWidth - 40, y = 330, height=60, width=60
+    })
+
+	--eventsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	eventsButton.name = "Events"
+	navGroup:insert(eventsButton)
+
+	npcsButton = widget.newButton(
+    {
+        label = "NPCs", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+        defaultFile= "images/gamemastery/icons/npcs.png",
+        overFile= "images/gamemastery/icons/npcs-selected.png",
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+        x = display.contentWidth - 40, y = 410, height=60, width=60
+    })
+
+	npcsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	npcsButton.name = "Npcs"
+	navGroup:insert(npcsButton)
+
+	questsButton = widget.newButton(
+    {
+        label = "Quests", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+        defaultFile= "images/gamemastery/icons/quests.png",
+        overFile= "images/gamemastery/icons/quests-selected.png",
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+        x = display.contentWidth - 40, y = 490, height=60, width=60
+    })
+
+	questsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	questsButton.name = "Quests"
+	navGroup:insert(questsButton)
+
+	placesButton = widget.newButton(
+    {
+        label = "Places", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+        defaultFile= "images/gamemastery/icons/places.png",
+        overFile= "images/gamemastery/icons/places-selected.png",
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+        x = display.contentWidth - 40, y = 570, height=60, width=60
+    })
+
+	placesButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	placesButton.name = "Places"
+	navGroup:insert(placesButton)
+
+	thingsButton = widget.newButton(
+    {
+        label = "Things", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+        defaultFile= "images/gamemastery/icons/things.png",
+        overFile= "images/gamemastery/icons/things-selected.png",
+        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+        x = display.contentWidth - 40, y = 650, height=60, width=60
+    })
+
+	thingsButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	thingsButton.name = "Things"
+	navGroup:insert(thingsButton)
 
 	if event.phase == "will" then
 		print(currentScene .. ":SHOW WILL PHASE")

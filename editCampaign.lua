@@ -87,60 +87,74 @@ function scene:create( event )
 
 	print(currentScene .. ":createScene")
 
+	
+
+	local function tapListener( event )
+		if buttonsDisabled == true then return true end
+	 
+		    -- Code executed when the button is tapped
+		    if event then
+		    	print( "tapped: " .. tostring(event.target) )  
+		    	--do stuff
+		    end
+    		-- "event.target" is the tapped object
+   	 	return true
+	end
+
 
 	local yStart = titleBarHeight + yPadding 
 	local buttonCount = 0
 
 
-	if placesGroup then placesGroup:removeSelf() end
-	local placesGroup = display.newGroup()
-	placesGroup.x=0
-	placesGroup.y=160
+	-- if placesGroup then placesGroup:removeSelf() end
+	-- local placesGroup = display.newGroup()
+	-- placesGroup.x=0
+	-- placesGroup.y=160
 
-	local placesSquare = display.newRect( display.viewableContentWidth/4, 90, display.viewableContentWidth/2 - 5, 180 )
-	placesSquare.stroke = {1,0,0}
-	placesSquare.strokeWidth = 2
-	placesSquare.fill = {0,0,0}
-	placesGroup:insert(placesSquare)
-	group:insert(placesGroup)
+	-- local placesSquare = display.newRect( display.viewableContentWidth/4, 90, display.viewableContentWidth/2 - 5, 180 )
+	-- placesSquare.stroke = {1,0,0}
+	-- placesSquare.strokeWidth = 2
+	-- placesSquare.fill = {0,0,0}
+	-- placesGroup:insert(placesSquare)
+	-- group:insert(placesGroup)
 	
 
-	if npcsGroup then npcsGroup:removeSelf() end
-	npcsGroup = display.newGroup()
-	npcsGroup.x=display.viewableContentWidth/2
-	npcsGroup.y=160
+	-- if npcsGroup then npcsGroup:removeSelf() end
+	-- npcsGroup = display.newGroup()
+	-- npcsGroup.x=display.viewableContentWidth/2
+	-- npcsGroup.y=160
 
-	local npcsSquare = display.newRect(display.viewableContentWidth/4, 90, display.viewableContentWidth/2 - 5, 180 )
-	npcsSquare.stroke = {1,0,0}
-	npcsSquare.strokeWidth = 2
-	npcsSquare.fill = {0,0,0}
-	npcsGroup:insert(npcsSquare)
-	group:insert(npcsGroup)
+	-- local npcsSquare = display.newRect(display.viewableContentWidth/4, 90, display.viewableContentWidth/2 - 5, 180 )
+	-- npcsSquare.stroke = {1,0,0}
+	-- npcsSquare.strokeWidth = 2
+	-- npcsSquare.fill = {0,0,0}
+	-- npcsGroup:insert(npcsSquare)
+	-- group:insert(npcsGroup)
 
 
-	if questGroup then questGroup:removeSelf() end
-	questGroup = display.newGroup()
-	questGroup.x=0
-	questGroup.y=345
+	-- if questGroup then questGroup:removeSelf() end
+	-- questGroup = display.newGroup()
+	-- questGroup.x=0
+	-- questGroup.y=345
 
-	local questSquare = display.newRect( display.contentWidth/2, 90, display.contentWidth-10, 180 )
-	questSquare.stroke = {1,0,0}
-	questSquare.strokeWidth = 2
-	questSquare.fill = {0,0,0}
-	questGroup:insert(questSquare)
-	group:insert(questGroup)
+	-- local questSquare = display.newRect( display.contentWidth/2, 90, display.contentWidth-10, 180 )
+	-- questSquare.stroke = {1,0,0}
+	-- questSquare.strokeWidth = 2
+	-- questSquare.fill = {0,0,0}
+	-- questGroup:insert(questSquare)
+	-- group:insert(questGroup)
 
-	if eventGroup then eventGroup:removeSelf() end
-	eventGroup = display.newGroup()
-	eventGroup.x=0
-	eventGroup.y=520
+	-- if eventGroup then eventGroup:removeSelf() end
+	-- eventGroup = display.newGroup()
+	-- eventGroup.x=0
+	-- eventGroup.y=520
 
-	local eventSquare = display.newRect( display.contentWidth/2, 90, display.contentWidth-10, 180 )
-	eventSquare.stroke = {1,0,0}
-	eventSquare.strokeWidth = 2
-	eventSquare.fill = {0,0,0}
-	eventGroup:insert(eventSquare)
-	group:insert(eventGroup)
+	-- local eventSquare = display.newRect( display.contentWidth/2, 90, display.contentWidth-10, 180 )
+	-- eventSquare.stroke = {1,0,0}
+	-- eventSquare.strokeWidth = 2
+	-- eventSquare.fill = {0,0,0}
+	-- eventGroup:insert(eventSquare)
+	-- group:insert(eventGroup)
 
 	
 	currentCampaign = CampaignList:getCurrentorNewCampaign() 
@@ -162,19 +176,31 @@ function scene:create( event )
 
 	group:insert(homeBtn)
 
-	thingsButton = ssk.easyIFC:presetPush(group, "appButton", 50, display.contentHeight-80, 80, 30, 
-											  "Things", 
-											  function()  composer.gotoScene("manageThings", { effect = "fade", time = 400}) end, 
-											  {labelHorizAlign="left", labelSize=14} )
-	settingsButton = ssk.easyIFC:presetPush(group, "appButton", 140, display.contentHeight-80, 80, 30, 
-											  "Settings", 
-											  function()  composer.gotoScene("manageCampaignSettings", { effect = "fade", time = 400}) end, 
-											  {labelHorizAlign="left", labelSize=14} )
-	encountersButton = ssk.easyIFC:presetPush(group, "appButton", 60, display.contentHeight-40, 100, 30, 
-											  "Encounters", 
-											  function()  composer.gotoScene("manageEncounters", { effect = "fade", time = 400}) end, 
-											  {labelHorizAlign="left", labelSize=14} )
+	-- thingsButton = ssk.easyIFC:presetPush(group, "appButton", 50, display.contentHeight-80, 80, 30, 
+	-- 										  "Things", 
+	-- 										  function()  composer.gotoScene("manageThings", { effect = "fade", time = 400}) end, 
+	-- 										  {labelHorizAlign="left", labelSize=14} )
+	-- settingsButton = ssk.easyIFC:presetPush(group, "appButton", 140, display.contentHeight-80, 80, 30, 
+	-- 										  "Settings", 
+	-- 										  function()  composer.gotoScene("manageCampaignSettings", { effect = "fade", time = 400}) end, 
+	-- 										  {labelHorizAlign="left", labelSize=14} )
+	-- encountersButton = ssk.easyIFC:presetPush(group, "appButton", 60, display.contentHeight-40, 100, 30, 
+	-- 										  "Encounters", 
+	-- 										  function()  composer.gotoScene("manageEncounters", { effect = "fade", time = 400}) end, 
+	-- 										  {labelHorizAlign="left", labelSize=14} )
 	
+	-- encountersButton = widget.newButton(
+ --    {
+ --        label = "  Encounters", emboss = false, font=btnFont, fontSize=btnFontSize-4, labelYOffset = 38,
+ --        defaultFile= "images/gamemastery/icons/encounters.png",
+ --        overFile= "images/gamemastery/icons/encounters-selected.png",
+ --        labelColor = { default={.6,0,0,1}, over={0.7,0.0,0,1} },
+
+ --        x = display.contentWidth - 30, y = 200, height=60, width=60
+ --    })
+
+	-- encountersButton:addEventListener( "tap", tapListener)  -- Add a "tap" listener to the object
+	-- group:insert(encountersButton)
 end
 
 
@@ -206,8 +232,18 @@ function scene:show( event )
 	CampaignList:setCurrentCampaignIndex(i)
 	print ("Current campaign number=" .. i)
 	currentCampaign = CampaignList:getCurrentorNewCampaign()
-	
-	
+
+	if not newCampaignFlag then
+		if currentCampaign.startScreen then
+			composer.gotoScene("manage" .. currentCampaign.startScreen)
+
+		else
+			currentCampaign.startScreen = "Events"
+			composer.gotoScene("manageEvents")
+		end
+	else
+		composer.gotoScene("manageCampaignSettings")
+	end
 
 	if event.phase == "will" then
 		print(currentScene .. ":SHOW WILL PHASE")
@@ -239,73 +275,73 @@ function scene:show( event )
 			overlayGroup.y=display.viewableContentHeight/2
 		end
 
-		npcsButton = ssk.easyIFC:presetPush(npcsGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
-											"NPCs: " .. #currentCampaign.npcList, 
-											function()  composer.gotoScene("manageNpcs", { effect = "fade", time = 400}) end, 
-											{labelHorizAlign="left", labelSize=14} )
-		saveButton(npcsButton)
+		-- npcsButton = ssk.easyIFC:presetPush(npcsGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+		-- 									"NPCs: " .. #currentCampaign.npcList, 
+		-- 									function()  composer.gotoScene("manageNpcs", { effect = "fade", time = 400}) end, 
+		-- 									{labelHorizAlign="left", labelSize=14} )
+		-- saveButton(npcsButton)
 
-		for i=1, #currentCampaign.npcList do
-			print("NPC found: " .. currentCampaign.npcList[i].name)
-			if (i < 9) then
-				if debugFlag then print("Creating NPC button for " .. currentCampaign.npcList[i].name); end
-				npcButton = ssk.easyIFC:presetPush( npcsGroup, "linkButton", display.contentWidth/4, 20+18*i, 140, 30, "* " .. currentCampaign.npcList[i].name, 
-					function() manageNpc.openViewNpcDialog(currentCampaign.npcList[i], overlayGroup, false, doUpdate); end, 
-					{labelHorizAlign="left", labelSize=12} )
-				saveButton(npcButton)
-			end
-		end
+		-- for i=1, #currentCampaign.npcList do
+		-- 	print("NPC found: " .. currentCampaign.npcList[i].name)
+		-- 	if (i < 9) then
+		-- 		if debugFlag then print("Creating NPC button for " .. currentCampaign.npcList[i].name); end
+		-- 		npcButton = ssk.easyIFC:presetPush( npcsGroup, "linkButton", display.contentWidth/4, 20+18*i, 140, 30, "* " .. currentCampaign.npcList[i].name, 
+		-- 			function() manageNpc.openViewNpcDialog(currentCampaign.npcList[i], overlayGroup, false, doUpdate); end, 
+		-- 			{labelHorizAlign="left", labelSize=12} )
+		-- 		saveButton(npcButton)
+		-- 	end
+		-- end
 		
-		placesButton = ssk.easyIFC:presetPush(placesGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
-											  "Places: " .. #currentCampaign.placeList, 
-											  function()  composer.gotoScene("managePlaces", { effect = "fade", time = 400}) end, 
-											  {labelHorizAlign="left", labelSize=14} )
-		saveButton(placesButton)
-		for i=1, #currentCampaign.placeList do
-			print("Place found: " .. currentCampaign.placeList[i].name)
-			if (i < 9) then
-				b = ssk.easyIFC:presetPush( placesGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.placeList[i].name, 
-					function() managePlace.openViewPlaceDialog(currentCampaign.placeList[i], overlayGroup, false, doUpdate); end, 
-					{labelHorizAlign="left", labelSize=11} )
-				saveButton(b)
-			end
-		end
+		-- placesButton = ssk.easyIFC:presetPush(placesGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+		-- 									  "Places: " .. #currentCampaign.placeList, 
+		-- 									  function()  composer.gotoScene("managePlaces", { effect = "fade", time = 400}) end, 
+		-- 									  {labelHorizAlign="left", labelSize=14} )
+		-- saveButton(placesButton)
+		-- for i=1, #currentCampaign.placeList do
+		-- 	print("Place found: " .. currentCampaign.placeList[i].name)
+		-- 	if (i < 9) then
+		-- 		b = ssk.easyIFC:presetPush( placesGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.placeList[i].name, 
+		-- 			function() managePlace.openViewPlaceDialog(currentCampaign.placeList[i], overlayGroup, false, doUpdate); end, 
+		-- 			{labelHorizAlign="left", labelSize=11} )
+		-- 		saveButton(b)
+		-- 	end
+		-- end
 		
-		questsButton = ssk.easyIFC:presetPush(questGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
-											  "Quests: " .. #currentCampaign.questList, 
-											  function()  composer.gotoScene("manageQuests", { effect = "fade", time = 400}) end, 
-											  {labelHorizAlign="left", labelSize=14} )
-		saveButton(questsButton)
-		for i=1, #currentCampaign.questList do
-			print("Quest found: " .. currentCampaign.questList[i].name)
-			if (i < 9) then
-				b = ssk.easyIFC:presetPush( questGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.questList[i].name, 
-					function() manageQuest.openViewQuestDialog(currentCampaign.questList[i], overlayGroup, false, doUpdate); end, 
-					{labelHorizAlign="left", labelSize=11} )
-				saveButton(b)
-			end
-		end
+		-- questsButton = ssk.easyIFC:presetPush(questGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+		-- 									  "Quests: " .. #currentCampaign.questList, 
+		-- 									  function()  composer.gotoScene("manageQuests", { effect = "fade", time = 400}) end, 
+		-- 									  {labelHorizAlign="left", labelSize=14} )
+		-- saveButton(questsButton)
+		-- for i=1, #currentCampaign.questList do
+		-- 	print("Quest found: " .. currentCampaign.questList[i].name)
+		-- 	if (i < 9) then
+		-- 		b = ssk.easyIFC:presetPush( questGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.questList[i].name, 
+		-- 			function() manageQuest.openViewQuestDialog(currentCampaign.questList[i], overlayGroup, false, doUpdate); end, 
+		-- 			{labelHorizAlign="left", labelSize=11} )
+		-- 		saveButton(b)
+		-- 	end
+		-- end
 
-		eventButton = ssk.easyIFC:presetPush(eventGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
-											  "Events: " .. #currentCampaign.eventList, 
-											  function()  composer.gotoScene("manageEvents", { effect = "fade", time = 400}) end, 
-											  {labelHorizAlign="left", labelSize=14} )
-		saveButton(eventButton)
-		for i=1, #currentCampaign.eventList do
-			print("Quest found: " .. currentCampaign.eventList[i].title)
-			if (i < 9) then
-				b = ssk.easyIFC:presetPush( eventGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.eventList[i].title, 
-					function() manageEvent.openViewEventDialog(currentCampaign.eventList[i], overlayGroup, false, doUpdate); end, 
-					{labelHorizAlign="left", labelSize=11} )
-				saveButton(b)
-			end
-		end
+		-- eventButton = ssk.easyIFC:presetPush(eventGroup, "linkButton", display.contentWidth/4 - 13, 15, 140, 30, 
+		-- 									  "Events: " .. #currentCampaign.eventList, 
+		-- 									  function()  composer.gotoScene("manageEvents", { effect = "fade", time = 400}) end, 
+		-- 									  {labelHorizAlign="left", labelSize=14} )
+		-- saveButton(eventButton)
+		-- for i=1, #currentCampaign.eventList do
+		-- 	print("Quest found: " .. currentCampaign.eventList[i].title)
+		-- 	if (i < 9) then
+		-- 		b = ssk.easyIFC:presetPush( eventGroup, "linkButton", display.contentWidth/4 - 13, 20+18*i, 140, 30, "* " .. currentCampaign.eventList[i].title, 
+		-- 			function() manageEvent.openViewEventDialog(currentCampaign.eventList[i], overlayGroup, false, doUpdate); end, 
+		-- 			{labelHorizAlign="left", labelSize=11} )
+		-- 		saveButton(b)
+		-- 	end
+		-- end
 
-		campaignNameTextField = ssk.easyIFC:presetTextInput(group, "title", currentCampaign.name, 100, 70, 
-			{listener=uiTools.textFieldListener, updateFunction=updateCampaignName, keyboardFocus=newCampaignFlag, selectedChars={0,99}})
+		-- campaignNameTextField = ssk.easyIFC:presetTextInput(group, "title", currentCampaign.name, 100, 70, 
+		-- 	{listener=uiTools.textFieldListener, updateFunction=updateCampaignName, keyboardFocus=newCampaignFlag, selectedChars={0,99}})
 
-		campaignNotesTextField = ssk.easyIFC:presetTextBox(group, "default", currentCampaign.description, display.contentCenterX, 120, 
-			{listener=uiTools.textFieldListener, updateFunction=updateCampaignNotes, selectedChars={0,99}, height=75, width=display.contentWidth-20})
+		-- campaignNotesTextField = ssk.easyIFC:presetTextBox(group, "default", currentCampaign.description, display.contentCenterX, 120, 
+		-- 	{listener=uiTools.textFieldListener, updateFunction=updateCampaignNotes, selectedChars={0,99}, height=75, width=display.contentWidth-20})
 		
 
 	else
@@ -327,7 +363,7 @@ function scene:hide( event )
 	local group = self.view
 
 	if event.phase == "will" then
-
+		if placesGroup then placesGroup:removeSelf(); end
 
 		if campaignNameTextField then
 			if debugFlag then print("**** hide.removing campaignNameTextField"); end
