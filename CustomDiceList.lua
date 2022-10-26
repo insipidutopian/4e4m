@@ -5,7 +5,7 @@
 -- class for managing CustomDice objects.
 --
 -------------------------------------------------
-FileUtil = require ("FileUtil")
+--FileUtil = require ("FileUtil")
 local CustomDiceClass = require ( "custom_dice" )
 
 local CustomDiceList = {Instances={}}

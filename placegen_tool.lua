@@ -8,7 +8,6 @@
 
 local storyboard = require ( "composer" )
 local widget = require ( "widget" )
-Randomizer = require ("RandGenUtil")
 
 -- Common SSK Helper Modules
 local easyIFC = ssk.easyIFC;local persist = ssk.persist

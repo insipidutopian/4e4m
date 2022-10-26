@@ -7,10 +7,11 @@
 
 local composer = require ( "composer" )
 local widget = require ( "widget" )
-FileUtil = require ("FileUtil")
+FileUtil = require ("lib.asg.FileUtil")
 CampaignList = require ("CampaignList")
 local CampaignClass = require ( "campaign" )
-uiTools = require("uiTools")
+uiTools = require("lib.asg.uiTools")
+strings = require("lib.asg.stringTools")
 
 manageNpc = require("manageNpc")
 manageThing = require("manageThing")

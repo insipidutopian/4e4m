@@ -5,7 +5,7 @@
 -- class for managing Campaign objects.
 --
 -------------------------------------------------
-FileUtil = require ("FileUtil")
+FileUtil = require ("lib.asg.FileUtil")
 local CampaignClass = require ( "campaign" )
 
 local CampaignList = {Instances={}}

@@ -8,7 +8,6 @@
 
 local storyboard = require ( "composer" )
 local widget = require ( "widget" )
-Randomizer = require ("RandGenUtil")
 local thing = require ("thing")
 
 -- Common SSK Helper Modules

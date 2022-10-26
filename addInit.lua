@@ -1,7 +1,6 @@
 -- addInit.lua
 InitiativeList = require ( "InitiativeList" )
 local initiative = require ( "initiative" )
-local RandGenUtil = require("RandGenUtil")
 local widget = require ( "widget" )
 
 
@@ -85,9 +84,9 @@ function addInit.openAddInitDialog(group, params, onSave)
 		print("addInitiativeEntity: name=" .. entityName .. ", entityType=" .. entityType .. ", entityInit=" .. entityInit .. ", entityBonus=" .. entityBonus)
 		if entityName == "" then
 			if entityType == "player" then
-				entityName = RandGenUtil.generateNpcName()
+				entityName = Randomizer.generateNpcName()
 			else
-				entityName = RandGenUtil.generateAdversary()
+				entityName = Randomizer.generateAdversary()
 			end
 		end
 
@@ -131,9 +130,9 @@ function addInit.openAddInitDialog(group, params, onSave)
 
 		if entityName == "text" then
 			if entityType == "player" then
-				entityName = RandGenUtil.generateNpcName()
+				entityName = Randomizer.generateNpcName()
 			else
-				entityName = RandGenUtil.generateAdversary()
+				entityName = Randomizer.generateAdversary()
 			end
 		end
 

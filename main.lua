@@ -15,8 +15,8 @@ require("mobdebug").start()
 CampaignList = require ("CampaignList")
 InitiativeList = require ("InitiativeList")
 QuestList = require ("QuestList")
-Randomizer = require ("RandGenUtil")
-FileUtil = require ("FileUtil")
+Randomizer = require ("lib.asg.RandGenUtil")
+FileUtil = require ("lib.asg.FileUtil")
 local CampaignClass = require ( "campaign" )
 
 GAMEMASTERY_VERSION = "1.4.0"

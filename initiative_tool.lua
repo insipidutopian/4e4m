@@ -7,7 +7,6 @@ local composer = require ( "composer" )
 local widget = require ( "widget" )
 local initiative = require ( "initiative" )
 local initList = require ( "InitiativeList")
-local RandGenUtil = require ("RandGenUtil")
 
 local addInit = require ("addInit")
 local delayInit = require ("delayInit")

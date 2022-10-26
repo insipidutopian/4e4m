@@ -5,7 +5,7 @@ TestRandomizerQuests = {}
 
 	function TestRandomizerQuests:setUp()
 		print("Setting up randomizer tests")
-		Randomizer = require ("RandGenUtil")
+		Randomizer = require ("lib.asg.RandGenUtil")
 	end
 
 

@@ -5,7 +5,7 @@
 -- class for managing Initiative objects.
 --
 -------------------------------------------------
-FileUtil = require ("FileUtil")
+--FileUtil = require ("FileUtil")
 local InitiativeClass = require ( "initiative" )
 
 local InitiativeList = {Instances={}}

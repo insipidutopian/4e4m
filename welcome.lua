@@ -3,13 +3,10 @@
 --  
 -- Version: 1.0
 -- 
---
--- This file is used to display the corresponding screen content when the user clicks the tab bar. 
+
 
 local composer = require ( "composer" )
--- local storyboard = require ( "storyboard" )
 local widget = require ( "widget" )
-FileUtil = require ("FileUtil")
 local mainFont = "fonts/kellunc.ttf"
 local ASGFont = "fonts/Aclonica.ttf"
 

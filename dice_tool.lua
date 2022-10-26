@@ -11,7 +11,7 @@ local customdice = require ( "custom_dice" )
 local widget = require ( "widget" )
 local campaign = require ( "campaign" )
 
-local strings = require("stringTools")
+
 local CustomDiceList = require("CustomDiceList")
 
 --Create a composer scene for this module

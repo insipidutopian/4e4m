@@ -1,3 +1,6 @@
+local lfs = require( "lfs" )
+ 
+
 local FileUtil = {Instances={}}
 local FileUtil_mt = { __index = FileUtil }  -- metatable
 
@@ -19,6 +22,22 @@ end
 
 function FileUtil:new(value, chained)
 	return setmetatable({ _val = value or false }, self)
+end
+
+function FileUtil:createDirectory(self, path, dirname)
+	local base = path or system.DocumentsDirectory
+	local docs_path = system.pathForFile( "", base )
+	
+	-- Change current working directory
+	local success = lfs.chdir( docs_path )  -- Returns true on success
+	 
+	local new_folder_path
+	
+	 
+	if ( success ) then
+	    lfs.mkdir( dirname )
+	    new_folder_path = lfs.currentdir() .. "/" .. dirname
+	end
 end
 
 
